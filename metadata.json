@@ -1,0 +1,8 @@
+{
+  "name": "Nexus Social",
+  "description": "A next-generation social media platform featuring AI-powered content creation, real-time trending topics via Google Search Grounding, and a modern glassmorphism aesthetic.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
