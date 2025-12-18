@@ -35,13 +35,13 @@ const Bookmarks: React.FC<BookmarksProps> = ({
     useEffect(() => {
         const handleScroll = () => {
             const currentY = window.scrollY;
-            if (currentY < 50) {
+            
+            if (currentY <= 10) {
                 setShowHeader(true);
             } else if (currentY > lastScrollY) {
                 setShowHeader(false);
-            } else {
-                setShowHeader(true);
             }
+            
             setLastScrollY(currentY);
         };
         window.addEventListener('scroll', handleScroll, { passive: true });

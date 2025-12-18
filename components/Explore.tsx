@@ -32,13 +32,13 @@ const Explore: React.FC = () => {
 
     const handleScroll = () => {
       const currentY = window.scrollY;
-      if (currentY < 50) {
+      
+      if (currentY <= 10) {
         setShowHeader(true);
       } else if (currentY > lastScrollY) {
         setShowHeader(false);
-      } else {
-        setShowHeader(true);
       }
+      
       setLastScrollY(currentY);
     };
 

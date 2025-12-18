@@ -15,13 +15,13 @@ const Messages: React.FC = () => {
   useEffect(() => {
     const handleScroll = () => {
         const currentY = window.scrollY;
-        if (currentY < 50) {
+        
+        if (currentY <= 10) {
             setShowHeader(true);
         } else if (currentY > lastScrollY) {
             setShowHeader(false);
-        } else {
-            setShowHeader(true);
         }
+        
         setLastScrollY(currentY);
     };
     if (!selectedConversationId) {
@@ -240,7 +240,7 @@ const Messages: React.FC = () => {
       {/* New Message Modal */}
       {showNewMessageModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="bg-white w-full max-md rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in duration-200">
                 <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
                     <h3 className="font-bold text-lg text-gray-900">New Message</h3>
                     <button 

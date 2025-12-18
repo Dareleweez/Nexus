@@ -46,13 +46,14 @@ export default function App() {
       const currentY = window.scrollY;
       setShowScrollTop(currentY > 300);
       
-      if (currentY < 50) {
+      // Only show header when at the very top, otherwise hide on scroll down
+      if (currentY <= 10) {
         setShowHeader(true);
       } else if (currentY > lastScrollY) {
         setShowHeader(false);
-      } else {
-        setShowHeader(true);
       }
+      // If scrolling up but not at top, we do nothing to keep header hidden
+      
       setLastScrollY(currentY);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
