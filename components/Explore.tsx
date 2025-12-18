@@ -10,6 +10,7 @@ const Explore: React.FC = () => {
   const [showHeader, setShowHeader] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
+  // Fetch data ONLY once on mount
   useEffect(() => {
     let mounted = true;
     const fetchTrends = async () => {
@@ -30,6 +31,13 @@ const Explore: React.FC = () => {
 
     fetchTrends();
 
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  // Handle scroll visibility separately
+  useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
       
@@ -44,7 +52,6 @@ const Explore: React.FC = () => {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
-      mounted = false;
       window.removeEventListener('scroll', handleScroll);
     };
   }, [lastScrollY]);
