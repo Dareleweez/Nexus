@@ -14,7 +14,7 @@ const Messages: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
   };
 
   useEffect(() => {
@@ -26,13 +26,11 @@ const Messages: React.FC = () => {
   useEffect(() => {
     const handleScroll = () => {
         const currentY = window.scrollY;
-        
         if (currentY <= 10) {
             setShowHeader(true);
         } else if (currentY > lastScrollY) {
             setShowHeader(false);
         }
-        
         setLastScrollY(currentY);
     };
     if (!selectedConversationId) {
@@ -91,71 +89,62 @@ const Messages: React.FC = () => {
   };
 
   if (selectedConversation) {
-    // Chat View - Styled to match screenshot
+    // Chat View - Immersive view that covers the bottom nav on mobile
     return (
-      <div className="flex flex-col h-screen md:h-[calc(100vh-0px)] bg-white">
-        {/* Chat Header - Refined */}
-        <div className="sticky top-0 bg-white/95 backdrop-blur-md z-30 px-4 py-3 border-b border-gray-100 flex items-center gap-2">
+      <div className="fixed inset-0 md:relative md:inset-auto z-[60] md:z-auto bg-white flex flex-col h-full w-full max-w-[750px] mx-auto animate-in slide-in-from-right duration-200">
+        {/* Chat Header - Matched to Screenshot */}
+        <div className="bg-white px-4 py-3 border-b border-gray-100 flex items-center gap-2 shrink-0">
           <button 
             onClick={() => setSelectedConversationId(null)}
             className="p-1 rounded-full hover:bg-gray-100 transition-colors mr-1"
           >
             <ArrowLeft className="w-8 h-8 text-gray-900" strokeWidth={1.5} />
           </button>
-          <div className="flex items-center gap-3 flex-1">
+          <div className="flex items-center gap-3 flex-1 overflow-hidden">
             <img 
               src={selectedConversation.user.avatar} 
               alt={selectedConversation.user.name} 
-              className="w-11 h-11 rounded-full object-cover shadow-sm"
+              className="w-11 h-11 rounded-full object-cover"
             />
-            <div className="flex flex-col">
-              <h2 className="font-bold text-[19px] text-gray-900 leading-tight">{selectedConversation.user.name}</h2>
-              <p className="text-[13px] text-gray-400 font-medium tracking-tight">{selectedConversation.user.handle}</p>
+            <div className="flex flex-col min-w-0">
+              <h2 className="font-bold text-[19px] text-gray-900 leading-tight truncate">{selectedConversation.user.name}</h2>
+              <p className="text-[13px] text-gray-400 font-medium tracking-tight truncate">{selectedConversation.user.handle}</p>
             </div>
           </div>
           <button className="p-2 text-gray-300 hover:text-gray-600 transition-colors">
-            <MoreHorizontal className="w-7 h-7" strokeWidth={1.5} />
+            <MoreHorizontal className="w-7 h-7" strokeWidth={1.2} />
           </button>
         </div>
 
-        {/* Messages List - Styled like screenshot */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-8 bg-white no-scrollbar">
-          {selectedConversation.messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-gray-400 text-sm">
-                <p>Start a conversation with {selectedConversation.user.name}</p>
+        {/* Messages List - Matched to Screenshot */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-white no-scrollbar pb-32">
+          {selectedConversation.messages.map((msg) => (
+            <div 
+              key={msg.id} 
+              className={`flex flex-col ${msg.isOwn ? 'items-end' : 'items-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}
+            >
+              <div 
+                className={`max-w-[85%] px-5 py-3 rounded-[24px] text-[16px] leading-snug ${
+                  msg.isOwn 
+                    ? 'bg-nexus-primary text-white rounded-tr-none' 
+                    : 'bg-gray-100 text-gray-900 rounded-tl-none'
+                }`}
+              >
+                {msg.text}
+              </div>
+              <div className="text-[11px] mt-1.5 px-2 font-medium text-gray-400 tracking-wide">
+                {msg.timestamp}
+              </div>
             </div>
-          ) : (
-            selectedConversation.messages.map((msg) => (
-                <div 
-                  key={msg.id} 
-                  className={`flex flex-col ${msg.isOwn ? 'items-end' : 'items-start'}`}
-                >
-                  <div 
-                      className={`max-w-[85%] px-5 py-3.5 rounded-[22px] text-[16px] leading-relaxed shadow-sm ${
-                      msg.isOwn 
-                          ? 'bg-nexus-primary text-white' 
-                          : 'bg-gray-50 text-gray-900 border border-gray-100'
-                      }`}
-                  >
-                      {msg.text}
-                  </div>
-                  <div className={`text-[11px] mt-1.5 px-1 font-medium text-gray-400`}>
-                    {msg.timestamp}
-                  </div>
-                </div>
-            ))
-          )}
+          ))}
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Message Input - Pill shape, no send button */}
-        <div className="px-4 py-4 border-t border-gray-100 bg-white">
-          <form 
-            onSubmit={handleSendMessage}
-            className="flex items-center gap-2 bg-gray-100 rounded-[30px] px-5 py-1.5 border border-gray-200/50 shadow-inner"
-          >
-            <button type="button" className="text-nexus-primary hover:scale-110 transition-transform p-1">
-              <ImageIcon className="w-6 h-6" strokeWidth={2} />
+        {/* Message Input - Pill shape, absolute bottom, replaces nav */}
+        <div className="fixed bottom-0 left-0 right-0 w-full max-w-[750px] mx-auto bg-white/95 backdrop-blur-md px-4 py-6 border-t border-gray-100 shrink-0 z-50">
+          <div className="bg-gray-100 rounded-full flex items-center px-4 py-1 border border-gray-200/50 shadow-inner">
+            <button type="button" className="text-nexus-primary p-2 hover:scale-110 transition-transform">
+              <ImageIcon className="w-6 h-6" strokeWidth={1.8} />
             </button>
             <input 
               type="text"
@@ -168,13 +157,12 @@ const Messages: React.FC = () => {
                 }
               }}
               placeholder="Start a message"
-              className="flex-1 bg-transparent border-none focus:ring-0 text-gray-900 placeholder-gray-500 text-[16px] py-3 ml-1"
+              className="flex-1 bg-transparent border-none focus:ring-0 text-gray-900 placeholder-gray-500 text-[17px] py-3.5 px-2"
             />
-            <button type="button" className="text-nexus-primary hover:scale-110 transition-transform p-1">
-              <Smile className="w-6 h-6" strokeWidth={2} />
+            <button type="button" className="text-nexus-primary p-2 hover:scale-110 transition-transform">
+              <Smile className="w-6 h-6" strokeWidth={1.8} />
             </button>
-            {/* The send button is hidden as per request, logic is handled via Enter key */}
-          </form>
+          </div>
         </div>
       </div>
     );
@@ -183,7 +171,6 @@ const Messages: React.FC = () => {
   // Conversation List View
   return (
     <div className="pb-20 relative bg-white min-h-screen">
-      {/* Header */}
       <div className={`sticky top-0 bg-white/95 backdrop-blur-md z-30 px-4 py-4 border-b border-gray-100 flex justify-between items-center transition-transform duration-300 ${showHeader ? 'translate-y-0' : '-translate-y-full'}`}>
         <h2 className="font-bold text-2xl text-gray-900">Messages</h2>
         <div className="flex gap-1">
@@ -200,7 +187,6 @@ const Messages: React.FC = () => {
         </div>
       </div>
 
-      {/* Search */}
       <div className="p-4 border-b border-gray-50">
         <div className="relative group">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -214,7 +200,6 @@ const Messages: React.FC = () => {
         </div>
       </div>
 
-      {/* List */}
       <div className="divide-y divide-gray-50">
         {conversations.map(conv => (
           <div 
@@ -252,7 +237,6 @@ const Messages: React.FC = () => {
         ))}
       </div>
 
-      {/* New Message Modal */}
       {showNewMessageModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
             <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 border border-gray-100">
