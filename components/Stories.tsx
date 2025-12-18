@@ -60,7 +60,7 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
   const openViewer = (index: number) => {
     setCurrentStoryIndex(index);
     setViewerOpen(true);
-    // Hide body scroll when viewer is open
+    // CRITICAL: Prevent body scroll and ensure full coverage
     document.body.style.overflow = 'hidden';
   };
 
@@ -93,7 +93,7 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
         {/* Add Story Button */}
         <div className="flex flex-col items-center gap-2 cursor-pointer group" onClick={() => fileInputRef.current?.click()}>
           <div className="relative" style={{ width: '4.5rem', height: '4.5rem' }}>
-            <div className="w-full h-full rounded-full p-[4px] border-[2px] border-gray-300 border-dashed group-hover:border-nexus-primary group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all duration-300 transform">
+            <div className="w-full h-full rounded-full p-[4px] border-[2px] border-gray-300 border-dashed group-hover:border-nexus-primary group-hover:scale-105 transition-all duration-300 transform">
                  <img 
                     src={currentUser.avatar} 
                     alt="Add Story" 
@@ -138,19 +138,19 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
         ))}
       </div>
 
-      {/* Story Viewer Modal - FULL PAGE */}
+      {/* Story Viewer Modal - TRULY IMMERSIVE FULL SCREEN */}
       {viewerOpen && stories[currentStoryIndex] && (
-        <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center animate-in fade-in duration-300">
-           {/* Cinematic Blur Background */}
+        <div className="fixed inset-0 z-[100] bg-black flex flex-col animate-in fade-in duration-300 overflow-hidden">
+           {/* Cinematic Background Layer */}
            <div 
-             className="absolute inset-0 opacity-40 scale-110 bg-cover bg-center blur-[120px]"
+             className="absolute inset-0 opacity-40 scale-110 bg-cover bg-center blur-[100px] pointer-events-none"
              style={{ backgroundImage: `url(${stories[currentStoryIndex].imageUrl})` }}
            ></div>
 
-           <div className="relative w-full h-full max-w-[100vw] max-h-[100vh] overflow-hidden flex flex-col bg-transparent">
-              {/* Top Navigation & Progress */}
-              <div className="absolute top-0 left-0 w-full z-[110] px-4 pt-3 pb-8 bg-gradient-to-b from-black/60 to-transparent">
-                  <div className="flex gap-1.5 mb-4">
+           {/* Top Content Layer (Progress & Profile) */}
+           <div className="relative z-[120] w-full px-4 pt-4 pb-12 bg-gradient-to-b from-black/80 via-black/40 to-transparent shrink-0">
+                {/* Progress Indicators */}
+                <div className="flex gap-1.5 mb-5 max-w-4xl mx-auto">
                     {stories.map((_, idx) => (
                         <div key={idx} className="h-1 flex-1 bg-white/20 rounded-full overflow-hidden">
                             <div 
@@ -162,82 +162,79 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
                             ></div>
                         </div>
                     ))}
-                  </div>
+                </div>
 
-                  <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                          <img 
+                {/* Identity & Close */}
+                <div className="flex items-center justify-between max-w-4xl mx-auto">
+                    <div className="flex items-center gap-3 group">
+                        <img 
                             src={stories[currentStoryIndex].user.avatar} 
                             alt={stories[currentStoryIndex].user.name}
-                            className="w-11 h-11 rounded-full border-2 border-white/20 shadow-lg" 
-                          />
-                          <div>
-                              <div className="text-white text-[16px] font-bold drop-shadow-md tracking-tight leading-none mb-0.5">
-                                  {stories[currentStoryIndex].user.name}
-                              </div>
-                              <div className="text-white/70 text-[12px] font-medium drop-shadow-sm">
-                                  {stories[currentStoryIndex].timestamp}
-                              </div>
-                          </div>
-                      </div>
-                      <button 
+                            className="w-10 h-10 rounded-full border border-white/30 shadow-xl group-hover:scale-105 transition-transform" 
+                        />
+                        <div className="flex flex-col">
+                            <span className="text-white text-base font-bold drop-shadow-lg leading-tight">
+                                {stories[currentStoryIndex].user.name}
+                            </span>
+                            <span className="text-white/60 text-xs font-medium drop-shadow-sm">
+                                {stories[currentStoryIndex].timestamp}
+                            </span>
+                        </div>
+                    </div>
+                    <button 
                         onClick={closeViewer}
-                        className="text-white p-2.5 rounded-full hover:bg-white/10 transition-all backdrop-blur-md"
-                      >
-                          <X className="w-7 h-7" />
-                      </button>
-                  </div>
-              </div>
+                        className="p-2.5 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-xl transition-all border border-white/10"
+                    >
+                        <X className="w-6 h-6" strokeWidth={2} />
+                    </button>
+                </div>
+           </div>
 
-              {/* Main Content (The Image) */}
-              <div className="flex-1 relative flex items-center justify-center p-0 md:p-12">
-                  <img 
+           {/* Main Content Layer (Image) */}
+           <div className="flex-1 relative flex items-center justify-center z-[110]">
+                {/* Navigation Tap Zones */}
+                <div className="absolute inset-0 flex z-[115]">
+                    <div className="w-1/3 h-full cursor-pointer" onClick={handlePrev}></div>
+                    <div className="w-2/3 h-full cursor-pointer" onClick={handleNext}></div>
+                </div>
+
+                {/* Story Image */}
+                <img 
                     src={stories[currentStoryIndex].imageUrl} 
                     alt="Story Content" 
-                    className="max-w-full max-h-full object-contain shadow-2xl animate-in zoom-in-95 duration-300"
-                  />
-                  {/* Tap Navigation Zones */}
-                  <div className="absolute inset-0 flex z-[105]">
-                      <div className="w-1/3 h-full cursor-pointer" onClick={handlePrev}></div>
-                      <div className="w-2/3 h-full cursor-pointer" onClick={handleNext}></div>
-                  </div>
-              </div>
-              
-              {/* Bottom Reply Bar */}
-              <div className="absolute bottom-0 left-0 w-full p-6 md:p-10 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-[110]">
-                  <div className="flex gap-4 items-center max-w-3xl mx-auto">
-                      <div className="flex-1 relative group">
+                    className="max-w-full max-h-full object-contain shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-in zoom-in-95 duration-500"
+                />
+
+                {/* Desktop Sidebar Arrows */}
+                <button 
+                    onClick={handlePrev}
+                    className={`hidden md:flex absolute left-8 lg:left-16 p-4 text-white/40 hover:text-white bg-white/5 hover:bg-white/10 rounded-full backdrop-blur-md transition-all z-[120] ${currentStoryIndex === 0 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                >
+                    <ChevronLeft className="w-10 h-10" />
+                </button>
+                <button 
+                    onClick={handleNext}
+                    className="hidden md:flex absolute right-8 lg:right-16 p-4 text-white/40 hover:text-white bg-white/5 hover:bg-white/10 rounded-full backdrop-blur-md transition-all z-[120]"
+                >
+                    <ChevronRight className="w-10 h-10" />
+                </button>
+           </div>
+
+           {/* Bottom Content Layer (Reply) */}
+           <div className="relative z-[120] w-full p-6 md:p-10 bg-gradient-to-t from-black/80 via-black/40 to-transparent shrink-0">
+                <div className="flex gap-3 items-center max-w-2xl mx-auto">
+                    <div className="flex-1 relative">
                         <input 
                             type="text" 
                             placeholder={`Reply to ${stories[currentStoryIndex].user.name.split(' ')[0]}...`} 
-                            className="w-full bg-white/10 border border-white/20 rounded-full px-6 py-4 text-white placeholder-white/40 focus:outline-none focus:border-white/40 focus:bg-white/15 backdrop-blur-2xl transition-all text-base shadow-lg"
+                            className="w-full bg-white/10 border border-white/20 rounded-full px-6 py-4 text-white placeholder-white/40 focus:outline-none focus:border-white/40 focus:bg-white/20 backdrop-blur-2xl transition-all text-[16px] shadow-2xl"
                         />
-                      </div>
-                      <button className="text-white p-4 rounded-full bg-white/10 hover:bg-white/20 transition-all backdrop-blur-2xl border border-white/20 shadow-lg">
-                         <ImageIcon className="w-6 h-6" />
-                      </button>
-                  </div>
-              </div>
+                    </div>
+                    <button className="text-white p-4 rounded-full bg-white/10 hover:bg-white/20 transition-all backdrop-blur-2xl border border-white/20 shadow-xl">
+                        <ImageIcon className="w-6 h-6" />
+                    </button>
+                </div>
            </div>
-
-           {/* Desktop Sidebar Arrows */}
-           <button 
-                onClick={handlePrev}
-                className={`hidden md:flex absolute left-8 lg:left-12 text-white/30 hover:text-white hover:scale-110 transition-all z-[120] ${currentStoryIndex === 0 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
-                disabled={currentStoryIndex === 0}
-           >
-               <div className="bg-black/20 hover:bg-black/40 p-4 rounded-full backdrop-blur-md">
-                 <ChevronLeft className="w-10 h-10" />
-               </div>
-           </button>
-           <button 
-                onClick={handleNext}
-                className="hidden md:flex absolute right-8 lg:right-12 text-white/30 hover:text-white hover:scale-110 transition-all z-[120]"
-           >
-               <div className="bg-black/20 hover:bg-black/40 p-4 rounded-full backdrop-blur-md">
-                 <ChevronRight className="w-10 h-10" />
-               </div>
-           </button>
         </div>
       )}
     </div>
