@@ -32,12 +32,12 @@ const Bookmarks: React.FC<BookmarksProps> = ({
     return (
         <div className="min-h-screen bg-white">
             {/* Header */}
-            <div className="sticky top-0 bg-white/80 backdrop-blur-md z-30 px-4 py-3 border-b border-gray-200">
-                <div className="flex items-center gap-3">
-                    <Bookmark className="w-6 h-6 text-nexus-primary" />
-                    <h2 className="font-bold text-xl text-gray-900">Bookmarks</h2>
+            <div className="sticky top-0 bg-white/80 backdrop-blur-md z-30 px-4 py-4 border-b border-gray-200">
+                <div className="flex items-center gap-4">
+                    <Bookmark className="w-8 h-8 text-nexus-primary" />
+                    <h2 className="font-bold text-2xl text-gray-900">Bookmarks</h2>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">{currentUser?.handle}</p>
+                <p className="text-sm text-gray-500 mt-1 ml-12">{currentUser?.handle}</p>
             </div>
 
             {/* List */}

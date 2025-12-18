@@ -41,14 +41,14 @@ const Notifications: React.FC<NotificationsProps> = ({ notifications, onNotifica
             {/* Header */}
             <div className="sticky top-0 bg-white/80 backdrop-blur-md z-30 border-b border-gray-200">
                 <div className="px-4 py-3 flex justify-between items-center">
-                    <h2 className="font-bold text-xl text-gray-900">Notifications</h2>
+                    <h2 className="font-bold text-2xl text-gray-900">Notifications</h2>
                     <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                        <Settings className="w-5 h-5 text-gray-600" />
+                        <Settings className="w-7 h-7 text-gray-600" />
                     </button>
                 </div>
                 
                 {/* Filter Tabs */}
-                <div className="flex px-2 overflow-x-auto no-scrollbar gap-2 pb-2">
+                <div className="flex px-2 overflow-x-auto no-scrollbar gap-2 pb-3">
                     {tabs.map((tab) => (
                         <button
                             key={tab.id}

@@ -98,12 +98,12 @@ const Profile: React.FC<ProfileProps> = ({
   return (
     <div>
       {/* Header */}
-      <div className="sticky top-0 bg-white/80 backdrop-blur-md z-30 px-4 py-2 flex items-center gap-4 border-b border-gray-200">
+      <div className="sticky top-0 bg-white/80 backdrop-blur-md z-30 px-4 py-3 flex items-center gap-4 border-b border-gray-200">
         <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
-            <ArrowLeft className="w-5 h-5 text-gray-900" />
+            <ArrowLeft className="w-7 h-7 text-gray-900" />
         </button>
         <div>
-            <h2 className="font-bold text-lg leading-tight text-gray-900">{user.name}</h2>
+            <h2 className="font-bold text-xl leading-tight text-gray-900">{user.name}</h2>
             <p className="text-xs text-gray-500">{posts.length} posts</p>
         </div>
       </div>

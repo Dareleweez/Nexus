@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Conversation, Message, User } from '../types';
 import { MOCK_CONVERSATIONS, CURRENT_USER, MOCK_USERS } from '../constants';
@@ -70,21 +71,21 @@ const Messages: React.FC = () => {
             onClick={() => setSelectedConversationId(null)}
             className="p-2 rounded-full hover:bg-gray-100 transition-colors"
           >
-            <ArrowLeft className="w-5 h-5 text-gray-900" />
+            <ArrowLeft className="w-7 h-7 text-gray-900" />
           </button>
           <div className="flex items-center gap-3 flex-1">
             <img 
               src={selectedConversation.user.avatar} 
               alt={selectedConversation.user.name} 
-              className="w-8 h-8 rounded-full object-cover"
+              className="w-10 h-10 rounded-full object-cover"
             />
             <div>
-              <h2 className="font-bold text-gray-900 leading-tight">{selectedConversation.user.name}</h2>
+              <h2 className="font-bold text-lg text-gray-900 leading-tight">{selectedConversation.user.name}</h2>
               <p className="text-xs text-gray-500">{selectedConversation.user.handle}</p>
             </div>
           </div>
           <button className="p-2 text-gray-400 hover:text-nexus-primary rounded-full transition-colors">
-            <MoreHorizontal className="w-5 h-5" />
+            <MoreHorizontal className="w-7 h-7" />
           </button>
         </div>
 
@@ -124,7 +125,7 @@ const Messages: React.FC = () => {
             className="flex items-center gap-2 bg-gray-100 rounded-3xl px-4 py-2"
           >
             <button type="button" className="text-nexus-primary hover:bg-gray-200 p-2 rounded-full transition-colors">
-              <ImageIcon className="w-5 h-5" />
+              <ImageIcon className="w-6 h-6" />
             </button>
             <input 
               type="text"
@@ -134,14 +135,14 @@ const Messages: React.FC = () => {
               className="flex-1 bg-transparent border-none focus:ring-0 text-gray-900 placeholder-gray-500"
             />
             <button type="button" className="text-nexus-primary hover:bg-gray-200 p-2 rounded-full transition-colors">
-              <Smile className="w-5 h-5" />
+              <Smile className="w-6 h-6" />
             </button>
             <button 
               type="submit" 
               disabled={!messageInput.trim()}
               className="text-nexus-primary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-200 p-2 rounded-full transition-colors"
             >
-              <Send className="w-5 h-5" />
+              <Send className="w-6 h-6" />
             </button>
           </form>
         </div>
@@ -154,17 +155,17 @@ const Messages: React.FC = () => {
     <div className="pb-20 relative">
       {/* Header */}
       <div className="sticky top-0 bg-white/80 backdrop-blur-md z-30 px-4 py-3 border-b border-gray-200 flex justify-between items-center">
-        <h2 className="font-bold text-xl text-gray-900">Messages</h2>
+        <h2 className="font-bold text-2xl text-gray-900">Messages</h2>
         <div className="flex gap-2">
             <button 
                 onClick={() => setShowNewMessageModal(true)}
                 className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-900"
                 title="New Message"
             >
-                <Plus className="w-5 h-5" />
+                <Plus className="w-7 h-7" />
             </button>
             <button className="p-2 rounded-full hover:bg-gray-100 transition-colors">
-                <Settings className="w-5 h-5 text-gray-600" />
+                <Settings className="w-7 h-7 text-gray-600" />
             </button>
         </div>
       </div>
@@ -172,12 +173,12 @@ const Messages: React.FC = () => {
       {/* Search */}
       <div className="p-4 border-b border-gray-100">
         <div className="relative group">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-4 w-4 text-gray-500" />
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-gray-500" />
           </div>
           <input
             type="text"
-            className="block w-full pl-10 pr-3 py-2 border border-transparent rounded-full leading-5 bg-gray-100 text-gray-900 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-1 focus:ring-nexus-primary focus:border-nexus-primary transition-all sm:text-sm"
+            className="block w-full pl-12 pr-4 py-2.5 border border-transparent rounded-full leading-5 bg-gray-100 text-gray-900 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-1 focus:ring-nexus-primary focus:border-nexus-primary transition-all text-base"
             placeholder="Search Direct Messages"
           />
         </div>
@@ -194,7 +195,7 @@ const Messages: React.FC = () => {
             <img 
               src={conv.user.avatar} 
               alt={conv.user.name} 
-              className="w-12 h-12 rounded-full object-cover shrink-0"
+              className="w-14 h-14 rounded-full object-cover shrink-0 shadow-sm border border-gray-100"
             />
             <div className="flex-1 min-w-0">
               <div className="flex justify-between items-baseline mb-0.5">
@@ -226,7 +227,7 @@ const Messages: React.FC = () => {
                         onClick={() => setShowNewMessageModal(false)}
                         className="p-1.5 rounded-full hover:bg-gray-100 transition-colors text-gray-500"
                     >
-                        <X className="w-5 h-5" />
+                        <X className="w-6 h-6" />
                     </button>
                 </div>
                 <div className="max-h-[60vh] overflow-y-auto">

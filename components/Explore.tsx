@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Search, Loader2, MoreHorizontal, Settings } from 'lucide-react';
 import { getTrendingTopics } from '../services/geminiService';
@@ -35,20 +36,20 @@ const Explore: React.FC = () => {
   return (
     <div>
       {/* Sticky Search Header */}
-      <div className="sticky top-0 bg-white/80 backdrop-blur-md z-30 px-4 py-2 border-b border-gray-200">
+      <div className="sticky top-0 bg-white/80 backdrop-blur-md z-30 px-4 py-3 border-b border-gray-200">
         <div className="relative group flex items-center gap-4">
             <div className="relative flex-1">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Search className="h-4 w-4 text-gray-500" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Search className="h-5 w-5 text-gray-500" />
                 </div>
                 <input 
                     type="text" 
                     placeholder="Search Nexus" 
-                    className="block w-full pl-10 pr-3 py-2 bg-gray-100 border-transparent text-gray-900 placeholder-gray-500 focus:bg-white focus:border-nexus-primary focus:ring-1 focus:ring-nexus-primary rounded-full sm:text-sm transition-all outline-none"
+                    className="block w-full pl-12 pr-4 py-2.5 bg-gray-100 border-transparent text-gray-900 placeholder-gray-500 focus:bg-white focus:border-nexus-primary focus:ring-1 focus:ring-nexus-primary rounded-full text-base transition-all outline-none"
                 />
             </div>
             <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                <Settings className="w-5 h-5 text-gray-600" />
+                <Settings className="w-7 h-7 text-gray-600" />
             </button>
         </div>
       </div>

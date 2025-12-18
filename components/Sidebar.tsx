@@ -25,11 +25,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, onCreatePo
   return (
     <div className="fixed bottom-0 w-full md:w-64 md:h-screen md:sticky md:top-0 bg-white/80 md:bg-white/60 backdrop-blur-xl border-t md:border-t-0 md:border-r border-gray-200/60 z-50 flex md:flex-col justify-between p-4 transition-all duration-300">
       <div className="flex md:flex-col w-full md:w-auto justify-around md:justify-start gap-1 md:gap-4">
-        <div className="hidden md:flex items-center gap-2 mb-8 px-4">
-            <div className="w-8 h-8 bg-gradient-to-tr from-nexus-primary to-nexus-accent rounded-lg flex items-center justify-center shadow-lg shadow-nexus-primary/20">
-                <Sparkles className="w-5 h-5 text-white" />
-            </div>
-            <h1 className="text-xl font-bold tracking-tight text-black">Nexus</h1>
+        <div className="hidden md:flex items-center mb-10 px-4">
+            <h1 className="text-4xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-nexus-primary to-nexus-accent">NEXUS</h1>
         </div>
 
         {items.map((item) => {

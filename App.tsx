@@ -235,28 +235,33 @@ export default function App() {
     switch (currentView) {
       case 'home':
         return (
-          <div className="flex flex-col gap-4 pb-20 md:pb-0">
-             <div className="md:hidden sticky top-0 bg-white/80 backdrop-blur-md z-30 px-4 py-3 flex items-center justify-between border-b border-gray-200">
-                <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gradient-to-tr from-nexus-primary to-nexus-accent rounded-lg flex items-center justify-center shadow-lg shadow-nexus-primary/20">
-                        <Sparkles className="w-5 h-5 text-white" />
+          <div className="flex flex-col md:gap-4 pb-20 md:pb-0">
+             {/* Unified Header Layer for Mobile */}
+             <div className="md:hidden sticky top-0 bg-white/90 backdrop-blur-md z-30 border-b border-gray-200">
+                <div className="px-4 py-3 flex items-center justify-between">
+                    <div className="flex items-center">
+                        <h1 className="text-3xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-nexus-primary to-nexus-accent">NEXUS</h1>
                     </div>
-                    <h1 className="text-xl font-bold tracking-tight text-black">Nexus</h1>
+                    <div className="flex items-center gap-4">
+                         <button onClick={() => handleViewChange('explore')}>
+                             <Compass className="w-8 h-8 text-gray-900" />
+                         </button>
+                         <img 
+                            src={currentUser?.avatar} 
+                            alt="Profile" 
+                            onClick={() => handleUserClick(currentUser!)}
+                            className="w-10 h-10 rounded-full object-cover border border-gray-200" 
+                         />
+                    </div>
                 </div>
-                <div className="flex items-center gap-4">
-                     <button onClick={() => handleViewChange('explore')}>
-                         <Compass className="w-8 h-8 text-gray-900" />
-                     </button>
-                     <img 
-                        src={currentUser?.avatar} 
-                        alt="Profile" 
-                        onClick={() => handleUserClick(currentUser!)}
-                        className="w-8 h-8 rounded-full object-cover border border-gray-200" 
-                     />
-                </div>
+                {/* Connected Stories */}
+                {currentUser && <Stories currentUser={currentUser} connected={true} />}
              </div>
             
-            {currentUser && <Stories currentUser={currentUser} />}
+            {/* Standard Feed Stories for Desktop */}
+            <div className="hidden md:block">
+                {currentUser && <Stories currentUser={currentUser} />}
+            </div>
             
             <div className="hidden md:block">
                  {currentUser && (
