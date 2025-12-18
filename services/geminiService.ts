@@ -2,16 +2,16 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { TrendingTopic } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export const generatePostCaption = async (
   images: Array<{ base64: string; mimeType: string }>,
   userPrompt?: string
 ): Promise<string> => {
-  if (!process.env.API_KEY) return "API Key missing. Cannot generate caption.";
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) return "API Key missing. Cannot generate caption.";
   if (images.length === 0) return "";
 
   try {
+    const ai = new GoogleGenAI({ apiKey });
     const prompt = userPrompt 
       ? `Based on these ${images.length} images and my idea "${userPrompt}", write a catchy, engaging social media caption with hashtags that connects all images.`
       : `Write a witty and engaging social media caption for this set of ${images.length} images with relevant hashtags.`;
@@ -41,13 +41,15 @@ export const generatePostCaption = async (
 };
 
 export const getTrendingTopics = async (): Promise<TrendingTopic[]> => {
-  if (!process.env.API_KEY) {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
     return [
       { title: "API Key Missing", url: "#", snippet: "Please configure your API Key." }
     ];
   }
 
   try {
+    const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: "What are the top 5 trending news topics in technology and science right now? Provide a brief title and a summary for each.",
@@ -85,9 +87,11 @@ export const getTrendingTopics = async (): Promise<TrendingTopic[]> => {
 };
 
 export const enhanceText = async (text: string): Promise<string> => {
-  if (!process.env.API_KEY) return text;
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) return text;
   
   try {
+    const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `Improve the following social media post text to be more engaging, grammar-perfect, and professional yet accessible. Keep it concise. Text: "${text}"`,
