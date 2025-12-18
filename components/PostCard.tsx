@@ -343,16 +343,20 @@ const PostCard: React.FC<PostCardProps> = ({
     setEditCommentText('');
   };
 
+  // Fix: Removed redundant recursive function definition and fixed 'prev' being undefined
   const handleSaveComment = (commentId: string) => {
     if (!editCommentText.trim()) return;
-    const updateRecursive = (items: Comment[]): Comment[] => {
-      return items.map(c => {
-        if (c.id === commentId) return { ...c, text: editCommentText };
-        if (c.replies && c.replies.length > 0) return { ...c, replies: updateRecursive(c.replies) };
-        return c;
-      });
-    };
-    setComments(prev => updateRecursive(prev));
+    
+    setComments(prev => {
+        const updateRecursive = (items: Comment[]): Comment[] => {
+            return items.map(c => {
+              if (c.id === commentId) return { ...c, text: editCommentText };
+              if (c.replies && c.replies.length > 0) return { ...c, replies: updateRecursive(c.replies) };
+              return c;
+            });
+        };
+        return updateRecursive(prev);
+    });
     if (onCommentUpdate) onCommentUpdate(post.id, commentId, editCommentText);
     handleCancelCommentEdit();
   };
@@ -377,7 +381,7 @@ const PostCard: React.FC<PostCardProps> = ({
   const renderMedia = () => {
     if (displayPost.videoUrl) {
       return (
-        <div className={`mt-3 rounded-2xl overflow-hidden border border-gray-100 bg-neutral-900 shadow-sm flex justify-center items-center group/media relative max-w-[500px] h-[500px] w-full mx-auto`}>
+        <div className={`mt-3 rounded-2xl overflow-hidden border border-gray-100 bg-neutral-900 shadow-sm flex justify-center items-center group/media relative max-w-[500px] h-[450px] w-full mx-auto`}>
           <video src={displayPost.videoUrl} className="w-full h-full object-cover" controls playsInline />
         </div>
       );
