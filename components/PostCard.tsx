@@ -65,7 +65,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
               <img 
                   src={comment.user.avatar} 
                   alt={comment.user.name} 
-                  className={`${depth > 0 ? 'w-7 h-7' : 'w-8 h-8'} rounded-full object-cover cursor-pointer hover:opacity-90 shrink-0 border border-gray-100`}
+                  className={`${depth > 0 ? 'w-7 h-7' : 'w-8 h-8'} rounded-full object-cover cursor-pointer hover:opacity-90 shrink-0 border border-gray-100 dark:border-gray-800`}
                   onClick={(e) => { e.stopPropagation(); onUserClick(comment.user); }}
               />
               
@@ -73,22 +73,22 @@ const CommentItem: React.FC<CommentItemProps> = ({
                   <div 
                       className={`rounded-2xl rounded-tl-none px-4 py-2.5 transition-all duration-700 relative ${
                           showHighlight 
-                              ? 'bg-nexus-primary/10 border-nexus-primary/20 text-gray-900 shadow-sm' 
-                              : 'bg-gray-50 text-gray-800 border border-transparent'
+                              ? 'bg-nexus-primary/10 border-nexus-primary/20 text-gray-900 dark:text-gray-100 shadow-sm' 
+                              : 'bg-gray-50 dark:bg-nexus-800 text-gray-800 dark:text-gray-200 border border-transparent dark:border-gray-700/50'
                       }`}
                   >
                       <div className="flex justify-between items-baseline mb-0.5">
                           <span 
-                              className="font-bold text-sm text-gray-900 cursor-pointer hover:underline"
+                              className="font-bold text-sm text-gray-900 dark:text-gray-100 cursor-pointer hover:underline"
                               onClick={(e) => { e.stopPropagation(); onUserClick(comment.user); }}
                           >
                               {comment.user.name}
                           </span>
                           <div className="flex items-center gap-2">
                               {showHighlight && (
-                                  <span className="text-[10px] font-bold text-nexus-primary bg-white/50 px-1.5 rounded-full animate-pulse">New</span>
+                                  <span className="text-[10px] font-bold text-nexus-primary bg-white/50 dark:bg-nexus-900/50 px-1.5 rounded-full animate-pulse">New</span>
                               )}
-                              <span className="text-xs text-gray-400">{comment.timestamp}</span>
+                              <span className="text-xs text-gray-400 dark:text-gray-500">{comment.timestamp}</span>
                           </div>
                       </div>
                       
@@ -97,12 +97,12 @@ const CommentItem: React.FC<CommentItemProps> = ({
                               <textarea 
                                   value={editCommentText}
                                   onChange={(e) => setEditCommentText(e.target.value)}
-                                  className="w-full bg-white border border-nexus-primary/30 rounded-xl p-2.5 text-[14px] focus:outline-none focus:ring-2 focus:ring-nexus-primary/10 resize-none shadow-inner"
+                                  className="w-full bg-white dark:bg-nexus-900 border border-nexus-primary/30 rounded-xl p-2.5 text-[14px] focus:outline-none focus:ring-2 focus:ring-nexus-primary/10 resize-none shadow-inner text-gray-900 dark:text-gray-100"
                                   rows={2}
                                   autoFocus
                               />
                               <div className="flex justify-end gap-2 mt-2">
-                                  <button onClick={handleCancelCommentEdit} className="text-xs font-bold text-gray-500 hover:bg-gray-100 px-3 py-1.5 rounded-full transition-colors">
+                                  <button onClick={handleCancelCommentEdit} className="text-xs font-bold text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-nexus-700 px-3 py-1.5 rounded-full transition-colors">
                                       Cancel
                                   </button>
                                   <button onClick={() => handleSaveComment(comment.id)} className="text-xs font-bold bg-nexus-primary text-white px-3 py-1.5 rounded-full hover:bg-nexus-primary/90 transition-colors shadow-sm">
@@ -118,21 +118,21 @@ const CommentItem: React.FC<CommentItemProps> = ({
                           <div className="absolute top-2 right-2 md:opacity-0 group-hover/comment:opacity-100 transition-opacity" ref={menuRef}>
                               <button 
                                   onClick={() => setShowActions(!showActions)}
-                                  className="p-1 text-gray-400 hover:text-nexus-primary hover:bg-nexus-primary/10 rounded-full transition-colors"
+                                  className="p-1 text-gray-400 dark:text-gray-500 hover:text-nexus-primary hover:bg-nexus-primary/10 rounded-full transition-colors"
                               >
                                   <MoreHorizontal className="w-4 h-4" />
                               </button>
                               {showActions && (
-                                  <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-30 animate-in fade-in zoom-in duration-150">
+                                  <div className="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-nexus-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-1 z-30 animate-in fade-in zoom-in duration-150">
                                       <button 
                                           onClick={() => { handleEditComment(comment); setShowActions(false); }}
-                                          className="w-full text-left px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors"
+                                          className="w-full text-left px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-2 transition-colors"
                                       >
                                           <Pencil className="w-3 h-3" /> Edit
                                       </button>
                                       <button 
                                           onClick={() => { handleDeleteComment(comment.id); setShowActions(false); }}
-                                          className="w-full text-left px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors"
+                                          className="w-full text-left px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2 transition-colors"
                                       >
                                           <Trash2 className="w-3 h-3" /> Delete
                                       </button>
@@ -146,14 +146,14 @@ const CommentItem: React.FC<CommentItemProps> = ({
                       <div className="flex items-center gap-4 mt-1 ml-2">
                           <button 
                             onClick={() => setReplyingTo(comment)} 
-                            className="text-xs font-bold text-gray-500 hover:text-nexus-primary transition-colors flex items-center gap-1"
+                            className="text-xs font-bold text-gray-500 dark:text-gray-400 hover:text-nexus-primary transition-colors flex items-center gap-1"
                           >
                               Reply
                           </button>
                           {hasReplies && (
                             <button 
                               onClick={() => setIsExpanded(!isExpanded)}
-                              className="text-xs font-bold text-gray-400 hover:text-gray-600 transition-colors flex items-center gap-1"
+                              className="text-xs font-bold text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center gap-1"
                             >
                                 {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                                 {isExpanded ? 'Hide replies' : `Show ${comment.replies?.length} replies`}
@@ -165,7 +165,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
           </div>
 
           {hasReplies && isExpanded && (
-              <div className="pl-6 border-l-2 border-gray-200/50 ml-4 mt-2">
+              <div className="pl-6 border-l-2 border-gray-200/50 dark:border-gray-700/50 ml-4 mt-2">
                   {comment.replies?.map(reply => (
                       <CommentItem 
                           key={reply.id} 
@@ -376,11 +376,10 @@ const PostCard: React.FC<PostCardProps> = ({
   const displayPost = post.repostedFrom || post;
   const isActuallyARepost = !!post.repostedFrom;
 
-  // Media Grid Renderer
   const renderMedia = () => {
     if (displayPost.videoUrl) {
       return (
-        <div className={`mt-3 rounded-2xl overflow-hidden border border-gray-100 bg-neutral-900 shadow-sm flex justify-center items-center group/media relative h-[500px] w-full mx-auto`}>
+        <div className={`mt-3 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-neutral-900 shadow-sm flex justify-center items-center group/media relative h-[500px] w-full mx-auto`}>
           <video src={displayPost.videoUrl} className="w-full h-full object-cover" controls playsInline />
         </div>
       );
@@ -393,7 +392,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
     if (count === 1) {
       return (
-        <div className="mt-3 rounded-2xl overflow-hidden border border-gray-100 bg-gray-50 shadow-sm">
+        <div className="mt-3 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-nexus-800 shadow-sm">
           <img src={images[0]} alt="Post image" className="w-full h-auto max-h-[800px] object-cover hover:scale-[1.01] transition-transform duration-700" loading="lazy" />
         </div>
       );
@@ -401,7 +400,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
     if (count === 2) {
       return (
-        <div className="mt-3 grid grid-cols-2 gap-1 rounded-2xl overflow-hidden border border-gray-100 h-64 sm:h-96">
+        <div className="mt-3 grid grid-cols-2 gap-1 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 h-64 sm:h-96">
           {images.map((img, i) => (
             <img key={i} src={img} alt={`Post image ${i+1}`} className="w-full h-full object-cover hover:opacity-90 transition-opacity" />
           ))}
@@ -411,7 +410,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
     if (count === 3) {
       return (
-        <div className="mt-3 grid grid-cols-2 gap-1 rounded-2xl overflow-hidden border border-gray-100 h-64 sm:h-96">
+        <div className="mt-3 grid grid-cols-2 gap-1 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 h-64 sm:h-96">
           <img src={images[0]} alt="Post image 1" className="w-full h-full object-cover" />
           <div className="grid grid-rows-2 gap-1 h-full">
             <img src={images[1]} alt="Post image 2" className="w-full h-full object-cover" />
@@ -421,9 +420,8 @@ const PostCard: React.FC<PostCardProps> = ({
       );
     }
 
-    // 4 Images (Grid 2x2)
     return (
-      <div className="mt-3 grid grid-cols-2 grid-rows-2 gap-1 rounded-2xl overflow-hidden border border-gray-100 h-64 sm:h-96">
+      <div className="mt-3 grid grid-cols-2 grid-rows-2 gap-1 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 h-64 sm:h-96">
         {images.slice(0, 4).map((img, i) => (
           <img key={i} src={img} alt={`Post image ${i+1}`} className="w-full h-full object-cover" />
         ))}
@@ -432,43 +430,49 @@ const PostCard: React.FC<PostCardProps> = ({
   };
 
   return (
-    <div className={`border-b border-gray-200 p-4 transition-all duration-300 ${!isDetailView && !isNested ? 'hover:bg-gray-50/50' : ''} ${isNested ? 'border border-gray-200 rounded-xl mt-3 p-3 bg-white hover:bg-gray-50/50' : ''}`}>
+    <div className={`border-b border-gray-200 dark:border-gray-800 p-4 transition-all duration-300 ${!isDetailView && !isNested ? 'hover:bg-gray-50/50 dark:hover:bg-nexus-800/20' : ''} ${isNested ? 'border border-gray-200 dark:border-gray-700 rounded-xl mt-3 p-3 bg-white dark:bg-nexus-800 hover:bg-gray-50/50 dark:hover:bg-nexus-700/50' : ''}`}>
       {isActuallyARepost && !isNested && (
-        <div className="flex items-center gap-2 text-gray-500 text-xs font-bold mb-2 ml-10">
+        <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs font-bold mb-2">
             <Repeat2 className="w-3 h-3 text-green-600" />
             <span>{post.user.name} reposted</span>
         </div>
       )}
       
-      <div className="flex gap-4">
-        {!isNested && (
-            <div onClick={handleUserClick} className="cursor-pointer shrink-0">
-              <img src={displayPost.user.avatar} alt={displayPost.user.name} className="w-12 h-12 rounded-full object-cover shrink-0 hover:opacity-90 transition-opacity border border-gray-100" />
+      <div className="flex flex-col">
+        <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-3">
+                {!isNested && (
+                    <div onClick={handleUserClick} className="cursor-pointer shrink-0">
+                        <img src={displayPost.user.avatar} alt={displayPost.user.name} className="w-10 h-10 rounded-full object-cover shrink-0 hover:opacity-90 transition-opacity border border-gray-100 dark:border-gray-800" />
+                    </div>
+                )}
+                <div className={`flex flex-col ${isNested ? 'ml-1' : ''}`}>
+                    <div className="flex items-center gap-2">
+                        {isNested && (
+                            <img src={displayPost.user.avatar} alt={displayPost.user.name} className="w-5 h-5 rounded-full object-cover mr-1" />
+                        )}
+                        <span onClick={handleUserClick} className="font-bold truncate text-gray-900 dark:text-gray-100 cursor-pointer hover:underline text-sm md:text-base leading-none">{displayPost.user.name}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span onClick={handleUserClick} className="text-gray-500 dark:text-gray-400 truncate cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 text-xs">{displayPost.user.handle}</span>
+                        <span className="text-gray-400 dark:text-gray-600 text-xs">·</span>
+                        <span className="text-gray-500 dark:text-gray-400 text-xs hover:underline cursor-pointer">{displayPost.timestamp}</span>
+                    </div>
+                </div>
             </div>
-        )}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between relative">
-            <div className={`flex items-center gap-2 overflow-hidden ${isNested ? 'mb-1' : ''}`}>
-              {isNested && (
-                  <img src={displayPost.user.avatar} alt={displayPost.user.name} className="w-6 h-6 rounded-full object-cover mr-1" />
-              )}
-              <span onClick={handleUserClick} className="font-bold truncate text-gray-900 cursor-pointer hover:underline text-sm md:text-base">{displayPost.user.name}</span>
-              <span onClick={handleUserClick} className="text-gray-500 truncate cursor-pointer hover:text-gray-700 text-xs md:text-sm">{displayPost.user.handle}</span>
-              <span className="text-gray-400">·</span>
-              <span className="text-gray-500 text-xs md:text-sm hover:underline cursor-pointer">{displayPost.timestamp}</span>
-            </div>
+
             {!isNested && (
                 <div className="relative">
-                    <button onClick={() => setShowMenu(!showMenu)} className="text-gray-400 hover:text-nexus-primary p-1.5 rounded-full hover:bg-nexus-primary/10 transition-colors">
+                    <button onClick={() => setShowMenu(!showMenu)} className="text-gray-400 dark:text-gray-500 hover:text-nexus-primary p-1.5 rounded-full hover:bg-nexus-primary/10 transition-colors">
                         <MoreHorizontal className="w-5 h-5" />
                     </button>
                     {showMenu && (
-                        <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-xl shadow-2xl border border-gray-100 py-1.5 z-40 animate-in fade-in slide-in-from-top-2">
-                             <button onClick={() => { if(onViewPost) onViewPost(post); setShowMenu(false); }} className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors">
+                        <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-nexus-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 py-1.5 z-40 animate-in fade-in slide-in-from-top-2">
+                             <button onClick={() => { if(onViewPost) onViewPost(post); setShowMenu(false); }} className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-2 transition-colors">
                                 <Eye className="w-4 h-4" /> View Post
                             </button>
                             {isOwner && (
-                                <button onClick={() => { setIsEditing(true); setShowMenu(false); }} className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors">
+                                <button onClick={() => { setIsEditing(true); setShowMenu(false); }} className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-2 transition-colors">
                                     <Pencil className="w-4 h-4" /> Edit Post
                                 </button>
                             )}
@@ -476,18 +480,19 @@ const PostCard: React.FC<PostCardProps> = ({
                     )}
                 </div>
             )}
-          </div>
+        </div>
 
+        <div className="flex-1 min-w-0">
           {isEditing ? (
              <div className="mt-2 animate-in fade-in duration-300">
-                 <textarea value={editContent} onChange={(e) => setEditContent(e.target.value)} className="w-full p-3 text-[15px] border border-nexus-primary rounded-xl focus:outline-none focus:ring-2 focus:ring-nexus-primary/20 bg-white text-gray-900 shadow-inner" rows={3} autoFocus />
+                 <textarea value={editContent} onChange={(e) => setEditContent(e.target.value)} className="w-full p-3 text-[15px] border border-nexus-primary rounded-xl focus:outline-none focus:ring-2 focus:ring-nexus-primary/20 bg-white dark:bg-nexus-900 text-gray-900 dark:text-gray-100 shadow-inner" rows={3} autoFocus />
                  <div className="flex gap-2 mt-2 justify-end">
-                     <button onClick={() => setIsEditing(false)} className="text-sm font-medium text-gray-500 hover:text-gray-700 px-4 py-1.5 rounded-full hover:bg-gray-100 transition-colors">Cancel</button>
-                     <button onClick={() => { if(onUpdate) onUpdate(post.id, editContent); setIsEditing(false); }} className="text-sm font-bold bg-black text-white px-5 py-1.5 rounded-full hover:bg-gray-800 transition-colors shadow-sm">Save</button>
+                     <button onClick={() => setIsEditing(false)} className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 px-4 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-nexus-700 transition-colors">Cancel</button>
+                     <button onClick={() => { if(onUpdate) onUpdate(post.id, editContent); setIsEditing(false); }} className="text-sm font-bold bg-black dark:bg-white text-white dark:text-black px-5 py-1.5 rounded-full hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors shadow-sm">Save</button>
                  </div>
              </div>
           ) : (
-            <div className={`mt-1 whitespace-pre-wrap ${isNested ? 'text-sm' : 'text-[16px]'} leading-relaxed text-gray-900`}>
+            <div className={`mt-1 whitespace-pre-wrap ${isNested ? 'text-sm' : 'text-[16px]'} leading-relaxed text-gray-900 dark:text-gray-100`}>
                 {post.content}
             </div>
           )}
@@ -507,7 +512,7 @@ const PostCard: React.FC<PostCardProps> = ({
           )}
 
           {!isEditing && !isNested && (
-              <div className="flex justify-between mt-4 text-gray-500 max-w-lg items-center px-1">
+              <div className="flex justify-between mt-4 text-gray-500 dark:text-gray-400 max-w-lg items-center px-1">
                 <button onClick={() => setShowComments(!showComments)} className={`flex items-center gap-2 group transition-all duration-200 p-1 ${showComments ? 'text-nexus-primary' : 'hover:text-nexus-primary'}`}>
                     <div className={`relative p-2 rounded-full ${showComments ? 'bg-nexus-primary/10' : 'group-hover:bg-nexus-primary/10'}`}>
                         <MessageCircle className="w-5 h-5" />
@@ -526,11 +531,11 @@ const PostCard: React.FC<PostCardProps> = ({
                         <span className="text-sm font-medium">{repostCount || ''}</span>
                     </button>
                     {showRepostMenu && (
-                        <div className="absolute left-0 bottom-full mb-2 w-40 bg-white rounded-xl shadow-2xl border border-gray-100 py-1.5 z-40 animate-in fade-in zoom-in duration-150">
-                            <button onClick={handleRepostAction} className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors">
+                        <div className="absolute left-0 bottom-full mb-2 w-40 bg-white dark:bg-nexus-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 py-1.5 z-40 animate-in fade-in zoom-in duration-150">
+                            <button onClick={handleRepostAction} className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-2 transition-colors">
                                 <Repeat2 className="w-4 h-4" /> Repost
                             </button>
-                            <button onClick={handleQuoteAction} className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors">
+                            <button onClick={handleQuoteAction} className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-2 transition-colors">
                                 <Quote className="w-4 h-4" /> Quote Post
                             </button>
                         </div>
@@ -566,7 +571,7 @@ const PostCard: React.FC<PostCardProps> = ({
           )}
 
           {!isEditing && showComments && !isNested && (
-            <div className="mt-4 pt-4 border-t border-gray-100 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 animate-in fade-in slide-in-from-top-2 duration-300">
               <div className="space-y-4 mb-4">
                 {comments.map((comment) => (
                     <CommentItem 
@@ -588,24 +593,18 @@ const PostCard: React.FC<PostCardProps> = ({
                 ))}
               </div>
               <div className="flex gap-3 items-start pt-2">
-                <img src={currentUser.avatar} alt="You" className="w-8 h-8 rounded-full object-cover border border-gray-100" />
+                <img src={currentUser.avatar} alt="You" className="w-8 h-8 rounded-full object-cover border border-gray-100 dark:border-gray-800" />
                 <div className="flex-1 relative">
                     <textarea 
                       ref={commentInputRef}
                       value={newCommentText} 
                       onChange={(e) => setNewCommentText(e.target.value)} 
                       placeholder="Add a comment..." 
-                      className="w-full bg-gray-50 border-gray-100 focus:bg-white focus:border-nexus-primary focus:ring-4 focus:ring-nexus-primary/5 px-4 py-3 pr-10 text-[14px] transition-all outline-none resize-none overflow-hidden rounded-2xl" 
+                      className="w-full bg-gray-50 dark:bg-nexus-800 border-gray-100 dark:border-gray-700 focus:bg-white dark:focus:bg-nexus-700 focus:border-nexus-primary focus:ring-4 focus:ring-nexus-primary/5 px-4 py-3 pr-10 text-[14px] transition-all outline-none resize-none overflow-hidden rounded-2xl text-gray-900 dark:text-gray-100" 
                       rows={1} 
                       onInput={(e) => { 
                         e.currentTarget.style.height = 'auto'; 
                         e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px'; 
-                      }} 
-                      onKeyDown={(e) => { 
-                        if (e.key === 'Enter' && !e.shiftKey) { 
-                          e.preventDefault(); 
-                          handleAddComment(); 
-                        } 
                       }} 
                     />
                     <button 

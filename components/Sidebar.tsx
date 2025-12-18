@@ -23,7 +23,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, onCreatePo
   ];
 
   return (
-    <div className="fixed bottom-0 w-full md:w-64 md:h-screen md:sticky md:top-0 bg-white/80 md:bg-white/60 backdrop-blur-xl border-t md:border-t-0 md:border-r border-gray-200/60 z-50 flex md:flex-col justify-between p-4 transition-all duration-300">
+    <div className="fixed bottom-0 w-full md:w-64 md:h-screen md:sticky md:top-0 bg-white/80 dark:bg-nexus-900/80 md:bg-white/60 dark:md:bg-nexus-900/60 backdrop-blur-xl border-t md:border-t-0 md:border-r border-gray-200/60 dark:border-gray-800 z-50 flex md:flex-col justify-between p-4 transition-all duration-300">
       <div className="flex md:flex-col w-full md:w-auto justify-around md:justify-start gap-1 md:gap-4">
         <div className="hidden md:flex items-center mb-10 px-4">
             <h1 className="text-4xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-nexus-primary to-nexus-accent">NEXUS</h1>
@@ -53,15 +53,15 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, onCreatePo
               onClick={() => onViewChange(item.id as ViewState)}
               className={`${displayClass} items-center gap-4 p-3 rounded-full transition-all duration-200 group ${
                 isActive 
-                  ? 'bg-white/50 shadow-sm text-black font-medium backdrop-blur-sm' 
-                  : 'text-gray-600 hover:bg-white/40 hover:text-black hover:backdrop-blur-sm'
+                  ? 'bg-white/50 dark:bg-nexus-800/50 shadow-sm text-black dark:text-white font-medium backdrop-blur-sm' 
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-nexus-800/40 hover:text-black dark:hover:text-white hover:backdrop-blur-sm'
               }`}
             >
               {item.id === 'profile' ? (
                   <img 
                     src={currentUser.avatar} 
                     alt="Profile"
-                    className={`w-8 h-8 rounded-full object-cover ${isActive ? 'ring-2 ring-black' : ''}`}
+                    className={`w-8 h-8 rounded-full object-cover ${isActive ? 'ring-2 ring-black dark:ring-white' : ''}`}
                   />
               ) : (
                   <item.icon className={`w-6 h-6 ${isActive ? 'fill-current' : ''}`} />
@@ -75,8 +75,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, onCreatePo
           onClick={() => onViewChange('settings')}
           className={`hidden md:flex mt-4 items-center gap-4 p-3 rounded-full transition-all ${
              currentView === 'settings'
-               ? 'bg-white/50 shadow-sm text-black font-medium backdrop-blur-sm'
-               : 'text-gray-600 hover:bg-white/40 hover:text-black hover:backdrop-blur-sm'
+               ? 'bg-white/50 dark:bg-nexus-800/50 shadow-sm text-black dark:text-white font-medium backdrop-blur-sm'
+               : 'text-gray-600 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-nexus-800/40 hover:text-black dark:hover:text-white hover:backdrop-blur-sm'
           }`}
         >
              <Settings className="w-6 h-6" />
@@ -85,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, onCreatePo
 
         <button 
             onClick={onCreatePost}
-            className="hidden md:block mt-8 bg-black text-white font-bold py-3 px-8 rounded-full hover:bg-gray-800 transition-colors shadow-lg shadow-black/20"
+            className="hidden md:block mt-8 bg-black dark:bg-white text-white dark:text-black font-bold py-3 px-8 rounded-full hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors shadow-lg shadow-black/20 dark:shadow-white/5"
         >
             Post
         </button>

@@ -23,6 +23,12 @@ export default function App() {
     return saved ? JSON.parse(saved) : CURRENT_USER;
   });
 
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem('nexus_dark_mode');
+    if (saved !== null) return saved === 'true';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
   const [currentView, setCurrentView] = useState<ViewState>('home');
   const [posts, setPosts] = useState<Post[]>(INITIAL_POSTS);
   const [notifications, setNotifications] = useState<Notification[]>(MOCK_NOTIFICATIONS);
@@ -36,6 +42,15 @@ export default function App() {
   const [quotingPost, setQuotingPost] = useState<Post | null>(null);
 
   useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('nexus_dark_mode', String(isDarkMode));
+  }, [isDarkMode]);
+
+  useEffect(() => {
     if (currentUser && !viewingUser) {
         setViewingUser(currentUser);
     }
@@ -46,13 +61,11 @@ export default function App() {
       const currentY = window.scrollY;
       setShowScrollTop(currentY > 300);
       
-      // Only show header when at the very top, otherwise hide on scroll down
       if (currentY <= 10) {
         setShowHeader(true);
       } else if (currentY > lastScrollY) {
         setShowHeader(false);
       }
-      // If scrolling up but not at top, we do nothing to keep header hidden
       
       setLastScrollY(currentY);
     };
@@ -63,6 +76,8 @@ export default function App() {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
 
   const handleLike = (postId: string) => {
     setPosts(posts.map(post => {
@@ -248,29 +263,26 @@ export default function App() {
       case 'home':
         return (
           <div className="flex flex-col md:gap-4 pb-20 md:pb-0">
-             {/* Unified Header Layer for Mobile - Minimized */}
-             <div className={`md:hidden sticky top-0 bg-white/90 backdrop-blur-md z-30 border-b border-gray-200 transition-transform duration-300 ${showHeader ? 'translate-y-0' : '-translate-y-full'}`}>
+             <div className={`md:hidden sticky top-0 bg-white/90 dark:bg-nexus-900/90 backdrop-blur-md z-30 border-b border-gray-200 dark:border-gray-800 transition-transform duration-300 ${showHeader ? 'translate-y-0' : '-translate-y-full'}`}>
                 <div className="px-4 py-1.5 flex items-center justify-between">
                     <div className="flex items-center">
                         <h1 className="text-2xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-nexus-primary to-nexus-accent">NEXUS</h1>
                     </div>
                     <div className="flex items-center gap-3">
                          <button onClick={() => handleViewChange('explore')}>
-                             <Compass className="w-6 h-6 text-gray-900" />
+                             <Compass className="w-6 h-6 text-gray-900 dark:text-gray-100" />
                          </button>
                          <img 
                             src={currentUser?.avatar} 
                             alt="Profile" 
                             onClick={() => handleUserClick(currentUser!)}
-                            className="w-8 h-8 rounded-full object-cover border border-gray-200" 
+                            className="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-gray-700" 
                          />
                     </div>
                 </div>
-                {/* Connected Stories - Minimized */}
                 {currentUser && <Stories currentUser={currentUser} connected={true} />}
              </div>
             
-            {/* Standard Feed Stories for Desktop */}
             <div className="hidden md:block">
                 {currentUser && <Stories currentUser={currentUser} />}
             </div>
@@ -344,7 +356,7 @@ export default function App() {
             />
         ) : null;
       case 'settings':
-        return <Settings onLogout={() => window.location.reload()} />;
+        return <Settings onLogout={() => window.location.reload()} isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />;
       case 'post':
         return viewingPost ? (
             <PostDetail 
@@ -370,6 +382,8 @@ export default function App() {
             onClose={() => handleViewChange('home')}
             onLogout={() => window.location.reload()}
             onUserClick={handleUserClick}
+            isDarkMode={isDarkMode}
+            toggleDarkMode={toggleDarkMode}
           />
         ) : null;
       default:
@@ -378,7 +392,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-nexus-900 transition-colors duration-300">
       <div className="max-w-7xl mx-auto flex justify-center">
         {currentUser && (
             <div className="hidden md:block md:w-64 lg:w-72 shrink-0">
@@ -402,7 +416,7 @@ export default function App() {
              )}
         </div>
 
-        <main className="w-full max-w-[750px] border-x border-gray-100 min-h-screen pb-20 md:pb-0">
+        <main className="w-full max-w-[750px] border-x border-gray-100 dark:border-gray-800 min-h-screen pb-20 md:pb-0">
           {renderContent()}
         </main>
 
@@ -411,7 +425,7 @@ export default function App() {
 
       <button 
         onClick={scrollToTop}
-        className={`fixed bottom-24 md:bottom-8 right-8 bg-black text-white p-3 rounded-full shadow-lg transition-all duration-300 z-40 ${
+        className={`fixed bottom-24 md:bottom-8 right-8 bg-black dark:bg-white text-white dark:text-black p-3 rounded-full shadow-lg transition-all duration-300 z-40 ${
           showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
         }`}
       >
@@ -419,13 +433,13 @@ export default function App() {
       </button>
 
       {isCreateModalOpen && (
-        <div className="fixed inset-0 z-[60] bg-white md:bg-black/50 md:backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200 p-0 md:p-4">
-           <div className="w-full h-full md:h-auto md:max-w-lg md:rounded-2xl bg-white overflow-hidden shadow-2xl flex flex-col">
-               <div className="flex items-center justify-between p-4 border-b border-gray-100">
+        <div className="fixed inset-0 z-[60] bg-white md:bg-black/50 dark:md:bg-black/70 md:backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200 p-0 md:p-4">
+           <div className="w-full h-full md:h-auto md:max-w-lg md:rounded-2xl bg-white dark:bg-nexus-900 overflow-hidden shadow-2xl flex flex-col border dark:border-gray-800">
+               <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-800">
                    <button onClick={() => { setIsCreateModalOpen(false); setQuotingPost(null); }}>
-                       <X className="w-6 h-6 text-gray-900" />
+                       <X className="w-6 h-6 text-gray-900 dark:text-gray-100" />
                    </button>
-                   <span className="font-bold text-lg">{quotingPost ? 'Quote Post' : 'New Post'}</span>
+                   <span className="font-bold text-lg text-gray-900 dark:text-gray-100">{quotingPost ? 'Quote Post' : 'New Post'}</span>
                    <div className="w-6"></div>
                </div>
                {currentUser && (
