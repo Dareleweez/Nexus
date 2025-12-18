@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Heart, MessageCircle, UserPlus, AtSign, Settings, Check, Bell } from 'lucide-react';
 import { Notification, NotificationType, User } from '../types';
 
@@ -10,10 +10,28 @@ interface NotificationsProps {
 
 const Notifications: React.FC<NotificationsProps> = ({ notifications, onNotificationClick }) => {
     const [filter, setFilter] = useState<'all' | NotificationType>('all');
+    const [showHeader, setShowHeader] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
 
     const filteredNotifications = notifications.filter(n => 
         filter === 'all' ? true : n.type === filter
     );
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentY = window.scrollY;
+            if (currentY < 50) {
+                setShowHeader(true);
+            } else if (currentY > lastScrollY) {
+                setShowHeader(false);
+            } else {
+                setShowHeader(true);
+            }
+            setLastScrollY(currentY);
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [lastScrollY]);
 
     const getIcon = (type: NotificationType) => {
         switch (type) {
@@ -39,7 +57,7 @@ const Notifications: React.FC<NotificationsProps> = ({ notifications, onNotifica
     return (
         <div className="min-h-screen bg-white">
             {/* Header */}
-            <div className="sticky top-0 bg-white/80 backdrop-blur-md z-30 border-b border-gray-200">
+            <div className={`sticky top-0 bg-white/80 backdrop-blur-md z-30 border-b border-gray-200 transition-transform duration-300 ${showHeader ? 'translate-y-0' : '-translate-y-full'}`}>
                 <div className="px-4 py-3 flex justify-between items-center">
                     <h2 className="font-bold text-2xl text-gray-900">Notifications</h2>
                     <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
@@ -132,9 +150,14 @@ const Notifications: React.FC<NotificationsProps> = ({ notifications, onNotifica
                                     <button className="bg-black text-white text-xs font-bold px-4 py-1.5 rounded-full hover:bg-gray-800 transition-colors">
                                         Follow back
                                     </button>
-                                ) : notification.post && notification.post.imageUrl ? (
+                                // Fix: Use 'imageUrls' and 'videoUrl' to show correct post thumbnail
+                                ) : notification.post && ((notification.post.imageUrls && notification.post.imageUrls.length > 0) || notification.post.videoUrl) ? (
                                     <div className="w-12 h-12 rounded-md overflow-hidden bg-gray-100">
-                                        <img src={notification.post.imageUrl} className="w-full h-full object-cover" alt="Post" />
+                                        {notification.post.videoUrl ? (
+                                            <video src={notification.post.videoUrl} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <img src={notification.post.imageUrls?.[0]} className="w-full h-full object-cover" alt="Post" />
+                                        )}
                                     </div>
                                 ) : notification.post && (
                                     <div className="w-12 h-12 rounded-md bg-gray-100 flex items-center justify-center p-1">

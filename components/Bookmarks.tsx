@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Post, User, Comment } from '../types';
 import PostCard from './PostCard';
 import { Bookmark, Inbox } from 'lucide-react';
@@ -29,10 +29,29 @@ const Bookmarks: React.FC<BookmarksProps> = ({
     onCommentDelete,
     currentUser 
 }) => {
+    const [showHeader, setShowHeader] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentY = window.scrollY;
+            if (currentY < 50) {
+                setShowHeader(true);
+            } else if (currentY > lastScrollY) {
+                setShowHeader(false);
+            } else {
+                setShowHeader(true);
+            }
+            setLastScrollY(currentY);
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [lastScrollY]);
+
     return (
         <div className="min-h-screen bg-white">
             {/* Header */}
-            <div className="sticky top-0 bg-white/80 backdrop-blur-md z-30 px-4 py-4 border-b border-gray-200">
+            <div className={`sticky top-0 bg-white/80 backdrop-blur-md z-30 px-4 py-4 border-b border-gray-200 transition-transform duration-300 ${showHeader ? 'translate-y-0' : '-translate-y-full'}`}>
                 <div className="flex items-center gap-4">
                     <Bookmark className="w-8 h-8 text-nexus-primary" />
                     <h2 className="font-bold text-2xl text-gray-900">Bookmarks</h2>

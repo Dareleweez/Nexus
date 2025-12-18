@@ -7,6 +7,8 @@ import { TrendingTopic } from '../types';
 const Explore: React.FC = () => {
   const [trends, setTrends] = useState<TrendingTopic[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showHeader, setShowHeader] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     let mounted = true;
@@ -28,15 +30,29 @@ const Explore: React.FC = () => {
 
     fetchTrends();
 
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      if (currentY < 50) {
+        setShowHeader(true);
+      } else if (currentY > lastScrollY) {
+        setShowHeader(false);
+      } else {
+        setShowHeader(true);
+      }
+      setLastScrollY(currentY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
       mounted = false;
+      window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [lastScrollY]);
 
   return (
     <div>
       {/* Sticky Search Header */}
-      <div className="sticky top-0 bg-white/80 backdrop-blur-md z-30 px-4 py-3 border-b border-gray-200">
+      <div className={`sticky top-0 bg-white/80 backdrop-blur-md z-30 px-4 py-3 border-b border-gray-200 transition-transform duration-300 ${showHeader ? 'translate-y-0' : '-translate-y-full'}`}>
         <div className="relative group flex items-center gap-4">
             <div className="relative flex-1">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">

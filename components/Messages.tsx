@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Conversation, Message, User } from '../types';
 import { MOCK_CONVERSATIONS, CURRENT_USER, MOCK_USERS } from '../constants';
 import { Search, Settings, ArrowLeft, Send, MoreHorizontal, Image as ImageIcon, Smile, Plus, X } from 'lucide-react';
@@ -9,6 +9,26 @@ const Messages: React.FC = () => {
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const [messageInput, setMessageInput] = useState('');
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
+  const [showHeader, setShowHeader] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+        const currentY = window.scrollY;
+        if (currentY < 50) {
+            setShowHeader(true);
+        } else if (currentY > lastScrollY) {
+            setShowHeader(false);
+        } else {
+            setShowHeader(true);
+        }
+        setLastScrollY(currentY);
+    };
+    if (!selectedConversationId) {
+        window.addEventListener('scroll', handleScroll, { passive: true });
+    }
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY, selectedConversationId]);
 
   const selectedConversation = conversations.find(c => c.id === selectedConversationId);
 
@@ -154,7 +174,7 @@ const Messages: React.FC = () => {
   return (
     <div className="pb-20 relative">
       {/* Header */}
-      <div className="sticky top-0 bg-white/80 backdrop-blur-md z-30 px-4 py-3 border-b border-gray-200 flex justify-between items-center">
+      <div className={`sticky top-0 bg-white/80 backdrop-blur-md z-30 px-4 py-3 border-b border-gray-200 flex justify-between items-center transition-transform duration-300 ${showHeader ? 'translate-y-0' : '-translate-y-full'}`}>
         <h2 className="font-bold text-2xl text-gray-900">Messages</h2>
         <div className="flex gap-2">
             <button 

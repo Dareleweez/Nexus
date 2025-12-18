@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Post } from '../types';
 import PostCard from './PostCard';
 import { Calendar, MapPin, Link as LinkIcon, ArrowLeft, Image as ImageIcon, Heart, X } from 'lucide-react';
@@ -41,6 +41,24 @@ const Profile: React.FC<ProfileProps> = ({
   const [activeTab, setActiveTab] = useState<Tab>('posts');
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [editForm, setEditForm] = useState({ name: '', handle: '', bio: '' });
+  const [showHeader, setShowHeader] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+        const currentY = window.scrollY;
+        if (currentY < 50) {
+            setShowHeader(true);
+        } else if (currentY > lastScrollY) {
+            setShowHeader(false);
+        } else {
+            setShowHeader(true);
+        }
+        setLastScrollY(currentY);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   const isCurrentUser = user.id === CURRENT_USER.id;
 
@@ -56,7 +74,8 @@ const Profile: React.FC<ProfileProps> = ({
       case 'posts':
         return posts;
       case 'media':
-        return posts.filter(p => p.imageUrl);
+        // Fix: Use 'imageUrls' and 'videoUrl' to filter media posts correctly
+        return posts.filter(p => (p.imageUrls && p.imageUrls.length > 0) || p.videoUrl);
       case 'likes':
         return likedPosts;
       case 'replies':
@@ -98,7 +117,7 @@ const Profile: React.FC<ProfileProps> = ({
   return (
     <div>
       {/* Header */}
-      <div className="sticky top-0 bg-white/80 backdrop-blur-md z-30 px-4 py-3 flex items-center gap-4 border-b border-gray-200">
+      <div className={`sticky top-0 bg-white/80 backdrop-blur-md z-30 px-4 py-3 flex items-center gap-4 border-b border-gray-200 transition-transform duration-300 ${showHeader ? 'translate-y-0' : '-translate-y-full'}`}>
         <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
             <ArrowLeft className="w-7 h-7 text-gray-900" />
         </button>

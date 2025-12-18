@@ -27,6 +27,8 @@ export default function App() {
   const [posts, setPosts] = useState<Post[]>(INITIAL_POSTS);
   const [notifications, setNotifications] = useState<Notification[]>(MOCK_NOTIFICATIONS);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showHeader, setShowHeader] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const [viewingUser, setViewingUser] = useState<User | null>(null);
   const [viewingPost, setViewingPost] = useState<Post | null>(null);
   
@@ -41,11 +43,21 @@ export default function App() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 300);
+      const currentY = window.scrollY;
+      setShowScrollTop(currentY > 300);
+      
+      if (currentY < 50) {
+        setShowHeader(true);
+      } else if (currentY > lastScrollY) {
+        setShowHeader(false);
+      } else {
+        setShowHeader(true);
+      }
+      setLastScrollY(currentY);
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -236,7 +248,7 @@ export default function App() {
         return (
           <div className="flex flex-col md:gap-4 pb-20 md:pb-0">
              {/* Unified Header Layer for Mobile - Minimized */}
-             <div className="md:hidden sticky top-0 bg-white/90 backdrop-blur-md z-30 border-b border-gray-200">
+             <div className={`md:hidden sticky top-0 bg-white/90 backdrop-blur-md z-30 border-b border-gray-200 transition-transform duration-300 ${showHeader ? 'translate-y-0' : '-translate-y-full'}`}>
                 <div className="px-4 py-1.5 flex items-center justify-between">
                     <div className="flex items-center">
                         <h1 className="text-2xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-nexus-primary to-nexus-accent">NEXUS</h1>
