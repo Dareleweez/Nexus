@@ -124,7 +124,7 @@ export const INITIAL_POSTS: Post[] = [
   },
   {
     id: 'n-p1',
-    user: MOCK_USERS[5],
+    user: MOCK_USERS[4],
     content: 'Golden hour in the city is something else. 🌆 #UrbanPhotography #Sunset #Vibes',
     likes: 3421,
     reposts: 521,
@@ -203,7 +203,7 @@ export const INITIAL_POSTS: Post[] = [
   },
   {
     id: 'n-p6',
-    user: MOCK_USERS[5],
+    user: MOCK_USERS[4],
     content: 'Minimalist architecture at its finest. 🏢⚪️ #Minimalism #Architecture #DesignInspiration',
     likes: 2311,
     reposts: 145,

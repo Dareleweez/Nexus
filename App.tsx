@@ -379,12 +379,14 @@ export default function App() {
         )}
 
         <div className="md:hidden">
-             <Sidebar 
-                currentView={currentView} 
-                onViewChange={handleViewChange} 
-                onCreatePost={() => { setQuotingPost(null); setIsCreateModalOpen(true); }}
-                currentUser={currentUser!}
-            />
+             {currentUser && (
+                 <Sidebar 
+                    currentView={currentView} 
+                    onViewChange={handleViewChange} 
+                    onCreatePost={() => { setQuotingPost(null); setIsCreateModalOpen(true); }}
+                    currentUser={currentUser}
+                />
+             )}
         </div>
 
         <main className="w-full max-w-[600px] border-x border-gray-100 min-h-screen pb-20 md:pb-0">
