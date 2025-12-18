@@ -1,3 +1,4 @@
+
 export interface User {
   id: string;
   name: string;
@@ -13,17 +14,34 @@ export interface Comment {
   user: User;
   text: string;
   timestamp: string;
+  unread?: boolean;
+  replies?: Comment[];
 }
 
 export interface Post {
   id: string;
   user: User;
   content: string;
-  imageUrl?: string;
+  imageUrls?: string[];
+  videoUrl?: string;
   likes: number;
+  reposts: number;
+  quotes: number;
   comments: Comment[];
   timestamp: string;
   isLiked?: boolean;
+  isBookmarked?: boolean;
+  isReposted?: boolean;
+  repostedFrom?: Post;
+  quotedPost?: Post;
+}
+
+export interface Story {
+  id: string;
+  user: User;
+  imageUrl: string;
+  timestamp: string;
+  isViewed?: boolean;
 }
 
 export interface TrendingTopic {
@@ -33,7 +51,24 @@ export interface TrendingTopic {
   source?: string;
 }
 
-export type ViewState = 'home' | 'explore' | 'notifications' | 'profile';
+export interface Message {
+  id: string;
+  senderId: string;
+  text: string;
+  timestamp: string;
+  isOwn: boolean;
+}
+
+export interface Conversation {
+  id: string;
+  user: User;
+  lastMessage: string;
+  timestamp: string;
+  unread: boolean;
+  messages: Message[];
+}
+
+export type ViewState = 'home' | 'explore' | 'notifications' | 'profile' | 'settings' | 'messages' | 'post' | 'menu' | 'bookmarks';
 
 export interface GroundingMetadata {
   groundingChunks?: Array<{
@@ -42,4 +77,16 @@ export interface GroundingMetadata {
       title: string;
     };
   }>;
+}
+
+export type NotificationType = 'like' | 'comment' | 'follow' | 'mention' | 'repost' | 'quote';
+
+export interface Notification {
+  id: string;
+  type: NotificationType;
+  user: User;
+  post?: Post;
+  text?: string;
+  timestamp: string;
+  read: boolean;
 }

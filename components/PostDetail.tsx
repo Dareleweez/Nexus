@@ -1,0 +1,39 @@
+
+import React from 'react';
+import { Post, User, Comment } from '../types';
+import PostCard from './PostCard';
+import { ArrowLeft } from 'lucide-react';
+
+interface PostDetailProps {
+    post: Post;
+    onBack: () => void;
+    onLike: (postId: string) => void;
+    onRepost: (postId: string) => void;
+    onQuote: (post: Post) => void;
+    onBookmark: (postId: string) => void;
+    onUserClick: (user: User) => void;
+    onUpdate?: (postId: string, newContent: string) => void;
+    onComment?: (postId: string, comment: Comment, parentId?: string) => void;
+    onCommentUpdate?: (postId: string, commentId: string, newText: string) => void;
+    onCommentDelete?: (postId: string, commentId: string) => void;
+    currentUser?: User;
+}
+
+const PostDetail: React.FC<PostDetailProps> = ({ post, onBack, ...postCardProps }) => {
+    return (
+        <div className="animate-in fade-in duration-300">
+            <div className="sticky top-0 bg-white/80 backdrop-blur-md z-30 px-4 py-2 flex items-center gap-4 border-b border-gray-200">
+                <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
+                    <ArrowLeft className="w-5 h-5 text-gray-900" />
+                </button>
+                <h2 className="font-bold text-lg leading-tight text-gray-900">Post</h2>
+            </div>
+            <PostCard
+                post={post}
+                isDetailView={true}
+                {...postCardProps}
+            />
+        </div>
+    );
+};
+export default PostDetail;

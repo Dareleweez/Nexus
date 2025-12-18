@@ -1,108 +1,436 @@
-import React, { useState } from 'react';
-import Sidebar from './components/Sidebar';
-import CreatePost from './components/CreatePost';
-import PostCard from './components/PostCard';
-import RightPanel from './components/RightPanel';
-import Profile from './components/Profile';
-import { ViewState, Post } from './types';
-import { CURRENT_USER, INITIAL_POSTS } from './constants';
-import { Sparkles } from 'lucide-react';
 
-function App() {
+import React, { useState, useEffect } from 'react';
+import Sidebar from './components/Sidebar.tsx';
+import CreatePost from './components/CreatePost.tsx';
+import PostCard from './components/PostCard.tsx';
+import RightPanel from './components/RightPanel.tsx';
+import Profile from './components/Profile.tsx';
+import Explore from './components/Explore.tsx';
+import Settings from './components/Settings.tsx';
+import Messages from './components/Messages.tsx';
+import Stories from './components/Stories.tsx';
+import Notifications from './components/Notifications.tsx';
+import PostDetail from './components/PostDetail.tsx';
+import MobileMenu from './components/MobileMenu.tsx';
+import Bookmarks from './components/Bookmarks.tsx';
+import { ViewState, Post, User, Comment, Notification } from './types.ts';
+import { CURRENT_USER, INITIAL_POSTS, MOCK_USERS, MOCK_NOTIFICATIONS } from './constants.ts';
+import { Sparkles, ArrowUp, Loader2, Compass, X } from 'lucide-react';
+
+export default function App() {
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    const saved = localStorage.getItem('nexus_current_user');
+    return saved ? JSON.parse(saved) : CURRENT_USER;
+  });
+
   const [currentView, setCurrentView] = useState<ViewState>('home');
   const [posts, setPosts] = useState<Post[]>(INITIAL_POSTS);
+  const [notifications, setNotifications] = useState<Notification[]>(MOCK_NOTIFICATIONS);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [viewingUser, setViewingUser] = useState<User | null>(null);
+  const [viewingPost, setViewingPost] = useState<Post | null>(null);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [quotingPost, setQuotingPost] = useState<Post | null>(null);
 
-  const handlePostCreate = (content: string, imageFile: File | null) => {
-    const newPost: Post = {
-      id: Date.now().toString(),
-      user: CURRENT_USER,
-      content,
-      likes: 0,
-      comments: [],
-      timestamp: 'Just now',
-      imageUrl: imageFile ? URL.createObjectURL(imageFile) : undefined
+  useEffect(() => {
+    if (currentUser && !viewingUser) {
+        setViewingUser(currentUser);
+    }
+  }, [currentUser, viewingUser]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
     };
-    setPosts([newPost, ...posts]);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleLike = (postId: string) => {
+    setPosts(posts.map(post => {
+      if (post.id === postId) {
+        const isLiked = !post.isLiked;
+        return {
+          ...post,
+          likes: isLiked ? post.likes + 1 : post.likes - 1,
+          isLiked
+        };
+      }
+      return post;
+    }));
+  };
+
+  const handleBookmark = (postId: string) => {
+    setPosts(posts.map(post => {
+        if (post.id === postId) {
+            return {
+                ...post,
+                isBookmarked: !post.isBookmarked
+            };
+        }
+        return post;
+    }));
+  };
+
+  const handleRepost = (postId: string) => {
+    const originalPost = posts.find(p => p.id === postId);
+    if (!originalPost || !currentUser) return;
+
+    const newPost: Post = {
+        id: `rp-${Date.now()}`,
+        user: currentUser,
+        content: '', 
+        likes: 0,
+        reposts: 0,
+        quotes: 0,
+        comments: [],
+        timestamp: 'Just now',
+        isReposted: true,
+        repostedFrom: originalPost
+    };
+
+    setPosts([newPost, ...posts]);
+    setNotifications(prev => [{
+        id: `n-${Date.now()}`,
+        type: 'repost',
+        user: currentUser,
+        post: originalPost,
+        timestamp: 'Just now',
+        read: false
+    }, ...prev]);
+  };
+
+  const handleQuote = (post: Post) => {
+    setQuotingPost(post);
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCreatePost = (content: string, mediaFiles: File[], quotedPost?: Post) => {
+    if (!currentUser) return;
+    
+    const imageUrls: string[] = [];
+    let videoUrl: string | undefined;
+
+    mediaFiles.forEach(file => {
+      const url = URL.createObjectURL(file);
+      if (file.type.startsWith('video/')) {
+        videoUrl = url;
+      } else {
+        imageUrls.push(url);
+      }
+    });
+
+    const newPost: Post = {
+      id: `p-${Date.now()}`,
+      user: currentUser,
+      content,
+      imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
+      videoUrl,
+      likes: 0,
+      reposts: 0,
+      quotes: 0,
+      comments: [],
+      timestamp: 'Just now',
+      quotedPost: quotedPost
+    };
+
+    setPosts([newPost, ...posts]);
+    setIsCreateModalOpen(false);
+    setQuotingPost(null);
+    setCurrentView('home');
+    scrollToTop();
+  };
+
+  const handleUpdatePost = (postId: string, newContent: string) => {
+    setPosts(posts.map(p => p.id === postId ? { ...p, content: newContent } : p));
+  };
+
+  const handleComment = (postId: string, comment: Comment, parentId?: string) => {
     setPosts(posts.map(p => {
         if (p.id === postId) {
-            return {
-                ...p,
-                likes: (p.isLiked ? p.likes - 1 : p.likes + 1),
-                isLiked: !p.isLiked
-            };
+            if (parentId) {
+                const addReplyRecursive = (comments: Comment[]): Comment[] => {
+                    return comments.map(c => {
+                        if (c.id === parentId) {
+                            return { ...c, replies: [...(c.replies || []), comment] };
+                        }
+                        if (c.replies && c.replies.length > 0) {
+                            return { ...c, replies: addReplyRecursive(c.replies) };
+                        }
+                        return c;
+                    });
+                };
+                return { ...p, comments: addReplyRecursive(p.comments) };
+            } else {
+                return { ...p, comments: [...p.comments, comment] };
+            }
         }
         return p;
     }));
   };
 
-  const renderMainContent = () => {
-    if (currentView === 'profile') {
-      const myPosts = posts.filter(p => p.user.id === CURRENT_USER.id);
-      return (
-        <Profile 
-          user={CURRENT_USER} 
-          posts={myPosts.length > 0 ? myPosts : INITIAL_POSTS} // Fallback to show initial posts as "yours" for demo
-          onBack={() => setCurrentView('home')} 
-        />
-      );
-    }
+  const handleCommentUpdate = (postId: string, commentId: string, newText: string) => {
+    setPosts(posts.map(p => {
+        if (p.id === postId) {
+            const updateRecursive = (comments: Comment[]): Comment[] => {
+                return comments.map(c => {
+                    if (c.id === commentId) return { ...c, text: newText };
+                    if (c.replies) return { ...c, replies: updateRecursive(c.replies) };
+                    return c;
+                });
+            };
+            return { ...p, comments: updateRecursive(p.comments) };
+        }
+        return p;
+    }));
+  };
 
-    if (currentView === 'notifications') {
+  const handleCommentDelete = (postId: string, commentId: string) => {
+    setPosts(posts.map(p => {
+        if (p.id === postId) {
+             const deleteRecursive = (comments: Comment[]): Comment[] => {
+                return comments.filter(c => {
+                    if (c.id === commentId) return false;
+                    if (c.replies) c.replies = deleteRecursive(c.replies);
+                    return true;
+                });
+            };
+            return { ...p, comments: deleteRecursive(p.comments) };
+        }
+        return p;
+    }));
+  };
+
+  const handleUserClick = (user: User) => {
+    setViewingUser(user);
+    setCurrentView('profile');
+    scrollToTop();
+  };
+
+  const handleViewChange = (view: ViewState) => {
+    setCurrentView(view);
+    if (view === 'profile' && currentUser) {
+        setViewingUser(currentUser);
+    }
+    scrollToTop();
+  };
+
+  const handleNotificationClick = (notification: Notification) => {
+      if (notification.post) {
+          setViewingPost(notification.post);
+          setCurrentView('post');
+      } else if (notification.type === 'follow') {
+          handleUserClick(notification.user);
+      }
+      setNotifications(prev => prev.map(n => n.id === notification.id ? { ...n, read: true } : n));
+  };
+
+  const renderContent = () => {
+    switch (currentView) {
+      case 'home':
         return (
-            <div className="flex flex-col items-center justify-center h-screen text-zinc-500">
-                <Sparkles className="w-12 h-12 mb-4 text-nexus-accent/50" />
-                <h3 className="text-xl font-bold text-white">Nothing here yet</h3>
-                <p>When you get notifications, they'll show up here.</p>
+          <div className="flex flex-col gap-4 pb-20 md:pb-0">
+             <div className="md:hidden sticky top-0 bg-white/80 backdrop-blur-md z-30 px-4 py-3 flex items-center justify-between border-b border-gray-200">
+                <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-gradient-to-tr from-nexus-primary to-nexus-accent rounded-lg flex items-center justify-center shadow-lg shadow-nexus-primary/20">
+                        <Sparkles className="w-5 h-5 text-white" />
+                    </div>
+                    <h1 className="text-xl font-bold tracking-tight text-black">Nexus</h1>
+                </div>
+                <div className="flex items-center gap-4">
+                     <button onClick={() => handleViewChange('explore')}>
+                         <Compass className="w-8 h-8 text-gray-900" />
+                     </button>
+                     <img 
+                        src={currentUser?.avatar} 
+                        alt="Profile" 
+                        onClick={() => handleUserClick(currentUser!)}
+                        className="w-8 h-8 rounded-full object-cover border border-gray-200" 
+                     />
+                </div>
+             </div>
+            
+            {currentUser && <Stories currentUser={currentUser} />}
+            
+            <div className="hidden md:block">
+                 {currentUser && (
+                    <CreatePost 
+                        currentUser={currentUser} 
+                        onPostCreate={handleCreatePost}
+                        quotingPost={quotingPost}
+                        onCancelQuote={() => setQuotingPost(null)}
+                    />
+                 )}
             </div>
+
+            {posts.map(post => (
+              <PostCard 
+                key={post.id} 
+                post={post} 
+                onLike={handleLike}
+                onRepost={handleRepost}
+                onQuote={handleQuote}
+                onBookmark={handleBookmark}
+                onUserClick={handleUserClick}
+                onUpdate={handleUpdatePost}
+                onComment={handleComment}
+                onCommentUpdate={handleCommentUpdate}
+                onCommentDelete={handleCommentDelete}
+                onViewPost={(p) => { setViewingPost(p); setCurrentView('post'); }}
+                currentUser={currentUser || undefined}
+              />
+            ))}
+            
+            <div className="p-8 flex justify-center">
+                <button 
+                    disabled={isLoadingMore}
+                    onClick={() => setIsLoadingMore(true)}
+                    className="text-nexus-primary font-medium hover:underline flex items-center gap-2"
+                >
+                    {isLoadingMore ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                    Load more
+                </button>
+            </div>
+          </div>
         );
+      case 'explore':
+        return <Explore />;
+      case 'notifications':
+        return <Notifications notifications={notifications} onNotificationClick={handleNotificationClick} />;
+      case 'messages':
+        return <Messages />;
+      case 'bookmarks':
+        return (
+            <Bookmarks 
+                bookmarkedPosts={posts.filter(p => p.isBookmarked)}
+                onLike={handleLike}
+                onRepost={handleRepost}
+                onQuote={handleQuote}
+                onBookmark={handleBookmark}
+                onUserClick={handleUserClick}
+                onUpdate={handleUpdatePost}
+                onCommentUpdate={handleCommentUpdate}
+                onCommentDelete={handleCommentDelete}
+                currentUser={currentUser || undefined}
+            />
+        );
+      case 'profile':
+        return viewingUser ? (
+            <Profile 
+                user={viewingUser} 
+                posts={posts.filter(p => p.user.id === viewingUser.id)}
+                likedPosts={posts.filter(p => p.likes > 50)}
+                onBack={() => handleViewChange('home')}
+                onUserClick={handleUserClick}
+                onLike={handleLike}
+                onRepost={handleRepost}
+                onQuote={handleQuote}
+                onBookmark={handleBookmark}
+                onUpdate={handleUpdatePost}
+                onCommentUpdate={handleCommentUpdate}
+                onCommentDelete={handleCommentDelete}
+            />
+        ) : null;
+      case 'settings':
+        return <Settings onLogout={() => window.location.reload()} />;
+      case 'post':
+        return viewingPost ? (
+            <PostDetail 
+                post={posts.find(p => p.id === viewingPost.id) || viewingPost}
+                onBack={() => handleViewChange('home')}
+                onLike={handleLike}
+                onRepost={handleRepost}
+                onQuote={handleQuote}
+                onBookmark={handleBookmark}
+                onUserClick={handleUserClick}
+                onUpdate={handleUpdatePost}
+                onComment={handleComment}
+                onCommentUpdate={handleCommentUpdate}
+                onCommentDelete={handleCommentDelete}
+                currentUser={currentUser || undefined}
+            />
+        ) : null;
+      case 'menu':
+        return currentUser ? (
+          <MobileMenu 
+            currentUser={currentUser} 
+            onViewChange={handleViewChange} 
+            onClose={() => handleViewChange('home')}
+            onLogout={() => window.location.reload()}
+            onUserClick={handleUserClick}
+          />
+        ) : null;
+      default:
+        return null;
     }
-
-    // Home or Explore
-    return (
-      <>
-        {/* Sticky Header */}
-        <div className="sticky top-0 bg-black/80 backdrop-blur-md z-30 px-4 py-3 border-b border-zinc-800">
-            <h2 className="font-bold text-xl cursor-pointer">For you</h2>
-        </div>
-
-        {/* Create Post */}
-        <CreatePost currentUser={CURRENT_USER} onPostCreate={handlePostCreate} />
-
-        {/* Feed */}
-        <div className="pb-20 md:pb-0">
-          {posts.map((post) => (
-            <PostCard key={post.id} post={post} onLike={handleLike} />
-          ))}
-        </div>
-      </>
-    );
   };
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-nexus-accent/30 selection:text-nexus-accent-foreground font-sans">
-      <div className="container mx-auto xl:max-w-[1265px] flex min-h-screen">
-        
-        {/* Sidebar (Left) */}
-        <header className="flex-none">
-          <Sidebar currentView={currentView} onViewChange={setCurrentView} />
-        </header>
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto flex justify-center">
+        {currentUser && (
+            <div className="hidden md:block md:w-64 lg:w-72 shrink-0">
+                <Sidebar 
+                    currentView={currentView} 
+                    onViewChange={handleViewChange} 
+                    onCreatePost={() => { setQuotingPost(null); setIsCreateModalOpen(true); }}
+                    currentUser={currentUser}
+                />
+            </div>
+        )}
 
-        {/* Main Feed (Center) */}
-        <main className="flex-1 max-w-[600px] border-x border-zinc-800 relative w-full">
-          {renderMainContent()}
+        <div className="md:hidden">
+             <Sidebar 
+                currentView={currentView} 
+                onViewChange={handleViewChange} 
+                onCreatePost={() => { setQuotingPost(null); setIsCreateModalOpen(true); }}
+                currentUser={currentUser!}
+            />
+        </div>
+
+        <main className="w-full max-w-[600px] border-x border-gray-100 min-h-screen pb-20 md:pb-0">
+          {renderContent()}
         </main>
 
-        {/* Widgets (Right) */}
-        <aside className="flex-none hidden lg:block ml-4">
-          <RightPanel />
-        </aside>
-
+        <RightPanel />
       </div>
+
+      <button 
+        onClick={scrollToTop}
+        className={`fixed bottom-24 md:bottom-8 right-8 bg-black text-white p-3 rounded-full shadow-lg transition-all duration-300 z-40 ${
+          showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
+        }`}
+      >
+        <ArrowUp className="w-5 h-5" />
+      </button>
+
+      {isCreateModalOpen && (
+        <div className="fixed inset-0 z-[60] bg-white md:bg-black/50 md:backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200 p-0 md:p-4">
+           <div className="w-full h-full md:h-auto md:max-w-lg md:rounded-2xl bg-white overflow-hidden shadow-2xl flex flex-col">
+               <div className="flex items-center justify-between p-4 border-b border-gray-100">
+                   <button onClick={() => { setIsCreateModalOpen(false); setQuotingPost(null); }}>
+                       <X className="w-6 h-6 text-gray-900" />
+                   </button>
+                   <span className="font-bold text-lg">{quotingPost ? 'Quote Post' : 'New Post'}</span>
+                   <div className="w-6"></div>
+               </div>
+               {currentUser && (
+                    <CreatePost 
+                        currentUser={currentUser} 
+                        onPostCreate={handleCreatePost}
+                        quotingPost={quotingPost}
+                        onCancelQuote={() => setQuotingPost(null)}
+                    />
+                )}
+           </div>
+        </div>
+      )}
     </div>
   );
 }
-
-export default App;
