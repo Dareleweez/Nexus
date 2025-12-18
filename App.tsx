@@ -15,7 +15,7 @@ import MobileMenu from './components/MobileMenu.tsx';
 import Bookmarks from './components/Bookmarks.tsx';
 import { ViewState, Post, User, Comment, Notification } from './types.ts';
 import { CURRENT_USER, INITIAL_POSTS, MOCK_USERS, MOCK_NOTIFICATIONS } from './constants.ts';
-import { Sparkles, ArrowUp, Loader2, Compass, X } from 'lucide-react';
+import { Sparkles, ArrowUp, Compass, X } from 'lucide-react';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
@@ -29,7 +29,6 @@ export default function App() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [viewingUser, setViewingUser] = useState<User | null>(null);
   const [viewingPost, setViewingPost] = useState<Post | null>(null);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
   
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [quotingPost, setQuotingPost] = useState<Post | null>(null);
@@ -291,17 +290,6 @@ export default function App() {
                 currentUser={currentUser || undefined}
               />
             ))}
-            
-            <div className="p-8 flex justify-center">
-                <button 
-                    disabled={isLoadingMore}
-                    onClick={() => setIsLoadingMore(true)}
-                    className="text-nexus-primary font-medium hover:underline flex items-center gap-2"
-                >
-                    {isLoadingMore ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                    Load more
-                </button>
-            </div>
           </div>
         );
       case 'explore':
