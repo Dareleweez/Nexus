@@ -350,7 +350,7 @@ const PostCard: React.FC<PostCardProps> = ({
         const updateRecursive = (items: Comment[]): Comment[] => {
             return items.map(c => {
               if (c.id === commentId) return { ...c, text: editCommentText };
-              if (c.replies && c.replies.length > 0) return { ...c, replies: updateRecursive(c.replies) };
+              if (c.replies && c.replies.length > 0) return { ...c, replies: updateRecursive(prev) };
               return c;
             });
         };
@@ -446,17 +446,21 @@ const PostCard: React.FC<PostCardProps> = ({
                         <img src={displayPost.user.avatar} alt={displayPost.user.name} className="w-10 h-10 rounded-full object-cover shrink-0 hover:opacity-90 transition-opacity border border-gray-100 dark:border-gray-800" />
                     </div>
                 )}
-                <div className={`flex flex-col ${isNested ? 'ml-1' : ''}`}>
-                    <div className="flex items-center gap-2">
-                        {isNested && (
-                            <img src={displayPost.user.avatar} alt={displayPost.user.name} className="w-5 h-5 rounded-full object-cover mr-1" />
-                        )}
-                        <span onClick={handleUserClick} className="font-bold truncate text-gray-900 dark:text-gray-100 cursor-pointer hover:underline text-sm md:text-base leading-none">{displayPost.user.name}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span onClick={handleUserClick} className="text-gray-500 dark:text-gray-400 truncate cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 text-xs">{displayPost.user.handle}</span>
-                        <span className="text-gray-400 dark:text-gray-600 text-xs">·</span>
-                        <span className="text-gray-500 dark:text-gray-400 text-xs hover:underline cursor-pointer">{displayPost.timestamp}</span>
+                <div className={`flex items-center gap-2 ${isNested ? 'ml-1' : ''}`}>
+                    {isNested && (
+                        <img src={displayPost.user.avatar} alt={displayPost.user.name} className="w-5 h-5 rounded-full object-cover mr-1" />
+                    )}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span onClick={handleUserClick} className="font-bold truncate text-gray-900 dark:text-gray-100 cursor-pointer hover:underline text-sm md:text-base leading-none">
+                        {displayPost.user.name}
+                      </span>
+                      <span onClick={handleUserClick} className="text-gray-500 dark:text-gray-400 truncate cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 text-xs">
+                        {displayPost.user.handle}
+                      </span>
+                      <span className="text-gray-400 dark:text-gray-600 text-xs">·</span>
+                      <span className="text-gray-500 dark:text-gray-400 text-xs hover:underline cursor-pointer">
+                        {displayPost.timestamp}
+                      </span>
                     </div>
                 </div>
             </div>
