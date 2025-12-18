@@ -236,25 +236,25 @@ export default function App() {
       case 'home':
         return (
           <div className="flex flex-col md:gap-4 pb-20 md:pb-0">
-             {/* Unified Header Layer for Mobile */}
+             {/* Unified Header Layer for Mobile - Minimized */}
              <div className="md:hidden sticky top-0 bg-white/90 backdrop-blur-md z-30 border-b border-gray-200">
-                <div className="px-4 py-3 flex items-center justify-between">
+                <div className="px-4 py-1.5 flex items-center justify-between">
                     <div className="flex items-center">
-                        <h1 className="text-3xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-nexus-primary to-nexus-accent">NEXUS</h1>
+                        <h1 className="text-2xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-nexus-primary to-nexus-accent">NEXUS</h1>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
                          <button onClick={() => handleViewChange('explore')}>
-                             <Compass className="w-8 h-8 text-gray-900" />
+                             <Compass className="w-6 h-6 text-gray-900" />
                          </button>
                          <img 
                             src={currentUser?.avatar} 
                             alt="Profile" 
                             onClick={() => handleUserClick(currentUser!)}
-                            className="w-10 h-10 rounded-full object-cover border border-gray-200" 
+                            className="w-8 h-8 rounded-full object-cover border border-gray-200" 
                          />
                     </div>
                 </div>
-                {/* Connected Stories */}
+                {/* Connected Stories - Minimized */}
                 {currentUser && <Stories currentUser={currentUser} connected={true} />}
              </div>
             

@@ -85,23 +85,23 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
   };
 
   return (
-    <div className={`${connected ? 'bg-transparent' : 'bg-white border-b border-gray-200'} pt-4 pb-6 overflow-x-auto no-scrollbar`}>
-      <div className="flex gap-6 px-5 min-w-max items-start">
-        {/* Add Story Button - Refined Big Size */}
-        <div className="flex flex-col items-center gap-3 cursor-pointer group" onClick={() => fileInputRef.current?.click()}>
-          <div className="relative w-24 h-24 sm:w-32 sm:h-32">
-            <div className="w-full h-full rounded-full p-[6px] border-[3px] border-gray-300 border-dashed group-hover:border-nexus-primary transition-all duration-300 transform group-hover:scale-105">
+    <div className={`${connected ? 'bg-transparent' : 'bg-white border-b border-gray-200'} pt-1 pb-3 overflow-x-auto no-scrollbar`}>
+      <div className="flex gap-5 px-4 min-w-max items-start">
+        {/* Add Story Button - Minimized Refined Size */}
+        <div className="flex flex-col items-center gap-2 cursor-pointer group" onClick={() => fileInputRef.current?.click()}>
+          <div className="relative w-18 h-18 sm:w-26 sm:h-26" style={{ width: '4.5rem', height: '4.5rem' }}>
+            <div className="w-full h-full rounded-full p-[4px] border-[2px] border-gray-300 border-dashed group-hover:border-nexus-primary transition-all duration-300 transform group-hover:scale-105">
                  <img 
                     src={currentUser.avatar} 
                     alt="Add Story" 
                     className="w-full h-full rounded-full object-cover opacity-80 group-hover:opacity-100 transition-opacity shadow-inner" 
                  />
             </div>
-            <div className="absolute bottom-1 right-1 bg-nexus-primary text-white rounded-full p-2.5 border-[4px] border-white shadow-xl group-hover:scale-110 transition-transform">
-              <Plus className="w-5 h-5" />
+            <div className="absolute bottom-0 right-0 bg-nexus-primary text-white rounded-full p-1.5 border-[3px] border-white shadow-lg group-hover:scale-110 transition-transform">
+              <Plus className="w-4 h-4" />
             </div>
           </div>
-          <span className="text-xs font-bold text-gray-500 group-hover:text-nexus-primary transition-colors uppercase tracking-tight">Your Story</span>
+          <span className="text-[10px] font-bold text-gray-500 group-hover:text-nexus-primary transition-colors uppercase tracking-tight">Your Story</span>
           <input 
             type="file" 
             ref={fileInputRef} 
@@ -111,15 +111,15 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
           />
         </div>
 
-        {/* Stories List - Refined Big Size */}
+        {/* Stories List - Minimized Refined Size */}
         {stories.map((story, index) => (
           <div 
             key={story.id} 
-            className="flex flex-col items-center gap-3 cursor-pointer group"
+            className="flex flex-col items-center gap-2 cursor-pointer group"
             onClick={() => openViewer(index)}
           >
-            <div className={`w-24 h-24 sm:w-32 sm:h-32 rounded-full p-[6px] bg-gradient-to-tr ${story.isViewed ? 'from-gray-300 to-gray-200 shadow-sm' : 'from-nexus-primary via-nexus-accent to-pink-500 shadow-xl shadow-nexus-primary/30'} group-hover:scale-105 transition-all duration-500`}>
-              <div className="w-full h-full rounded-full bg-white p-[4px]">
+            <div className={`w-18 h-18 sm:w-26 sm:h-26 rounded-full p-[4px] bg-gradient-to-tr ${story.isViewed ? 'from-gray-300 to-gray-200 shadow-sm' : 'from-nexus-primary via-nexus-accent to-pink-500 shadow-lg shadow-nexus-primary/20'} group-hover:scale-105 transition-all duration-500`} style={{ width: '4.5rem', height: '4.5rem' }}>
+              <div className="w-full h-full rounded-full bg-white p-[3px]">
                 <img 
                     src={story.user.avatar} 
                     alt={story.user.name} 
@@ -127,7 +127,7 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
                 />
               </div>
             </div>
-            <span className="text-xs font-bold text-gray-900 max-w-[90px] truncate text-center tracking-tight">{story.user.name.split(' ')[0]}</span>
+            <span className="text-[10px] font-bold text-gray-900 max-w-[80px] truncate text-center tracking-tight">{story.user.name.split(' ')[0]}</span>
           </div>
         ))}
       </div>
