@@ -402,7 +402,7 @@ export default function App() {
              )}
         </div>
 
-        <main className="w-full max-w-[600px] border-x border-gray-100 min-h-screen pb-20 md:pb-0">
+        <main className="w-full max-w-[750px] border-x border-gray-100 min-h-screen pb-20 md:pb-0">
           {renderContent()}
         </main>
 

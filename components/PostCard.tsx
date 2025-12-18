@@ -343,7 +343,6 @@ const PostCard: React.FC<PostCardProps> = ({
     setEditCommentText('');
   };
 
-  // Fix: Removed redundant recursive function definition and fixed 'prev' being undefined
   const handleSaveComment = (commentId: string) => {
     if (!editCommentText.trim()) return;
     
@@ -381,7 +380,7 @@ const PostCard: React.FC<PostCardProps> = ({
   const renderMedia = () => {
     if (displayPost.videoUrl) {
       return (
-        <div className={`mt-3 rounded-2xl overflow-hidden border border-gray-100 bg-neutral-900 shadow-sm flex justify-center items-center group/media relative max-w-[500px] h-[450px] w-full mx-auto`}>
+        <div className={`mt-3 rounded-2xl overflow-hidden border border-gray-100 bg-neutral-900 shadow-sm flex justify-center items-center group/media relative h-[500px] w-full mx-auto`}>
           <video src={displayPost.videoUrl} className="w-full h-full object-cover" controls playsInline />
         </div>
       );
@@ -395,14 +394,14 @@ const PostCard: React.FC<PostCardProps> = ({
     if (count === 1) {
       return (
         <div className="mt-3 rounded-2xl overflow-hidden border border-gray-100 bg-gray-50 shadow-sm">
-          <img src={images[0]} alt="Post image" className="w-full h-auto max-h-[800px] object-cover hover:scale-[1.02] transition-transform duration-700" loading="lazy" />
+          <img src={images[0]} alt="Post image" className="w-full h-auto max-h-[800px] object-cover hover:scale-[1.01] transition-transform duration-700" loading="lazy" />
         </div>
       );
     }
 
     if (count === 2) {
       return (
-        <div className="mt-3 grid grid-cols-2 gap-1 rounded-2xl overflow-hidden border border-gray-100 h-64 sm:h-80">
+        <div className="mt-3 grid grid-cols-2 gap-1 rounded-2xl overflow-hidden border border-gray-100 h-64 sm:h-96">
           {images.map((img, i) => (
             <img key={i} src={img} alt={`Post image ${i+1}`} className="w-full h-full object-cover hover:opacity-90 transition-opacity" />
           ))}
@@ -412,7 +411,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
     if (count === 3) {
       return (
-        <div className="mt-3 grid grid-cols-2 gap-1 rounded-2xl overflow-hidden border border-gray-100 h-64 sm:h-80">
+        <div className="mt-3 grid grid-cols-2 gap-1 rounded-2xl overflow-hidden border border-gray-100 h-64 sm:h-96">
           <img src={images[0]} alt="Post image 1" className="w-full h-full object-cover" />
           <div className="grid grid-rows-2 gap-1 h-full">
             <img src={images[1]} alt="Post image 2" className="w-full h-full object-cover" />
@@ -424,7 +423,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
     // 4 Images (Grid 2x2)
     return (
-      <div className="mt-3 grid grid-cols-2 grid-rows-2 gap-1 rounded-2xl overflow-hidden border border-gray-100 h-64 sm:h-80">
+      <div className="mt-3 grid grid-cols-2 grid-rows-2 gap-1 rounded-2xl overflow-hidden border border-gray-100 h-64 sm:h-96">
         {images.slice(0, 4).map((img, i) => (
           <img key={i} src={img} alt={`Post image ${i+1}`} className="w-full h-full object-cover" />
         ))}
@@ -441,17 +440,17 @@ const PostCard: React.FC<PostCardProps> = ({
         </div>
       )}
       
-      <div className="flex gap-3">
+      <div className="flex gap-4">
         {!isNested && (
             <div onClick={handleUserClick} className="cursor-pointer shrink-0">
-              <img src={displayPost.user.avatar} alt={displayPost.user.name} className="w-10 h-10 rounded-full object-cover shrink-0 hover:opacity-90 transition-opacity border border-gray-100" />
+              <img src={displayPost.user.avatar} alt={displayPost.user.name} className="w-12 h-12 rounded-full object-cover shrink-0 hover:opacity-90 transition-opacity border border-gray-100" />
             </div>
         )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between relative">
             <div className={`flex items-center gap-2 overflow-hidden ${isNested ? 'mb-1' : ''}`}>
               {isNested && (
-                  <img src={displayPost.user.avatar} alt={displayPost.user.name} className="w-5 h-5 rounded-full object-cover mr-1" />
+                  <img src={displayPost.user.avatar} alt={displayPost.user.name} className="w-6 h-6 rounded-full object-cover mr-1" />
               )}
               <span onClick={handleUserClick} className="font-bold truncate text-gray-900 cursor-pointer hover:underline text-sm md:text-base">{displayPost.user.name}</span>
               <span onClick={handleUserClick} className="text-gray-500 truncate cursor-pointer hover:text-gray-700 text-xs md:text-sm">{displayPost.user.handle}</span>
@@ -488,7 +487,7 @@ const PostCard: React.FC<PostCardProps> = ({
                  </div>
              </div>
           ) : (
-            <div className={`mt-1 whitespace-pre-wrap ${isNested ? 'text-sm' : 'text-[15px]'} leading-relaxed text-gray-900`}>
+            <div className={`mt-1 whitespace-pre-wrap ${isNested ? 'text-sm' : 'text-[16px]'} leading-relaxed text-gray-900`}>
                 {post.content}
             </div>
           )}
@@ -508,7 +507,7 @@ const PostCard: React.FC<PostCardProps> = ({
           )}
 
           {!isEditing && !isNested && (
-              <div className="flex justify-between mt-3 text-gray-500 max-w-md items-center">
+              <div className="flex justify-between mt-4 text-gray-500 max-w-lg items-center px-1">
                 <button onClick={() => setShowComments(!showComments)} className={`flex items-center gap-2 group transition-all duration-200 p-1 ${showComments ? 'text-nexus-primary' : 'hover:text-nexus-primary'}`}>
                     <div className={`relative p-2 rounded-full ${showComments ? 'bg-nexus-primary/10' : 'group-hover:bg-nexus-primary/10'}`}>
                         <MessageCircle className="w-5 h-5" />
