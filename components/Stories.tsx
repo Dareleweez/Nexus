@@ -1,12 +1,12 @@
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Plus, X, ChevronLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Plus, X, ChevronLeft, ChevronRight, Image as ImageIcon, Heart, Send } from 'lucide-react';
 import { User, Story } from '../types';
 import { MOCK_STORIES } from '../constants';
 
 interface StoriesProps {
   currentUser: User;
-  connected?: boolean; // Prop to indicate it's part of the header layer
+  connected?: boolean; 
 }
 
 const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => {
@@ -14,15 +14,39 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
   const [viewerOpen, setViewerOpen] = useState(false);
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const progressInterval = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const handleNext = useCallback(() => {
+    if (currentStoryIndex < stories.length - 1) {
+      setCurrentStoryIndex(prev => prev + 1);
+      setProgress(0);
+    } else {
+      closeViewer();
+    }
+  }, [currentStoryIndex, stories.length]);
+
+  const handlePrev = useCallback(() => {
+    if (currentStoryIndex > 0) {
+      setCurrentStoryIndex(prev => prev - 1);
+      setProgress(0);
+    }
+  }, [currentStoryIndex]);
+
+  const closeViewer = useCallback(() => {
+    setViewerOpen(false);
+    setProgress(0);
+    setIsPaused(false);
+    document.body.style.overflow = 'auto';
+    if (progressInterval.current) clearInterval(progressInterval.current);
+  }, []);
+
   // Auto-advance logic
   useEffect(() => {
-    if (viewerOpen) {
-      setProgress(0);
-      const duration = 5000; // 5 seconds per story
-      const intervalTime = 50; // Update every 50ms
+    if (viewerOpen && !isPaused) {
+      const duration = 5000; 
+      const intervalTime = 30; 
       const step = 100 / (duration / intervalTime);
 
       progressInterval.current = setInterval(() => {
@@ -38,8 +62,10 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
       return () => {
         if (progressInterval.current) clearInterval(progressInterval.current);
       };
+    } else if (isPaused && progressInterval.current) {
+      clearInterval(progressInterval.current);
     }
-  }, [viewerOpen, currentStoryIndex]);
+  }, [viewerOpen, currentStoryIndex, isPaused, handleNext]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -60,51 +86,30 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
   const openViewer = (index: number) => {
     setCurrentStoryIndex(index);
     setViewerOpen(true);
-    // CRITICAL: Prevent body scroll and ensure full coverage
     document.body.style.overflow = 'hidden';
   };
 
-  const closeViewer = () => {
-    setViewerOpen(false);
-    setProgress(0);
-    document.body.style.overflow = 'auto';
-    if (progressInterval.current) clearInterval(progressInterval.current);
-  };
-
-  const handleNext = () => {
-    if (currentStoryIndex < stories.length - 1) {
-      setCurrentStoryIndex(prev => prev + 1);
-      setProgress(0);
-    } else {
-      closeViewer();
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentStoryIndex > 0) {
-      setCurrentStoryIndex(prev => prev - 1);
-      setProgress(0);
-    }
-  };
+  const handleMouseDown = () => setIsPaused(true);
+  const handleMouseUp = () => setIsPaused(false);
 
   return (
-    <div className={`${connected ? 'bg-transparent' : 'bg-white border-b border-gray-200'} pt-1 pb-3 overflow-x-auto no-scrollbar`}>
-      <div className="flex gap-5 px-4 min-w-max items-start">
+    <div className={`${connected ? 'bg-transparent' : 'bg-white dark:bg-nexus-900 border-b border-gray-100 dark:border-gray-800'} pt-2 pb-4 overflow-x-auto no-scrollbar`}>
+      <div className="flex gap-4 px-4 min-w-max items-center">
         {/* Add Story Button */}
-        <div className="flex flex-col items-center gap-2 cursor-pointer group" onClick={() => fileInputRef.current?.click()}>
-          <div className="relative" style={{ width: '4.5rem', height: '4.5rem' }}>
-            <div className="w-full h-full rounded-full p-[4px] border-[2px] border-gray-300 border-dashed group-hover:border-nexus-primary group-hover:scale-105 transition-all duration-300 transform">
+        <div className="flex flex-col items-center gap-1.5 cursor-pointer group" onClick={() => fileInputRef.current?.click()}>
+          <div className="relative">
+            <div className="w-[72px] h-[72px] rounded-full p-[3px] border-2 border-dashed border-gray-300 dark:border-gray-700 group-hover:border-nexus-primary transition-all duration-300">
                  <img 
                     src={currentUser.avatar} 
                     alt="Add Story" 
-                    className="w-full h-full rounded-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" 
+                    className="w-full h-full rounded-full object-cover grayscale group-hover:grayscale-0 transition-all opacity-80" 
                  />
             </div>
-            <div className="absolute bottom-0 right-0 bg-nexus-primary text-white rounded-full p-1.5 border-[3px] border-white shadow-lg group-hover:scale-110 transition-transform">
-              <Plus className="w-4 h-4" />
+            <div className="absolute bottom-0 right-0 bg-nexus-primary text-white rounded-full p-1.5 border-2 border-white dark:border-nexus-900 shadow-md">
+              <Plus className="w-3 h-3" strokeWidth={3} />
             </div>
           </div>
-          <span className="text-[10px] font-bold text-gray-500 group-hover:text-nexus-primary transition-colors uppercase tracking-tight">Your Story</span>
+          <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400">Your Story</span>
           <input 
             type="file" 
             ref={fileInputRef} 
@@ -118,121 +123,139 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
         {stories.map((story, index) => (
           <div 
             key={story.id} 
-            className="flex flex-col items-center gap-2 cursor-pointer group"
+            className="flex flex-col items-center gap-1.5 cursor-pointer group"
             onClick={() => openViewer(index)}
           >
             <div 
-              className={`rounded-full p-[4px] bg-gradient-to-tr ${story.isViewed ? 'from-gray-300 to-gray-200' : 'from-nexus-primary via-nexus-accent to-pink-500 shadow-lg shadow-nexus-primary/20'} group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(99,102,241,0.5)] transition-all duration-500 transform`} 
-              style={{ width: '4.5rem', height: '4.5rem' }}
+              className={`w-[72px] h-[72px] rounded-full p-[3px] transition-all duration-300 transform group-hover:scale-105 ${
+                story.isViewed 
+                  ? 'bg-gray-200 dark:bg-gray-800' 
+                  : 'bg-gradient-to-tr from-nexus-primary via-nexus-accent to-pink-500'
+              }`}
             >
-              <div className="w-full h-full rounded-full bg-white p-[3px] transition-transform duration-500 group-hover:scale-95">
+              <div className="w-full h-full rounded-full bg-white dark:bg-nexus-900 p-[2px]">
                 <img 
                     src={story.user.avatar} 
                     alt={story.user.name} 
-                    className="w-full h-full rounded-full object-cover" 
+                    className="w-full h-full rounded-full object-cover border border-gray-100 dark:border-gray-800" 
                 />
               </div>
             </div>
-            <span className="text-[10px] font-bold text-gray-900 max-w-[80px] truncate text-center tracking-tight transition-colors group-hover:text-nexus-primary">{story.user.name.split(' ')[0]}</span>
+            <span className="text-[11px] font-semibold text-gray-900 dark:text-gray-200 max-w-[72px] truncate">
+              {story.user.name.split(' ')[0]}
+            </span>
           </div>
         ))}
       </div>
 
-      {/* Story Viewer Modal - TRULY IMMERSIVE FULL SCREEN */}
+      {/* FULL SCREEN IMMERSIVE VIEWER */}
       {viewerOpen && stories[currentStoryIndex] && (
-        <div className="fixed inset-0 z-[100] bg-black flex flex-col animate-in fade-in duration-300 overflow-hidden">
-           {/* Cinematic Background Layer */}
+        <div 
+          className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center animate-in fade-in duration-300"
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onTouchStart={handleMouseDown}
+          onTouchEnd={handleMouseUp}
+        >
+           {/* Cinematic Background Blur */}
            <div 
-             className="absolute inset-0 opacity-40 scale-110 bg-cover bg-center blur-[100px] pointer-events-none"
+             className="absolute inset-0 opacity-60 scale-125 bg-cover bg-center blur-[80px] pointer-events-none"
              style={{ backgroundImage: `url(${stories[currentStoryIndex].imageUrl})` }}
            ></div>
 
-           {/* Top Content Layer (Progress & Profile) */}
-           <div className="relative z-[120] w-full px-4 pt-4 pb-12 bg-gradient-to-b from-black/80 via-black/40 to-transparent shrink-0">
-                {/* Progress Indicators */}
-                <div className="flex gap-1.5 mb-5 max-w-4xl mx-auto">
-                    {stories.map((_, idx) => (
-                        <div key={idx} className="h-1 flex-1 bg-white/20 rounded-full overflow-hidden">
-                            <div 
-                                className={`h-full bg-white transition-all duration-100 ease-linear ${
-                                    idx < currentStoryIndex ? 'w-full' : 
-                                    idx === currentStoryIndex ? '' : 'w-0'
-                                }`}
-                                style={{ width: idx === currentStoryIndex ? `${progress}%` : undefined }}
-                            ></div>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Identity & Close */}
-                <div className="flex items-center justify-between max-w-4xl mx-auto">
-                    <div className="flex items-center gap-3 group">
-                        <img 
-                            src={stories[currentStoryIndex].user.avatar} 
-                            alt={stories[currentStoryIndex].user.name}
-                            className="w-10 h-10 rounded-full border border-white/30 shadow-xl group-hover:scale-105 transition-transform" 
-                        />
-                        <div className="flex flex-col">
-                            <span className="text-white text-base font-bold drop-shadow-lg leading-tight">
-                                {stories[currentStoryIndex].user.name}
-                            </span>
-                            <span className="text-white/60 text-xs font-medium drop-shadow-sm">
-                                {stories[currentStoryIndex].timestamp}
-                            </span>
-                        </div>
+           {/* Progress Bars Container */}
+           <div className="absolute top-0 inset-x-0 z-[100] px-3 pt-4 flex gap-1.5">
+                {stories.map((_, idx) => (
+                    <div key={idx} className="h-[2px] flex-1 bg-white/20 rounded-full overflow-hidden">
+                        <div 
+                            className={`h-full bg-white transition-all ease-linear ${
+                                idx < currentStoryIndex ? 'w-full' : 
+                                idx === currentStoryIndex ? '' : 'w-0'
+                            }`}
+                            style={{ 
+                                width: idx === currentStoryIndex ? `${progress}%` : undefined,
+                                transitionDuration: isPaused ? '0ms' : '30ms'
+                            }}
+                        ></div>
                     </div>
-                    <button 
-                        onClick={closeViewer}
-                        className="p-2.5 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-xl transition-all border border-white/10"
-                    >
-                        <X className="w-6 h-6" strokeWidth={2} />
-                    </button>
-                </div>
+                ))}
            </div>
 
-           {/* Main Content Layer (Image) */}
-           <div className="flex-1 relative flex items-center justify-center z-[110]">
+           {/* Top Info Bar */}
+           <div className="absolute top-8 inset-x-0 z-[100] px-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <img 
+                        src={stories[currentStoryIndex].user.avatar} 
+                        className="w-9 h-9 rounded-full border border-white/40 shadow-xl" 
+                        alt=""
+                    />
+                    <div className="flex flex-col">
+                        <span className="text-white text-sm font-bold shadow-black drop-shadow-md">
+                            {stories[currentStoryIndex].user.name}
+                        </span>
+                        <span className="text-white/70 text-[11px] font-medium">
+                            {stories[currentStoryIndex].timestamp}
+                        </span>
+                    </div>
+                </div>
+                <button 
+                    onClick={(e) => { e.stopPropagation(); closeViewer(); }}
+                    className="p-2 text-white/80 hover:text-white bg-black/20 hover:bg-black/40 rounded-full backdrop-blur-md transition-all"
+                >
+                    <X className="w-6 h-6" />
+                </button>
+           </div>
+
+           {/* Main Content Area */}
+           <div className="relative w-full h-full flex items-center justify-center">
                 {/* Navigation Tap Zones */}
-                <div className="absolute inset-0 flex z-[115]">
-                    <div className="w-1/3 h-full cursor-pointer" onClick={handlePrev}></div>
-                    <div className="w-2/3 h-full cursor-pointer" onClick={handleNext}></div>
+                <div className="absolute inset-0 flex z-[90]">
+                    <div 
+                        className="w-1/3 h-full cursor-pointer group" 
+                        onClick={(e) => { e.stopPropagation(); handlePrev(); }}
+                    >
+                        <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <ChevronLeft className="text-white/50 w-8 h-8" />
+                        </div>
+                    </div>
+                    <div 
+                        className="w-2/3 h-full cursor-pointer group" 
+                        onClick={(e) => { e.stopPropagation(); handleNext(); }}
+                    >
+                        <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <ChevronRight className="text-white/50 w-8 h-8" />
+                        </div>
+                    </div>
                 </div>
 
-                {/* Story Image */}
+                {/* Story Media */}
                 <img 
                     src={stories[currentStoryIndex].imageUrl} 
                     alt="Story Content" 
-                    className="max-w-full max-h-full object-contain shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-in zoom-in-95 duration-500"
+                    className="max-h-[90vh] max-w-[95vw] md:max-w-[450px] object-contain rounded-xl shadow-2xl animate-in zoom-in-95 duration-500 border border-white/10"
                 />
-
-                {/* Desktop Sidebar Arrows */}
-                <button 
-                    onClick={handlePrev}
-                    className={`hidden md:flex absolute left-8 lg:left-16 p-4 text-white/40 hover:text-white bg-white/5 hover:bg-white/10 rounded-full backdrop-blur-md transition-all z-[120] ${currentStoryIndex === 0 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
-                >
-                    <ChevronLeft className="w-10 h-10" />
-                </button>
-                <button 
-                    onClick={handleNext}
-                    className="hidden md:flex absolute right-8 lg:right-16 p-4 text-white/40 hover:text-white bg-white/5 hover:bg-white/10 rounded-full backdrop-blur-md transition-all z-[120]"
-                >
-                    <ChevronRight className="w-10 h-10" />
-                </button>
            </div>
 
-           {/* Bottom Content Layer (Reply) */}
-           <div className="relative z-[120] w-full p-6 md:p-10 bg-gradient-to-t from-black/80 via-black/40 to-transparent shrink-0">
-                <div className="flex gap-3 items-center max-w-2xl mx-auto">
-                    <div className="flex-1 relative">
+           {/* Bottom Action Bar */}
+           <div className="absolute bottom-0 inset-x-0 z-[100] p-6 bg-gradient-to-t from-black/60 to-transparent">
+                <div className="max-w-md mx-auto flex items-center gap-4">
+                    <div className="flex-1 bg-white/10 border border-white/20 rounded-full px-5 py-3.5 backdrop-blur-2xl transition-all hover:bg-white/15">
                         <input 
                             type="text" 
                             placeholder={`Reply to ${stories[currentStoryIndex].user.name.split(' ')[0]}...`} 
-                            className="w-full bg-white/10 border border-white/20 rounded-full px-6 py-4 text-white placeholder-white/40 focus:outline-none focus:border-white/40 focus:bg-white/20 backdrop-blur-2xl transition-all text-[16px] shadow-2xl"
+                            className="w-full bg-transparent text-white placeholder-white/50 focus:outline-none text-sm font-medium"
+                            onClick={(e) => { e.stopPropagation(); setIsPaused(true); }}
+                            onBlur={() => setIsPaused(false)}
                         />
                     </div>
-                    <button className="text-white p-4 rounded-full bg-white/10 hover:bg-white/20 transition-all backdrop-blur-2xl border border-white/20 shadow-xl">
-                        <ImageIcon className="w-6 h-6" />
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <button className="text-white hover:text-pink-400 transition-colors p-1">
+                            <Heart className="w-7 h-7" />
+                        </button>
+                        <button className="text-white hover:text-nexus-primary transition-colors p-1">
+                            <Send className="w-7 h-7" />
+                        </button>
+                    </div>
                 </div>
            </div>
         </div>
