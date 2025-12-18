@@ -85,23 +85,23 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
   };
 
   return (
-    <div className={`${connected ? 'bg-transparent' : 'bg-white border-b border-gray-200'} pt-6 pb-8 overflow-x-auto no-scrollbar`}>
-      <div className="flex gap-8 px-6 min-w-max items-start">
-        {/* Add Story Button - EXTRA BIG SIZE */}
-        <div className="flex flex-col items-center gap-4 cursor-pointer group" onClick={() => fileInputRef.current?.click()}>
-          <div className="relative w-32 h-32 sm:w-44 sm:h-44">
-            <div className="w-full h-full rounded-full p-[8px] border-[4px] border-gray-300 border-dashed group-hover:border-nexus-primary transition-all duration-300 transform group-hover:scale-105">
+    <div className={`${connected ? 'bg-transparent' : 'bg-white border-b border-gray-200'} pt-4 pb-6 overflow-x-auto no-scrollbar`}>
+      <div className="flex gap-6 px-5 min-w-max items-start">
+        {/* Add Story Button - Refined Big Size */}
+        <div className="flex flex-col items-center gap-3 cursor-pointer group" onClick={() => fileInputRef.current?.click()}>
+          <div className="relative w-24 h-24 sm:w-32 sm:h-32">
+            <div className="w-full h-full rounded-full p-[6px] border-[3px] border-gray-300 border-dashed group-hover:border-nexus-primary transition-all duration-300 transform group-hover:scale-105">
                  <img 
                     src={currentUser.avatar} 
                     alt="Add Story" 
                     className="w-full h-full rounded-full object-cover opacity-80 group-hover:opacity-100 transition-opacity shadow-inner" 
                  />
             </div>
-            <div className="absolute bottom-2 right-2 bg-nexus-primary text-white rounded-full p-3.5 border-[6px] border-white shadow-2xl group-hover:scale-110 transition-transform">
-              <Plus className="w-6 h-6" />
+            <div className="absolute bottom-1 right-1 bg-nexus-primary text-white rounded-full p-2.5 border-[4px] border-white shadow-xl group-hover:scale-110 transition-transform">
+              <Plus className="w-5 h-5" />
             </div>
           </div>
-          <span className="text-sm font-black text-gray-500 group-hover:text-nexus-primary transition-colors uppercase tracking-wider">Your Story</span>
+          <span className="text-xs font-bold text-gray-500 group-hover:text-nexus-primary transition-colors uppercase tracking-tight">Your Story</span>
           <input 
             type="file" 
             ref={fileInputRef} 
@@ -111,15 +111,15 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
           />
         </div>
 
-        {/* Stories List - EXTRA BIG SIZE */}
+        {/* Stories List - Refined Big Size */}
         {stories.map((story, index) => (
           <div 
             key={story.id} 
-            className="flex flex-col items-center gap-4 cursor-pointer group"
+            className="flex flex-col items-center gap-3 cursor-pointer group"
             onClick={() => openViewer(index)}
           >
-            <div className={`w-32 h-32 sm:w-44 sm:h-44 rounded-full p-[8px] bg-gradient-to-tr ${story.isViewed ? 'from-gray-300 to-gray-200 shadow-sm' : 'from-nexus-primary via-nexus-accent to-pink-500 shadow-2xl shadow-nexus-primary/40'} group-hover:scale-105 transition-all duration-500`}>
-              <div className="w-full h-full rounded-full bg-white p-[5px]">
+            <div className={`w-24 h-24 sm:w-32 sm:h-32 rounded-full p-[6px] bg-gradient-to-tr ${story.isViewed ? 'from-gray-300 to-gray-200 shadow-sm' : 'from-nexus-primary via-nexus-accent to-pink-500 shadow-xl shadow-nexus-primary/30'} group-hover:scale-105 transition-all duration-500`}>
+              <div className="w-full h-full rounded-full bg-white p-[4px]">
                 <img 
                     src={story.user.avatar} 
                     alt={story.user.name} 
@@ -127,7 +127,7 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
                 />
               </div>
             </div>
-            <span className="text-sm font-black text-gray-900 max-w-[120px] truncate text-center tracking-tight">{story.user.name.split(' ')[0]}</span>
+            <span className="text-xs font-bold text-gray-900 max-w-[90px] truncate text-center tracking-tight">{story.user.name.split(' ')[0]}</span>
           </div>
         ))}
       </div>
@@ -140,10 +140,10 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
              style={{ backgroundImage: `url(${stories[currentStoryIndex].imageUrl})` }}
            ></div>
 
-           <div className="relative w-full h-full md:w-[520px] md:h-[94vh] md:rounded-[50px] bg-black overflow-hidden flex flex-col shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-white/10">
-              <div className="absolute top-0 left-0 w-full z-20 flex gap-2.5 p-5">
+           <div className="relative w-full h-full md:w-[480px] md:h-[90vh] md:rounded-[40px] bg-black overflow-hidden flex flex-col shadow-[0_0_80px_rgba(0,0,0,0.8)] border border-white/10">
+              <div className="absolute top-0 left-0 w-full z-20 flex gap-2 p-4">
                  {stories.map((_, idx) => (
-                    <div key={idx} className="h-1.5 flex-1 bg-white/20 rounded-full overflow-hidden">
+                    <div key={idx} className="h-1 flex-1 bg-white/20 rounded-full overflow-hidden">
                         <div 
                             className={`h-full bg-white transition-all duration-100 ease-linear ${
                                 idx < currentStoryIndex ? 'w-full' : 
@@ -155,27 +155,27 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
                  ))}
               </div>
 
-              <div className="absolute top-10 left-0 w-full z-20 px-6 pt-2 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
+              <div className="absolute top-8 left-0 w-full z-20 px-5 pt-2 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
                       <img 
                         src={stories[currentStoryIndex].user.avatar} 
                         alt={stories[currentStoryIndex].user.name}
-                        className="w-14 h-14 rounded-full border-2 border-white/50 shadow-2xl" 
+                        className="w-12 h-12 rounded-full border border-white/40 shadow-xl" 
                       />
                       <div>
-                          <div className="text-white text-lg font-black shadow-black drop-shadow-xl tracking-tight">
+                          <div className="text-white text-[15px] font-bold shadow-black drop-shadow-lg tracking-tight">
                               {stories[currentStoryIndex].user.name}
                           </div>
-                          <div className="text-white/80 text-sm font-medium shadow-black drop-shadow-lg">
+                          <div className="text-white/80 text-[11px] font-medium shadow-black drop-shadow-md">
                               {stories[currentStoryIndex].timestamp}
                           </div>
                       </div>
                   </div>
                   <button 
                     onClick={closeViewer}
-                    className="text-white/80 hover:text-white p-3 rounded-full hover:bg-white/20 transition-all backdrop-blur-2xl border border-white/20 shadow-xl"
+                    className="text-white/80 hover:text-white p-2 rounded-full hover:bg-white/20 transition-all backdrop-blur-2xl border border-white/10 shadow-lg"
                   >
-                      <X className="w-8 h-8" />
+                      <X className="w-6 h-6" />
                   </button>
               </div>
 
@@ -191,15 +191,15 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
                   </div>
               </div>
               
-              <div className="absolute bottom-0 left-0 w-full p-10 bg-gradient-to-t from-black via-black/80 to-transparent z-20">
-                  <div className="flex gap-4 items-center">
+              <div className="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black via-black/80 to-transparent z-20">
+                  <div className="flex gap-3 items-center">
                       <input 
                         type="text" 
                         placeholder="Reply to story..." 
-                        className="flex-1 bg-white/10 border border-white/20 rounded-full px-8 py-5 text-white placeholder-white/50 focus:outline-none focus:border-white/50 focus:bg-white/20 backdrop-blur-3xl transition-all text-lg shadow-2xl"
+                        className="flex-1 bg-white/10 border border-white/10 rounded-full px-6 py-4 text-white placeholder-white/50 focus:outline-none focus:border-white/40 focus:bg-white/15 backdrop-blur-3xl transition-all text-base shadow-xl"
                       />
-                      <button className="text-white p-4 rounded-full bg-white/10 hover:bg-white/20 transition-all backdrop-blur-3xl border border-white/20 shadow-2xl">
-                         <ImageIcon className="w-7 h-7" />
+                      <button className="text-white p-3.5 rounded-full bg-white/10 hover:bg-white/20 transition-all backdrop-blur-3xl border border-white/10 shadow-xl">
+                         <ImageIcon className="w-5 h-5" />
                       </button>
                   </div>
               </div>
@@ -207,16 +207,16 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
 
            <button 
                 onClick={handlePrev}
-                className={`hidden md:flex absolute left-12 lg:left-40 text-white/40 hover:text-white p-6 rounded-full hover:bg-white/10 transition-all z-50 ${currentStoryIndex === 0 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                className={`hidden md:flex absolute left-8 lg:left-32 text-white/30 hover:text-white p-4 rounded-full hover:bg-white/10 transition-all z-50 ${currentStoryIndex === 0 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
                 disabled={currentStoryIndex === 0}
            >
-               <ChevronLeft className="w-20 h-20" />
+               <ChevronLeft className="w-14 h-14" />
            </button>
            <button 
                 onClick={handleNext}
-                className="hidden md:flex absolute right-12 lg:right-40 text-white/40 hover:text-white p-6 rounded-full hover:bg-white/10 transition-all z-50"
+                className="hidden md:flex absolute right-8 lg:right-32 text-white/30 hover:text-white p-4 rounded-full hover:bg-white/10 transition-all z-50"
            >
-               <ChevronRight className="w-20 h-20" />
+               <ChevronRight className="w-14 h-14" />
            </button>
         </div>
       )}
