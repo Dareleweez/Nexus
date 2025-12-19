@@ -63,6 +63,51 @@ export const MOCK_USERS: User[] = [
   },
 ];
 
+export const MOCK_ADS: Post[] = [
+  {
+    id: 'ad-nexus-1',
+    user: {
+      id: 'brand-nexus',
+      name: 'Nexus Pro',
+      handle: '@nexus_official',
+      avatar: 'https://picsum.photos/id/101/150/150',
+      followers: 1000000,
+      following: 0,
+      isPremium: true
+    },
+    content: 'Upgrade to Nexus Pro and unlock the full potential of AI-powered content creation. Get 2K image generation, advanced analytics, and zero ads! ✨',
+    likes: 12400,
+    reposts: 890,
+    shares: 4500,
+    quotes: 120,
+    comments: [],
+    timestamp: 'Sponsored',
+    isSponsored: true,
+    imageUrls: ['https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800']
+  },
+  {
+    id: 'ad-gaming-1',
+    user: {
+      id: 'brand-gaming',
+      name: 'Vortex Gaming',
+      handle: '@vortex_play',
+      avatar: 'https://picsum.photos/id/201/150/150',
+      followers: 250000,
+      following: 50,
+      isPremium: true
+    },
+    content: 'The future of cloud gaming is here. Play any AAA title on any device with zero latency. Join the beta today! 🎮🔥',
+    likes: 45000,
+    reposts: 12000,
+    shares: 34000,
+    quotes: 800,
+    comments: [],
+    timestamp: 'Promoted',
+    isSponsored: true,
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+  }
+];
+
 export const MOCK_STORIES: Story[] = [
   {
     id: 's1',
@@ -70,6 +115,21 @@ export const MOCK_STORIES: Story[] = [
     imageUrl: 'https://picsum.photos/id/129/600/1000',
     timestamp: '2h ago',
     isViewed: false,
+  },
+  {
+    id: 'ad-story-1',
+    user: {
+      id: 'brand-coffee',
+      name: 'StarBrew Coffee',
+      handle: '@starbrew',
+      avatar: 'https://picsum.photos/id/225/150/150',
+      followers: 50000,
+      following: 0,
+    },
+    imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&q=80&w=800',
+    timestamp: 'Sponsored',
+    isViewed: false,
+    isSponsored: true,
   },
   {
     id: 's2',
@@ -109,27 +169,6 @@ export const MOCK_STORIES: Story[] = [
 ];
 
 export const INITIAL_POSTS: Post[] = [
-  {
-    id: 'ad1',
-    user: {
-      id: 'brand1',
-      name: 'Nexus Cloud',
-      handle: '@nexuscloud',
-      avatar: 'https://picsum.photos/id/201/150/150',
-      followers: 120000,
-      following: 10,
-      isPremium: true
-    },
-    content: 'Experience the fastest AI inference speeds in the world. Scale your social apps with Nexus Cloud infrastructure. ⚡️🚀 #CloudTech #Ad',
-    likes: 15400,
-    reposts: 2100,
-    shares: 8000,
-    quotes: 450,
-    comments: [],
-    timestamp: 'Promoted',
-    isSponsored: true,
-    imageUrls: ['https://picsum.photos/id/1/800/600']
-  },
   {
     id: 'v1',
     user: MOCK_USERS[3],

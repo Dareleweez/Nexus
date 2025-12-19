@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { Search, TrendingUp, ExternalLink, Loader2 } from 'lucide-react';
+import { Search, TrendingUp, ExternalLink, Loader2, Sparkles, Zap } from 'lucide-react';
 import { getTrendingTopics } from '../services/geminiService';
 import { TrendingTopic } from '../types';
 
@@ -34,6 +34,24 @@ const RightPanel: React.FC = () => {
           className="block w-full pl-12 pr-3 py-2.5 border border-gray-200/50 rounded-full leading-5 bg-white/50 backdrop-blur-md text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-nexus-primary focus:bg-white/80 transition-all shadow-sm"
           placeholder="Search Nexus"
         />
+      </div>
+
+      {/* Sidebar Ad Unit */}
+      <div className="mb-6 p-6 rounded-2xl bg-gradient-to-br from-nexus-primary to-nexus-accent text-white shadow-lg relative overflow-hidden group cursor-pointer">
+          <div className="absolute -right-4 -bottom-4 opacity-10 transform group-hover:scale-110 transition-transform">
+              <Zap className="w-32 h-32" />
+          </div>
+          <div className="relative z-10">
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest mb-2 opacity-80">
+                  <Sparkles className="w-3 h-3" />
+                  Sponsored
+              </div>
+              <h3 className="font-black text-lg leading-tight mb-2">Build your dreams with Nexus Pro</h3>
+              <p className="text-xs font-medium text-white/80 mb-4">Get exclusive access to the latest Gemini 3 models and advanced creation tools.</p>
+              <button className="w-full bg-white text-nexus-primary font-black py-2 rounded-xl text-xs hover:scale-105 transition-transform shadow-md">
+                  Upgrade Now
+              </button>
+          </div>
       </div>
 
       {/* Trending Box */}

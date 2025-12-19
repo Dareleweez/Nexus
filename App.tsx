@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Sidebar from './components/Sidebar.tsx';
 import CreatePost from './components/CreatePost.tsx';
 import PostCard from './components/PostCard.tsx';
@@ -16,7 +16,7 @@ import Bookmarks from './components/Bookmarks.tsx';
 import Monetization from './components/Monetization.tsx';
 import Store from './components/Store.tsx';
 import { ViewState, Post, User, Comment, Notification } from './types.ts';
-import { CURRENT_USER, INITIAL_POSTS, MOCK_USERS, MOCK_NOTIFICATIONS } from './constants.ts';
+import { CURRENT_USER, INITIAL_POSTS, MOCK_USERS, MOCK_NOTIFICATIONS, MOCK_ADS } from './constants.ts';
 import { Sparkles, Search, X } from 'lucide-react';
 
 export default function App() {
@@ -78,6 +78,20 @@ export default function App() {
   };
 
   const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
+
+  // Intersperse ads into the feed every 3 posts
+  const postsWithAds = useMemo(() => {
+    const result: Post[] = [];
+    posts.forEach((post, index) => {
+      result.push(post);
+      // Inject an ad every 3 posts for non-premium users
+      if (!currentUser?.isPremium && (index + 1) % 3 === 0) {
+        const adIndex = Math.floor(index / 3) % MOCK_ADS.length;
+        result.push(MOCK_ADS[adIndex]);
+      }
+    });
+    return result;
+  }, [posts, currentUser]);
 
   const handleLike = (postId: string) => {
     setPosts(posts.map(post => {
@@ -300,7 +314,7 @@ export default function App() {
                  )}
             </div>
 
-            {posts.map(post => (
+            {postsWithAds.map(post => (
               <PostCard 
                 key={post.id} 
                 post={post} 

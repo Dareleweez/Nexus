@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Plus, X, ChevronLeft, ChevronRight, Heart, Send } from 'lucide-react';
+import { Plus, X, ChevronLeft, ChevronRight, Heart, Send, Sparkles } from 'lucide-react';
 import { User, Story } from '../types';
 import { MOCK_STORIES } from '../constants';
 
@@ -19,14 +19,19 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const progressInterval = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // Filter ads for premium users
+  const displayedStories = currentUser.isPremium 
+    ? stories.filter(s => !s.isSponsored) 
+    : stories;
+
   const handleNext = useCallback(() => {
-    if (currentStoryIndex < stories.length - 1) {
+    if (currentStoryIndex < displayedStories.length - 1) {
       setCurrentStoryIndex(prev => prev + 1);
       setProgress(0);
     } else {
       closeViewer();
     }
-  }, [currentStoryIndex, stories.length]);
+  }, [currentStoryIndex, displayedStories.length]);
 
   const handlePrev = useCallback(() => {
     if (currentStoryIndex > 0) {
@@ -103,7 +108,8 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
   }, [viewerOpen, closeViewer]);
 
   const renderViewer = () => {
-    if (!viewerOpen || !stories[currentStoryIndex]) return null;
+    const story = displayedStories[currentStoryIndex];
+    if (!viewerOpen || !story) return null;
 
     return createPortal(
       <div 
@@ -116,12 +122,12 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
          {/* Cinematic Background Blur */}
          <div 
            className="absolute inset-0 opacity-60 scale-125 bg-cover bg-center blur-[80px] pointer-events-none"
-           style={{ backgroundImage: `url(${stories[currentStoryIndex].imageUrl})` }}
+           style={{ backgroundImage: `url(${story.imageUrl})` }}
          ></div>
 
          {/* Progress Bars Container */}
          <div className="absolute top-0 inset-x-0 z-[10010] px-3 pt-4 flex gap-1.5">
-              {stories.map((_, idx) => (
+              {displayedStories.map((_, idx) => (
                   <div key={idx} className="h-[2px] flex-1 bg-white/20 rounded-full overflow-hidden">
                       <div 
                           className={`h-full bg-white transition-all ease-linear ${
@@ -141,16 +147,17 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
          <div className="absolute top-8 inset-x-0 z-[10010] px-4 flex items-center justify-between max-w-lg mx-auto w-full">
               <div className="flex items-center gap-3">
                   <img 
-                      src={stories[currentStoryIndex].user.avatar} 
+                      src={story.user.avatar} 
                       className="w-9 h-9 rounded-full border border-white/40 shadow-xl object-cover" 
                       alt=""
                   />
                   <div className="flex flex-col">
-                      <span className="text-white text-sm font-bold shadow-black drop-shadow-md">
-                          {stories[currentStoryIndex].user.name}
+                      <span className="text-white text-sm font-bold shadow-black drop-shadow-md flex items-center gap-1.5">
+                          {story.user.name}
+                          {story.isSponsored && <span className="bg-white/20 px-1.5 py-0.5 rounded text-[10px] uppercase font-black tracking-tighter">Ad</span>}
                       </span>
                       <span className="text-white/70 text-[11px] font-medium">
-                          {stories[currentStoryIndex].timestamp}
+                          {story.timestamp}
                       </span>
                   </div>
               </div>
@@ -187,7 +194,7 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
               {/* Story Media */}
               <div className="relative z-[10006] flex items-center justify-center w-full h-full p-2">
                 <img 
-                    src={stories[currentStoryIndex].imageUrl} 
+                    src={story.imageUrl} 
                     alt="Story Content" 
                     className="max-h-[85vh] max-w-full md:max-w-[450px] object-contain rounded-xl shadow-2xl transition-transform duration-500 scale-100 border border-white/10"
                 />
@@ -197,23 +204,32 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
          {/* Bottom Action Bar */}
          <div className="absolute bottom-0 inset-x-0 z-[10010] p-6 bg-gradient-to-t from-black/60 to-transparent">
               <div className="max-w-md mx-auto flex items-center gap-4">
-                  <div className="flex-1 bg-white/10 border border-white/20 rounded-full px-5 py-3.5 backdrop-blur-2xl transition-all hover:bg-white/15">
-                      <input 
-                          type="text" 
-                          placeholder={`Reply to ${stories[currentStoryIndex].user.name.split(' ')[0]}...`} 
-                          className="w-full bg-transparent text-white placeholder-white/50 focus:outline-none text-sm font-medium"
-                          onClick={(e) => { e.stopPropagation(); setIsPaused(true); }}
-                          onBlur={() => setIsPaused(false)}
-                      />
-                  </div>
-                  <div className="flex items-center gap-3">
-                      <button className="text-white hover:text-pink-400 transition-colors p-1">
-                          <Heart className="w-7 h-7" />
+                  {story.isSponsored ? (
+                      <button className="w-full bg-white text-black font-black py-4 rounded-full shadow-xl hover:scale-105 transition-transform flex items-center justify-center gap-2">
+                          Learn More
+                          <ChevronRight className="w-5 h-5" />
                       </button>
-                      <button className="text-white hover:text-nexus-primary transition-colors p-1">
-                          <Send className="w-7 h-7" />
-                      </button>
-                  </div>
+                  ) : (
+                    <>
+                        <div className="flex-1 bg-white/10 border border-white/20 rounded-full px-5 py-3.5 backdrop-blur-2xl transition-all hover:bg-white/15">
+                            <input 
+                                type="text" 
+                                placeholder={`Reply to ${story.user.name.split(' ')[0]}...`} 
+                                className="w-full bg-transparent text-white placeholder-white/50 focus:outline-none text-sm font-medium"
+                                onClick={(e) => { e.stopPropagation(); setIsPaused(true); }}
+                                onBlur={() => setIsPaused(false)}
+                            />
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <button className="text-white hover:text-pink-400 transition-colors p-1">
+                                <Heart className="w-7 h-7" />
+                            </button>
+                            <button className="text-white hover:text-nexus-primary transition-colors p-1">
+                                <Send className="w-7 h-7" />
+                            </button>
+                        </div>
+                    </>
+                  )}
               </div>
          </div>
       </div>,
@@ -249,7 +265,7 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
         </div>
 
         {/* Stories List */}
-        {stories.map((story, index) => (
+        {displayedStories.map((story, index) => (
           <div 
             key={story.id} 
             className="flex flex-col items-center gap-1.5 cursor-pointer group"
@@ -257,9 +273,11 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
           >
             <div 
               className={`w-[72px] h-[72px] rounded-full p-[3px] transition-all duration-300 transform group-hover:scale-105 ${
-                story.isViewed 
-                  ? 'bg-gray-200 dark:bg-gray-800' 
-                  : 'bg-gradient-to-tr from-nexus-primary via-nexus-accent to-pink-500'
+                story.isSponsored
+                  ? 'bg-nexus-primary shadow-lg shadow-nexus-primary/20'
+                  : story.isViewed 
+                    ? 'bg-gray-200 dark:bg-gray-800' 
+                    : 'bg-gradient-to-tr from-nexus-primary via-nexus-accent to-pink-500'
               }`}
             >
               <div className="w-full h-full rounded-full bg-white dark:bg-nexus-900 p-[2px]">
@@ -269,9 +287,14 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
                     className="w-full h-full rounded-full object-cover border border-gray-100 dark:border-gray-800" 
                 />
               </div>
+              {story.isSponsored && (
+                  <div className="absolute -top-1 -right-1 bg-nexus-primary text-white p-1 rounded-full border border-white dark:border-nexus-900 shadow-sm animate-pulse">
+                    <Sparkles className="w-3 h-3" />
+                  </div>
+              )}
             </div>
-            <span className="text-[11px] font-semibold text-gray-900 dark:text-gray-200 max-w-[72px] truncate">
-              {story.user.name.split(' ')[0]}
+            <span className={`text-[11px] font-semibold max-w-[72px] truncate ${story.isSponsored ? 'text-nexus-primary font-black' : 'text-gray-900 dark:text-gray-200'}`}>
+              {story.isSponsored ? 'Ad' : story.user.name.split(' ')[0]}
             </span>
           </div>
         ))}

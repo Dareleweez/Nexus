@@ -52,6 +52,7 @@ export interface Story {
   imageUrl: string;
   timestamp: string;
   isViewed?: boolean;
+  isSponsored?: boolean;
 }
 
 export interface TrendingTopic {
@@ -59,6 +60,7 @@ export interface TrendingTopic {
   url: string;
   snippet?: string;
   source?: string;
+  isPromoted?: boolean;
 }
 
 export interface Message {

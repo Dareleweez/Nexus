@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Post, User, Comment } from '../types.ts';
-import { Heart, MessageCircle, Send, MoreHorizontal, Pencil, Trash2, Eye, ChevronDown, ChevronUp, Repeat2, Quote, Bookmark, Link, Share2, Mail, X, Coins, Lock, BadgeCheck, Sparkles } from 'lucide-react';
+import { Heart, MessageCircle, Send, MoreHorizontal, Pencil, Trash2, Eye, ChevronDown, ChevronUp, Repeat2, Quote, Bookmark, Link, Share2, Mail, X, Coins, Lock, BadgeCheck, Sparkles, ExternalLink } from 'lucide-react';
 import { CURRENT_USER, MOCK_USERS } from '../constants.ts';
 
 interface CommentItemProps {
@@ -479,7 +479,7 @@ const PostCard: React.FC<PostCardProps> = ({
   };
 
   return (
-    <div className={`border-b border-gray-200 dark:border-gray-800 p-4 transition-all duration-300 ${!isDetailView && !isNested ? 'hover:bg-gray-50/50 dark:hover:bg-nexus-800/20' : ''} ${isNested ? 'border border-gray-200 dark:border-gray-700 rounded-xl mt-3 p-3 bg-white dark:bg-nexus-800 hover:bg-gray-50/50 dark:hover:bg-nexus-700/50' : ''} ${displayPost.isSponsored ? 'bg-nexus-primary/[0.02]' : ''}`}>
+    <div className={`border-b border-gray-200 dark:border-gray-800 p-4 transition-all duration-300 ${!isDetailView && !isNested ? 'hover:bg-gray-50/50 dark:hover:bg-nexus-800/20' : ''} ${isNested ? 'border border-gray-200 dark:border-gray-700 rounded-xl mt-3 p-3 bg-white dark:bg-nexus-800 hover:bg-gray-50/50 dark:hover:bg-nexus-700/50' : ''} ${displayPost.isSponsored ? 'bg-nexus-primary/[0.04]' : ''}`}>
       {isActuallyARepost && !isNested && (
         <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs font-bold mb-2">
             <Repeat2 className="w-3 h-3 text-green-600" />
@@ -490,7 +490,7 @@ const PostCard: React.FC<PostCardProps> = ({
       {displayPost.isSponsored && !isNested && (
         <div className="flex items-center gap-1.5 text-nexus-primary text-[11px] font-black uppercase tracking-wider mb-2 ml-1">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Promoted</span>
+            <span>Promoted Content</span>
         </div>
       )}
       
@@ -511,7 +511,6 @@ const PostCard: React.FC<PostCardProps> = ({
                         <span onClick={handleUserClick} className="font-bold truncate text-gray-900 dark:text-gray-100 cursor-pointer hover:underline text-sm md:text-base leading-none">
                           {displayPost.user.name}
                         </span>
-                        {/* Fix: Wrapped icons in a span with title to resolve TS error with Lucide icons */}
                         {displayPost.user.isPremium && <span title="Nexus Premium"><BadgeCheck className="w-4 h-4 text-nexus-primary shrink-0" /></span>}
                         {displayPost.user.isPro && <span title="Nexus Pro"><Sparkles className="w-4 h-4 text-nexus-accent shrink-0" /></span>}
                       </div>
@@ -563,6 +562,14 @@ const PostCard: React.FC<PostCardProps> = ({
           )}
 
           {!isEditing && renderMedia()}
+
+          {/* Ad Call to Action */}
+          {displayPost.isSponsored && !isNested && !isEditing && (
+            <button className="mt-4 w-full bg-white dark:bg-nexus-800 border-2 border-nexus-primary/30 text-nexus-primary font-black py-3 rounded-2xl hover:bg-nexus-primary hover:text-white transition-all flex items-center justify-center gap-2 shadow-sm group">
+                Learn More
+                <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </button>
+          )}
 
           {post.quotedPost && !isNested && (
             <PostCard 
