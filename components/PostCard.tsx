@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Post, User, Comment } from '../types.ts';
 import { Heart, MessageCircle, Send, MoreHorizontal, Pencil, Trash2, Eye, ChevronDown, ChevronUp, Repeat2, Quote, Bookmark } from 'lucide-react';
-import { CURRENT_USER } from '../constants.ts';
+import { CURRENT_USER, MOCK_USERS } from '../constants.ts';
 
 interface CommentItemProps {
   comment: Comment;
@@ -242,13 +242,14 @@ const PostCard: React.FC<PostCardProps> = ({
   const [replyingTo, setReplyingTo] = useState<Comment | null>(null);
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editCommentText, setEditCommentText] = useState('');
-  const [showLikePulse, setShowLikePulse] = useState(false);
-  const [showBookmarkPulse, setShowBookmarkPulse] = useState(false);
   
   const commentInputRef = useRef<HTMLTextAreaElement>(null);
   const repostMenuRef = useRef<HTMLDivElement>(null);
 
   const isOwner = post.user.id === currentUser.id;
+
+  // Use a user from Nexus for the "Liked by" section
+  const primaryLiker = MOCK_USERS[0];
 
   useEffect(() => { setLikeCount(post.likes); }, [post.likes]);
   useEffect(() => { setRepostCount(post.reposts); }, [post.reposts]);
@@ -295,16 +296,12 @@ const PostCard: React.FC<PostCardProps> = ({
          setReaction('❤️');
          setLikeCount(prev => prev + 1);
          onLike(post.id);
-         setShowLikePulse(true);
-         setTimeout(() => setShowLikePulse(false), 500);
      }
   };
 
   const handleBookmarkAction = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsBookmarked(!isBookmarked);
-    setShowBookmarkPulse(true);
-    setTimeout(() => setShowBookmarkPulse(false), 500);
     onBookmark(post.id);
   };
 
@@ -568,13 +565,13 @@ const PostCard: React.FC<PostCardProps> = ({
                 </button>
               </div>
 
-              {/* Liked by Section - Matched to Image */}
+              {/* Dynamic Liked by Section - Uses user from Nexus */}
               <div className="mt-4 flex items-center gap-2 px-1">
                 <div className="flex -space-x-1.5 overflow-hidden">
-                    <img className="inline-block h-5 w-5 rounded-full ring-2 ring-white dark:ring-nexus-900" src="https://picsum.photos/id/65/50/50" alt="" />
+                    <img className="inline-block h-5 w-5 rounded-full ring-2 ring-white dark:ring-nexus-900 object-cover" src={primaryLiker.avatar} alt={primaryLiker.name} />
                 </div>
                 <div className="text-[15px] text-gray-900 dark:text-gray-100">
-                    Liked by <span className="font-bold hover:underline cursor-pointer">lyricstrybe</span> and <span className="font-bold hover:underline cursor-pointer">others</span>
+                    Liked by <span className="font-bold hover:underline cursor-pointer" onClick={() => onUserClick(primaryLiker)}>{primaryLiker.name}</span> and <span className="font-bold hover:underline cursor-pointer">others</span>
                 </div>
               </div>
             </>
