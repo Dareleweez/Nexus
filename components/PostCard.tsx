@@ -516,66 +516,66 @@ const PostCard: React.FC<PostCardProps> = ({
           )}
 
           {!isEditing && !isNested && (
-              <div className="flex justify-between mt-4 text-gray-500 dark:text-gray-400 max-w-lg items-center px-1">
+              <div className="flex justify-between mt-6 text-gray-500 dark:text-gray-400 max-w-xl items-center px-1">
                 {/* LIKE */}
                 <button 
                     onClick={handleDefaultLike} 
-                    className={`flex items-center gap-2 group transition-all duration-300 p-1 ${reaction ? 'text-pink-600' : 'hover:text-pink-600'}`}
+                    className={`flex items-center gap-3 group transition-all duration-300 p-1 ${reaction ? 'text-pink-600' : 'hover:text-pink-600'}`}
                 >
-                    <div className={`p-2 rounded-full transition-all duration-300 ${reaction ? 'bg-pink-600/5' : 'group-hover:bg-pink-600/10'} flex items-center justify-center`}>
+                    <div className={`p-2.5 rounded-full transition-all duration-300 ${reaction ? 'bg-pink-600/10' : 'group-hover:bg-pink-600/10'} flex items-center justify-center`}>
                         {reaction ? (
-                            <span className={`text-lg transform transition-transform duration-300 ${showLikePulse ? 'scale-150 rotate-12' : 'scale-100'}`}>{reaction}</span>
+                            <span className={`text-2xl transform transition-transform duration-300 ${showLikePulse ? 'scale-150 rotate-12' : 'scale-100'}`}>{reaction}</span>
                         ) : (
-                            <Heart className={`w-5 h-5 ${showLikePulse ? 'fill-current scale-150' : ''}`} />
+                            <Heart className={`w-6 h-6 ${showLikePulse ? 'fill-current scale-150' : ''}`} />
                         )}
                     </div>
-                    <span className={`text-sm font-bold transition-all duration-300 ${showLikePulse ? 'scale-110 text-pink-600' : ''}`}>{likeCount || ''}</span>
+                    <span className={`text-[15px] font-bold transition-all duration-300 ${showLikePulse ? 'scale-125 text-pink-600' : ''}`}>{likeCount || ''}</span>
                 </button>
 
                 {/* REPOST */}
                 <div className="relative" ref={repostMenuRef}>
                     <button 
                         onClick={(e) => { e.stopPropagation(); setShowRepostMenu(!showRepostMenu); }}
-                        className={`flex items-center gap-2 group transition-all duration-200 p-1 ${post.isReposted ? 'text-green-600' : 'hover:text-green-600'}`}
+                        className={`flex items-center gap-3 group transition-all duration-200 p-1 ${post.isReposted ? 'text-green-600' : 'hover:text-green-600'}`}
                     >
-                        <div className={`p-2 rounded-full ${post.isReposted ? 'bg-green-600/10' : 'group-hover:bg-green-600/10'}`}>
-                            <Repeat2 className={`w-5 h-5 ${post.isReposted ? 'scale-110' : ''}`} />
+                        <div className={`p-2.5 rounded-full ${post.isReposted ? 'bg-green-600/15' : 'group-hover:bg-green-600/10'}`}>
+                            <Repeat2 className={`w-6 h-6 ${post.isReposted ? 'scale-110' : ''}`} />
                         </div>
-                        <span className="text-sm font-medium">{repostCount || ''}</span>
+                        <span className="text-[15px] font-bold">{repostCount || ''}</span>
                     </button>
                     {showRepostMenu && (
-                        <div className="absolute left-0 bottom-full mb-2 w-40 bg-white dark:bg-nexus-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 py-1.5 z-40 animate-in fade-in zoom-in duration-150">
-                            <button onClick={handleRepostAction} className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-2 transition-colors">
-                                <Repeat2 className="w-4 h-4" /> Repost
+                        <div className="absolute left-0 bottom-full mb-2 w-48 bg-white dark:bg-nexus-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 py-1.5 z-40 animate-in fade-in zoom-in duration-150">
+                            <button onClick={handleRepostAction} className="w-full text-left px-4 py-3 text-[15px] text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-3 transition-colors">
+                                <Repeat2 className="w-5 h-5" /> Repost
                             </button>
-                            <button onClick={handleQuoteAction} className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-2 transition-colors">
-                                <Quote className="w-4 h-4" /> Quote Post
+                            <button onClick={handleQuoteAction} className="w-full text-left px-4 py-3 text-[15px] text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-3 transition-colors">
+                                <Quote className="w-5 h-5" /> Quote Post
                             </button>
                         </div>
                     )}
                 </div>
 
                 {/* COMMENT */}
-                <button onClick={() => setShowComments(!showComments)} className={`flex items-center gap-2 group transition-all duration-200 p-1 ${showComments ? 'text-nexus-primary' : 'hover:text-nexus-primary'}`}>
-                    <div className={`relative p-2 rounded-full ${showComments ? 'bg-nexus-primary/10' : 'group-hover:bg-nexus-primary/10'}`}>
-                        <MessageCircle className="w-5 h-5" />
+                <button onClick={() => setShowComments(!showComments)} className={`flex items-center gap-3 group transition-all duration-200 p-1 ${showComments ? 'text-nexus-primary' : 'hover:text-nexus-primary'}`}>
+                    <div className={`relative p-2.5 rounded-full ${showComments ? 'bg-nexus-primary/15' : 'group-hover:bg-nexus-primary/10'}`}>
+                        <MessageCircle className="w-6 h-6" />
                     </div>
-                    <span className="text-sm font-medium">{comments.length || ''}</span>
+                    <span className="text-[15px] font-bold">{comments.length || ''}</span>
                 </button>
                 
                 {/* SHARE */}
-                <button className="flex items-center gap-2 group hover:text-sky-500 transition-colors p-1">
-                    <div className="p-2 rounded-full group-hover:bg-sky-500/10">
-                        <Share2 className="w-5 h-5" />
+                <button className="flex items-center gap-3 group hover:text-sky-500 transition-colors p-1">
+                    <div className="p-2.5 rounded-full group-hover:bg-sky-500/10">
+                        <Share2 className="w-6 h-6" />
                     </div>
                 </button>
 
                 {/* BOOKMARK */}
                 <button 
                     onClick={handleBookmarkAction} 
-                    className={`p-2 rounded-full transition-all duration-300 ${isBookmarked ? 'text-nexus-primary bg-nexus-primary/10' : 'hover:text-nexus-primary hover:bg-nexus-primary/10'}`}
+                    className={`p-2.5 rounded-full transition-all duration-300 ${isBookmarked ? 'text-nexus-primary bg-nexus-primary/15' : 'hover:text-nexus-primary hover:bg-nexus-primary/10'}`}
                 >
-                    <Bookmark className={`w-5 h-5 transition-transform duration-300 ${showBookmarkPulse ? 'scale-125' : 'scale-100'} ${isBookmarked ? 'fill-current' : ''}`} />
+                    <Bookmark className={`w-6 h-6 transition-transform duration-300 ${showBookmarkPulse ? 'scale-125' : 'scale-100'} ${isBookmarked ? 'fill-current' : ''}`} />
                 </button>
             </div>
           )}
