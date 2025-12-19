@@ -15,7 +15,7 @@ import MobileMenu from './components/MobileMenu.tsx';
 import Bookmarks from './components/Bookmarks.tsx';
 import { ViewState, Post, User, Comment, Notification } from './types.ts';
 import { CURRENT_USER, INITIAL_POSTS, MOCK_USERS, MOCK_NOTIFICATIONS } from './constants.ts';
-import { Sparkles, ArrowUp, Search, X } from 'lucide-react';
+import { Sparkles, Search, X } from 'lucide-react';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
@@ -32,7 +32,6 @@ export default function App() {
   const [currentView, setCurrentView] = useState<ViewState>('home');
   const [posts, setPosts] = useState<Post[]>(INITIAL_POSTS);
   const [notifications, setNotifications] = useState<Notification[]>(MOCK_NOTIFICATIONS);
-  const [showScrollTop, setShowScrollTop] = useState(false);
   const [showHeader, setShowHeader] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [viewingUser, setViewingUser] = useState<User | null>(null);
@@ -59,7 +58,6 @@ export default function App() {
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
-      setShowScrollTop(currentY > 300);
       
       if (currentY <= 10) {
         setShowHeader(true);
@@ -427,15 +425,6 @@ export default function App() {
 
         <RightPanel />
       </div>
-
-      <button 
-        onClick={scrollToTop}
-        className={`fixed bottom-24 md:bottom-8 right-8 bg-black dark:bg-white text-white dark:text-black p-3 rounded-full shadow-lg transition-all duration-300 z-40 ${
-          showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
-        }`}
-      >
-        <ArrowUp className="w-5 h-5" />
-      </button>
 
       {isCreateModalOpen && (
         <div className="fixed inset-0 z-[60] bg-white md:bg-black/50 dark:md:bg-black/70 md:backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200 p-0 md:p-4">
