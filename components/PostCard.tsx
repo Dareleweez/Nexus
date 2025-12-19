@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Post, User, Comment } from '../types.ts';
 import { Heart, MessageCircle, Send, MoreHorizontal, Pencil, Trash2, Eye, ChevronDown, ChevronUp, Repeat2, Quote, Bookmark, Link, Share2, Mail } from 'lucide-react';
@@ -251,7 +250,6 @@ const PostCard: React.FC<PostCardProps> = ({
 
   const isOwner = post.user.id === currentUser.id;
 
-  // Stable dynamic liker selection from Nexus users based on post ID
   const primaryLiker = useMemo(() => {
     let hash = 0;
     const idStr = post.id.toString();
@@ -285,7 +283,7 @@ const PostCard: React.FC<PostCardProps> = ({
   const formatCount = (num: number) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
     if (num >= 10000) return Math.floor(num / 1000) + 'K';
-    return num.toLocaleString(); // Handles the comma like in "4,014"
+    return num.toLocaleString(); 
   };
 
   const handleRepostAction = (e: React.MouseEvent) => {
@@ -543,7 +541,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
           {!isEditing && !isNested && (
             <>
-              {/* Bold Icon Bar - COMPRESSED - Matched to provided zoom screenshot */}
+              {/* Action Buttons Bar */}
               <div className="flex justify-between mt-5 text-gray-900 dark:text-gray-100 items-center px-1">
                 <div className="flex items-center gap-4 md:gap-6">
                   {/* LIKE */}
@@ -576,7 +574,7 @@ const PostCard: React.FC<PostCardProps> = ({
                     )}
                   </div>
                   
-                  {/* SEND / SHARE - Functional per-post counter with context menu */}
+                  {/* SHARE MENU */}
                   <div className="relative" ref={shareMenuRef}>
                     <button 
                       onClick={(e) => { e.stopPropagation(); setShowShareMenu(!showShareMenu); }} 
@@ -586,15 +584,15 @@ const PostCard: React.FC<PostCardProps> = ({
                       <span className="text-[16px] font-bold tracking-tight">{formatCount(shareCount)}</span>
                     </button>
                     {showShareMenu && (
-                        <div className="absolute left-0 bottom-full mb-2 w-48 bg-white dark:bg-nexus-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 py-1.5 z-40 animate-in fade-in zoom-in duration-150">
-                            <button onClick={(e) => handleShareAction(e, 'copy')} className="w-full text-left px-4 py-3 text-[15px] text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-3 transition-colors">
-                                <Link className="w-4 h-4" /> Copy link
+                        <div className="absolute left-0 bottom-full mb-3 w-56 bg-white dark:bg-nexus-800 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.7)] border border-gray-100 dark:border-gray-700 py-2 z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                            <button onClick={(e) => handleShareAction(e, 'copy')} className="w-full text-left px-4 py-3 text-[15px] font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-4 transition-colors">
+                                <Link className="w-5 h-5 text-gray-400" /> Copy link
                             </button>
-                            <button onClick={(e) => handleShareAction(e, 'dm')} className="w-full text-left px-4 py-3 text-[15px] text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-3 transition-colors">
-                                <Mail className="w-4 h-4" /> Send via DM
+                            <button onClick={(e) => handleShareAction(e, 'dm')} className="w-full text-left px-4 py-3 text-[15px] font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-4 transition-colors">
+                                <Mail className="w-5 h-5 text-gray-400" /> Send via DM
                             </button>
-                            <button onClick={(e) => handleShareAction(e, 'ext')} className="w-full text-left px-4 py-3 text-[15px] text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-3 transition-colors">
-                                <Share2 className="w-4 h-4" /> Share to...
+                            <button onClick={(e) => handleShareAction(e, 'ext')} className="w-full text-left px-4 py-3 text-[15px] font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-4 transition-colors">
+                                <Share2 className="w-5 h-5 text-gray-400" /> Share to...
                             </button>
                         </div>
                     )}
@@ -607,7 +605,7 @@ const PostCard: React.FC<PostCardProps> = ({
                 </button>
               </div>
 
-              {/* Dynamic Liked by Section - Uses dynamic primary liker from Nexus users based on post ID */}
+              {/* Dynamic Liked by Section */}
               <div className="mt-4 flex items-center gap-2 px-1">
                 <img 
                     className="h-5 w-5 rounded-full object-cover border border-gray-100 dark:border-gray-800" 
