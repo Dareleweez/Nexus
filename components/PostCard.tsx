@@ -522,26 +522,26 @@ const PostCard: React.FC<PostCardProps> = ({
 
           {!isEditing && !isNested && (
             <>
-              {/* Bold Icon Bar - Matched to Image */}
+              {/* Bold Icon Bar - Matched to Image - COMPRESSED */}
               <div className="flex justify-between mt-5 text-gray-900 dark:text-gray-100 items-center px-1">
-                <div className="flex items-center gap-6 md:gap-8">
+                <div className="flex items-center gap-4 md:gap-6">
                   {/* LIKE */}
-                  <button onClick={handleDefaultLike} className="flex items-center gap-2 group transition-all duration-300">
-                    <Heart className={`w-[26px] h-[26px] ${reaction ? 'fill-red-500 text-red-500' : 'text-gray-900 dark:text-white'}`} strokeWidth={2.5} />
-                    <span className="text-[17px] font-bold tracking-tight">{formatCount(likeCount)}</span>
+                  <button onClick={handleDefaultLike} className="flex items-center gap-1.5 group transition-all duration-300">
+                    <Heart className={`w-[24px] h-[24px] ${reaction ? 'fill-red-500 text-red-500' : 'text-gray-900 dark:text-white'}`} strokeWidth={2.5} />
+                    <span className="text-[16px] font-bold tracking-tight">{formatCount(likeCount)}</span>
                   </button>
 
                   {/* COMMENT */}
-                  <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-2 group transition-all duration-300">
-                    <MessageCircle className="w-[26px] h-[26px] text-gray-900 dark:text-white" strokeWidth={2.5} />
-                    <span className="text-[17px] font-bold tracking-tight">{formatCount(comments.length)}</span>
+                  <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1.5 group transition-all duration-300">
+                    <MessageCircle className="w-[24px] h-[24px] text-gray-900 dark:text-white" strokeWidth={2.5} />
+                    <span className="text-[16px] font-bold tracking-tight">{formatCount(comments.length)}</span>
                   </button>
 
                   {/* REPOST */}
                   <div className="relative" ref={repostMenuRef}>
-                    <button onClick={(e) => { e.stopPropagation(); setShowRepostMenu(!showRepostMenu); }} className="flex items-center gap-2 group transition-all duration-300">
-                      <Repeat2 className={`w-[26px] h-[26px] ${post.isReposted ? 'text-green-500' : 'text-gray-900 dark:text-white'}`} strokeWidth={2.5} />
-                      <span className="text-[17px] font-bold tracking-tight">{formatCount(repostCount)}</span>
+                    <button onClick={(e) => { e.stopPropagation(); setShowRepostMenu(!showRepostMenu); }} className="flex items-center gap-1.5 group transition-all duration-300">
+                      <Repeat2 className={`w-[24px] h-[24px] ${post.isReposted ? 'text-green-500' : 'text-gray-900 dark:text-white'}`} strokeWidth={2.5} />
+                      <span className="text-[16px] font-bold tracking-tight">{formatCount(repostCount)}</span>
                     </button>
                     {showRepostMenu && (
                         <div className="absolute left-0 bottom-full mb-2 w-48 bg-white dark:bg-nexus-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 py-1.5 z-40 animate-in fade-in zoom-in duration-150">
@@ -556,15 +556,15 @@ const PostCard: React.FC<PostCardProps> = ({
                   </div>
                   
                   {/* SEND / SHARE */}
-                  <button className="flex items-center gap-2 group transition-all duration-300">
-                    <Send className="w-[24px] h-[24px] text-gray-900 dark:text-white" strokeWidth={2.5} />
-                    <span className="text-[17px] font-bold tracking-tight">4,014</span>
+                  <button className="flex items-center gap-1.5 group transition-all duration-300">
+                    <Send className="w-[22px] h-[22px] text-gray-900 dark:text-white" strokeWidth={2.5} />
+                    <span className="text-[16px] font-bold tracking-tight">4,014</span>
                   </button>
                 </div>
 
                 {/* BOOKMARK */}
                 <button onClick={handleBookmarkAction} className="transition-all duration-300">
-                  <Bookmark className={`w-[26px] h-[26px] ${isBookmarked ? 'fill-gray-900 text-gray-900 dark:fill-white dark:text-white' : 'text-gray-900 dark:text-white'}`} strokeWidth={2.5} />
+                  <Bookmark className={`w-[24px] h-[24px] ${isBookmarked ? 'fill-gray-900 text-gray-900 dark:fill-white dark:text-white' : 'text-gray-900 dark:text-white'}`} strokeWidth={2.5} />
                 </button>
               </div>
 
