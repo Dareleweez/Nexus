@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Post, User, Comment } from '../types.ts';
-import { Heart, MessageCircle, Send, MoreHorizontal, Pencil, Trash2, Eye, ChevronDown, ChevronUp, Repeat2, Quote, Bookmark, Link, Share2, Mail, X } from 'lucide-react';
+import { Heart, MessageCircle, Send, MoreHorizontal, Pencil, Trash2, Eye, ChevronDown, ChevronUp, Repeat2, Quote, Bookmark, Link, Share2, Mail, X, Coins, Lock, BadgeCheck, Sparkles } from 'lucide-react';
 import { CURRENT_USER, MOCK_USERS } from '../constants.ts';
 
 interface CommentItemProps {
@@ -78,12 +78,15 @@ const CommentItem: React.FC<CommentItemProps> = ({
                       }`}
                   >
                       <div className="flex justify-between items-baseline mb-0.5">
-                          <span 
-                              className="font-bold text-sm text-gray-900 dark:text-gray-100 cursor-pointer hover:underline"
-                              onClick={(e) => { e.stopPropagation(); onUserClick(comment.user); }}
-                          >
-                              {comment.user.name}
-                          </span>
+                          <div className="flex items-center gap-1.5 overflow-hidden">
+                              <span 
+                                  className="font-bold text-sm text-gray-900 dark:text-gray-100 cursor-pointer hover:underline truncate"
+                                  onClick={(e) => { e.stopPropagation(); onUserClick(comment.user); }}
+                              >
+                                  {comment.user.name}
+                              </span>
+                              {comment.user.isPremium && <BadgeCheck className="w-3.5 h-3.5 text-nexus-primary shrink-0" />}
+                          </div>
                           <div className="flex items-center gap-2">
                               {showHighlight && (
                                   <span className="text-[10px] font-bold text-nexus-primary bg-white/50 dark:bg-nexus-900/50 px-1.5 rounded-full animate-pulse">New</span>
@@ -232,6 +235,7 @@ const PostCard: React.FC<PostCardProps> = ({
   const [showMenu, setShowMenu] = useState(false);
   const [showRepostMenu, setShowRepostMenu] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
+  const [showTipMenu, setShowTipMenu] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(post.content);
   
@@ -248,6 +252,7 @@ const PostCard: React.FC<PostCardProps> = ({
   const commentInputRef = useRef<HTMLTextAreaElement>(null);
   const repostMenuRef = useRef<HTMLDivElement>(null);
   const shareModalRef = useRef<HTMLDivElement>(null);
+  const tipModalRef = useRef<HTMLDivElement>(null);
 
   const isOwner = post.user.id === currentUser.id;
 
@@ -276,12 +281,15 @@ const PostCard: React.FC<PostCardProps> = ({
         if (shareModalRef.current && !shareModalRef.current.contains(event.target as Node)) {
             setShowShareMenu(false);
         }
+        if (tipModalRef.current && !tipModalRef.current.contains(event.target as Node)) {
+            setShowTipMenu(false);
+        }
     };
-    if (showShareMenu || showRepostMenu) {
+    if (showShareMenu || showRepostMenu || showTipMenu) {
         document.addEventListener("mousedown", handleClickOutside);
     }
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showShareMenu, showRepostMenu]);
+  }, [showShareMenu, showRepostMenu, showTipMenu]);
 
   const formatCount = (num: number) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -309,6 +317,12 @@ const PostCard: React.FC<PostCardProps> = ({
     }
     setShareCount(prev => prev + 1);
     setShowShareMenu(false);
+  };
+
+  const handleSendTip = (amount: number) => {
+      // Simulate sending tip
+      alert(`Sent ${amount} Nexus Gold to ${post.user.name}!`);
+      setShowTipMenu(false);
   };
 
   const handleDefaultLike = (e: React.MouseEvent) => {
@@ -404,6 +418,26 @@ const PostCard: React.FC<PostCardProps> = ({
   const isActuallyARepost = !!post.repostedFrom;
 
   const renderMedia = () => {
+    if (displayPost.isLocked) {
+        return (
+            <div className="mt-3 relative rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-nexus-800 h-64 flex flex-col items-center justify-center p-8 text-center gap-4">
+                <div className="p-4 bg-nexus-primary/10 rounded-full">
+                    <Lock className="w-10 h-10 text-nexus-primary" />
+                </div>
+                <div>
+                    <h4 className="font-bold text-lg">Exclusive Content</h4>
+                    <p className="text-sm text-gray-500">Subscribe to {displayPost.user.name} to unlock this post and more exclusive content.</p>
+                </div>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); onUserClick(displayPost.user); }}
+                  className="bg-nexus-primary text-white font-bold py-2 px-6 rounded-full hover:bg-nexus-primary/90 transition-all shadow-sm"
+                >
+                    Subscribe
+                </button>
+            </div>
+        );
+    }
+
     if (displayPost.videoUrl) {
       return (
         <div className={`mt-3 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-neutral-900 shadow-sm flex justify-center items-center group/media relative h-[500px] w-full mx-auto`}>
@@ -435,18 +469,6 @@ const PostCard: React.FC<PostCardProps> = ({
       );
     }
 
-    if (count === 3) {
-      return (
-        <div className="mt-3 grid grid-cols-2 gap-1 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 h-64 sm:h-96">
-          <img src={images[0]} alt="Post image 1" className="w-full h-full object-cover" />
-          <div className="grid grid-rows-2 gap-1 h-full">
-            <img src={images[1]} alt="Post image 2" className="w-full h-full object-cover" />
-            <img src={images[2]} alt="Post image 3" className="w-full h-full object-cover" />
-          </div>
-        </div>
-      );
-    }
-
     return (
       <div className="mt-3 grid grid-cols-2 grid-rows-2 gap-1 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 h-64 sm:h-96">
         {images.slice(0, 4).map((img, i) => (
@@ -457,11 +479,18 @@ const PostCard: React.FC<PostCardProps> = ({
   };
 
   return (
-    <div className={`border-b border-gray-200 dark:border-gray-800 p-4 transition-all duration-300 ${!isDetailView && !isNested ? 'hover:bg-gray-50/50 dark:hover:bg-nexus-800/20' : ''} ${isNested ? 'border border-gray-200 dark:border-gray-700 rounded-xl mt-3 p-3 bg-white dark:bg-nexus-800 hover:bg-gray-50/50 dark:hover:bg-nexus-700/50' : ''}`}>
+    <div className={`border-b border-gray-200 dark:border-gray-800 p-4 transition-all duration-300 ${!isDetailView && !isNested ? 'hover:bg-gray-50/50 dark:hover:bg-nexus-800/20' : ''} ${isNested ? 'border border-gray-200 dark:border-gray-700 rounded-xl mt-3 p-3 bg-white dark:bg-nexus-800 hover:bg-gray-50/50 dark:hover:bg-nexus-700/50' : ''} ${displayPost.isSponsored ? 'bg-nexus-primary/[0.02]' : ''}`}>
       {isActuallyARepost && !isNested && (
         <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs font-bold mb-2">
             <Repeat2 className="w-3 h-3 text-green-600" />
             <span>{post.user.name} reposted</span>
+        </div>
+      )}
+
+      {displayPost.isSponsored && !isNested && (
+        <div className="flex items-center gap-1.5 text-nexus-primary text-[11px] font-black uppercase tracking-wider mb-2 ml-1">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Promoted</span>
         </div>
       )}
       
@@ -477,10 +506,15 @@ const PostCard: React.FC<PostCardProps> = ({
                     {isNested && (
                         <img src={displayPost.user.avatar} alt={displayPost.user.name} className="w-5 h-5 rounded-full object-cover mr-1" />
                     )}
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span onClick={handleUserClick} className="font-bold truncate text-gray-900 dark:text-gray-100 cursor-pointer hover:underline text-sm md:text-base leading-none">
-                        {displayPost.user.name}
-                      </span>
+                    <div className="flex items-center gap-2 flex-wrap min-w-0">
+                      <div className="flex items-center gap-1.5 overflow-hidden">
+                        <span onClick={handleUserClick} className="font-bold truncate text-gray-900 dark:text-gray-100 cursor-pointer hover:underline text-sm md:text-base leading-none">
+                          {displayPost.user.name}
+                        </span>
+                        {/* Fix: Wrapped icons in a span with title to resolve TS error with Lucide icons */}
+                        {displayPost.user.isPremium && <span title="Nexus Premium"><BadgeCheck className="w-4 h-4 text-nexus-primary shrink-0" /></span>}
+                        {displayPost.user.isPro && <span title="Nexus Pro"><Sparkles className="w-4 h-4 text-nexus-accent shrink-0" /></span>}
+                      </div>
                       <span onClick={handleUserClick} className="text-gray-500 dark:text-gray-400 truncate cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 text-xs">
                         {displayPost.user.handle}
                       </span>
@@ -523,7 +557,7 @@ const PostCard: React.FC<PostCardProps> = ({
                  </div>
              </div>
           ) : (
-            <div className={`mt-1 whitespace-pre-wrap ${isNested ? 'text-sm' : 'text-[16px]'} leading-relaxed text-gray-900 dark:text-gray-100`}>
+            <div className={`mt-1 whitespace-pre-wrap ${isNested ? 'text-sm' : 'text-[16px]'} leading-relaxed text-gray-900 dark:text-gray-100 ${displayPost.isLocked ? 'blur-sm select-none opacity-40 pointer-events-none' : ''}`}>
                 {post.content}
             </div>
           )}
@@ -546,24 +580,24 @@ const PostCard: React.FC<PostCardProps> = ({
             <>
               {/* Action Buttons Bar */}
               <div className="flex justify-between mt-5 text-gray-900 dark:text-gray-100 items-center px-1">
-                <div className="flex items-center gap-4 md:gap-6">
+                <div className="flex items-center gap-3 md:gap-5">
                   {/* LIKE */}
                   <button onClick={handleDefaultLike} className="flex items-center gap-1.5 group transition-all duration-300">
-                    <Heart className={`w-[24px] h-[24px] ${reaction ? 'fill-red-500 text-red-500' : 'text-gray-900 dark:text-white'}`} strokeWidth={2.5} />
-                    <span className="text-[16px] font-bold tracking-tight">{formatCount(likeCount)}</span>
+                    <Heart className={`w-[22px] h-[22px] ${reaction ? 'fill-red-500 text-red-500' : 'text-gray-900 dark:text-white'}`} strokeWidth={2.5} />
+                    <span className="text-[14px] font-bold tracking-tight">{formatCount(likeCount)}</span>
                   </button>
 
                   {/* COMMENT */}
                   <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1.5 group transition-all duration-300">
-                    <MessageCircle className="w-[24px] h-[24px] text-gray-900 dark:text-white" strokeWidth={2.5} />
-                    <span className="text-[16px] font-bold tracking-tight">{formatCount(comments.length)}</span>
+                    <MessageCircle className="w-[22px] h-[22px] text-gray-900 dark:text-white" strokeWidth={2.5} />
+                    <span className="text-[14px] font-bold tracking-tight">{formatCount(comments.length)}</span>
                   </button>
 
                   {/* REPOST */}
                   <div className="relative" ref={repostMenuRef}>
                     <button onClick={(e) => { e.stopPropagation(); setShowRepostMenu(!showRepostMenu); }} className="flex items-center gap-1.5 group transition-all duration-300">
-                      <Repeat2 className={`w-[24px] h-[24px] ${post.isReposted ? 'text-green-500' : 'text-gray-900 dark:text-white'}`} strokeWidth={2.5} />
-                      <span className="text-[16px] font-bold tracking-tight">{formatCount(repostCount)}</span>
+                      <Repeat2 className={`w-[22px] h-[22px] ${post.isReposted ? 'text-green-500' : 'text-gray-900 dark:text-white'}`} strokeWidth={2.5} />
+                      <span className="text-[14px] font-bold tracking-tight">{formatCount(repostCount)}</span>
                     </button>
                     {showRepostMenu && (
                         <div className="absolute left-0 bottom-full mb-2 w-48 bg-white dark:bg-nexus-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 py-1.5 z-40 animate-in fade-in zoom-in duration-150">
@@ -576,22 +610,54 @@ const PostCard: React.FC<PostCardProps> = ({
                         </div>
                     )}
                   </div>
+
+                  {/* TIP (Nexus Gold) */}
+                  <div className="relative" ref={tipModalRef}>
+                    <button 
+                        onClick={(e) => { e.stopPropagation(); setShowTipMenu(!showTipMenu); }}
+                        className="flex items-center gap-1.5 text-nexus-accent hover:bg-nexus-accent/10 p-1.5 rounded-full transition-all"
+                        title="Tip with Nexus Gold"
+                    >
+                        <Coins className="w-[22px] h-[22px]" strokeWidth={2.5} />
+                    </button>
+                    {showTipMenu && (
+                        <div className="absolute left-0 bottom-full mb-3 w-64 bg-white dark:bg-nexus-800 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.3)] border border-gray-100 dark:border-gray-700 p-4 z-50 animate-in fade-in slide-in-from-bottom-4">
+                            <h4 className="font-black text-lg mb-3 flex items-center gap-2">
+                                <Coins className="w-5 h-5 text-nexus-accent" />
+                                Send Tip
+                            </h4>
+                            <div className="grid grid-cols-2 gap-2 mb-4">
+                                {[10, 50, 100, 500].map(amt => (
+                                    <button 
+                                        key={amt}
+                                        onClick={() => handleSendTip(amt)}
+                                        className="py-2.5 rounded-2xl bg-gray-50 dark:bg-nexus-900 border border-gray-100 dark:border-gray-700 font-bold text-sm hover:border-nexus-accent hover:bg-nexus-accent/5 transition-all flex items-center justify-center gap-1"
+                                    >
+                                        <Coins className="w-3.5 h-3.5" />
+                                        {amt}
+                                    </button>
+                                ))}
+                            </div>
+                            <p className="text-[10px] text-gray-400 text-center uppercase font-bold tracking-tighter">Your Balance: {currentUser.balance || 0} Gold</p>
+                        </div>
+                    )}
+                  </div>
                   
-                  {/* SHARE BUTTON - Triggers centered modal */}
+                  {/* SHARE BUTTON */}
                   <div className="relative">
                     <button 
                       onClick={(e) => { e.stopPropagation(); setShowShareMenu(!showShareMenu); }} 
                       className="flex items-center gap-1.5 group transition-all duration-300"
                     >
-                      <Send className="w-[22px] h-[22px] text-gray-900 dark:text-white" strokeWidth={2.5} />
-                      <span className="text-[16px] font-bold tracking-tight">{formatCount(shareCount)}</span>
+                      <Send className="w-[20px] h-[20px] text-gray-900 dark:text-white" strokeWidth={2.5} />
+                      <span className="text-[14px] font-bold tracking-tight">{formatCount(shareCount)}</span>
                     </button>
                   </div>
                 </div>
 
                 {/* BOOKMARK */}
                 <button onClick={handleBookmarkAction} className="transition-all duration-300">
-                  <Bookmark className={`w-[24px] h-[24px] ${isBookmarked ? 'fill-gray-900 text-gray-900 dark:fill-white dark:text-white' : 'text-gray-900 dark:text-white'}`} strokeWidth={2.5} />
+                  <Bookmark className={`w-[22px] h-[22px] ${isBookmarked ? 'fill-gray-900 text-gray-900 dark:fill-white dark:text-white' : 'text-gray-900 dark:text-white'}`} strokeWidth={2.5} />
                 </button>
               </div>
 
@@ -602,7 +668,7 @@ const PostCard: React.FC<PostCardProps> = ({
                     src={primaryLiker.avatar} 
                     alt={primaryLiker.name} 
                 />
-                <div className="text-[15px] text-gray-900 dark:text-gray-100">
+                <div className="text-[14px] text-gray-900 dark:text-gray-100">
                     Liked by <span className="font-bold hover:underline cursor-pointer" onClick={() => onUserClick(primaryLiker)}>{primaryLiker.name}</span> and <span className="font-bold">others</span>
                 </div>
               </div>

@@ -9,6 +9,10 @@ export const CURRENT_USER: User = {
   bio: 'Digital explorer | AI enthusiast | Building the future 🚀',
   followers: 1250,
   following: 432,
+  isPremium: true,
+  balance: 2450,
+  isMonetized: true,
+  subscriptionPrice: 4.99
 };
 
 export const MOCK_USERS: User[] = [
@@ -19,6 +23,8 @@ export const MOCK_USERS: User[] = [
     avatar: 'https://picsum.photos/id/65/150/150',
     followers: 8900,
     following: 120,
+    isPremium: true,
+    isPro: true,
   },
   {
     id: 'u3',
@@ -35,6 +41,7 @@ export const MOCK_USERS: User[] = [
     avatar: 'https://picsum.photos/id/338/150/150',
     followers: 3200,
     following: 150,
+    isPremium: true,
   },
   {
     id: 'u5',
@@ -43,6 +50,8 @@ export const MOCK_USERS: User[] = [
     avatar: 'https://picsum.photos/id/334/150/150',
     followers: 1200,
     following: 800,
+    isMonetized: true,
+    subscriptionPrice: 9.99
   },
   {
     id: 'u6',
@@ -101,6 +110,27 @@ export const MOCK_STORIES: Story[] = [
 
 export const INITIAL_POSTS: Post[] = [
   {
+    id: 'ad1',
+    user: {
+      id: 'brand1',
+      name: 'Nexus Cloud',
+      handle: '@nexuscloud',
+      avatar: 'https://picsum.photos/id/201/150/150',
+      followers: 120000,
+      following: 10,
+      isPremium: true
+    },
+    content: 'Experience the fastest AI inference speeds in the world. Scale your social apps with Nexus Cloud infrastructure. ⚡️🚀 #CloudTech #Ad',
+    likes: 15400,
+    reposts: 2100,
+    shares: 8000,
+    quotes: 450,
+    comments: [],
+    timestamp: 'Promoted',
+    isSponsored: true,
+    imageUrls: ['https://picsum.photos/id/1/800/600']
+  },
+  {
     id: 'v1',
     user: MOCK_USERS[3],
     content: 'The scale of this cinematic world is breathtaking. Loving the progress on this open-source film project! 🎬✨ #Cinematics #OpenSource',
@@ -125,6 +155,19 @@ export const INITIAL_POSTS: Post[] = [
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
   },
   {
+    id: 'ex-p1',
+    user: MOCK_USERS[4],
+    content: 'EXCLUSIVE: My raw workflow for the upcoming film. Available for subscribers only! 💎✨',
+    likes: 450,
+    reposts: 12,
+    shares: 5,
+    quotes: 2,
+    comments: [],
+    timestamp: '2h ago',
+    isExclusive: true,
+    isLocked: true
+  },
+  {
     id: 'n-p1',
     user: MOCK_USERS[4],
     content: 'Golden hour in the city is something else. 🌆 #UrbanPhotography #Sunset #Vibes',
@@ -135,30 +178,6 @@ export const INITIAL_POSTS: Post[] = [
     comments: [],
     timestamp: '1h ago',
     imageUrls: ['https://picsum.photos/id/10/800/1000'],
-  },
-  {
-    id: 'n-p2',
-    user: MOCK_USERS[0],
-    content: 'Finally upgraded my workspace. Productivity just went up by 200%! 💻✨ #DeskSetup #Workspace #TechStack',
-    likes: 1243,
-    reposts: 89,
-    shares: 456,
-    quotes: 15,
-    comments: [],
-    timestamp: '2h ago',
-    imageUrls: ['https://picsum.photos/id/20/800/1000'],
-  },
-  {
-    id: 'n-p3',
-    user: MOCK_USERS[1],
-    content: 'Morning coffee and a good book. Best way to start the day. ☕️📚 #SlowLiving #MorningRoutine',
-    likes: 892,
-    reposts: 34,
-    shares: 128,
-    quotes: 8,
-    comments: [],
-    timestamp: '3h ago',
-    imageUrls: ['https://picsum.photos/id/30/800/1000'],
   },
 ];
 
@@ -179,26 +198,28 @@ export const MOCK_CONVERSATIONS: Conversation[] = [
 
 export const MOCK_NOTIFICATIONS: Notification[] = [
   {
+    id: 'n-tip1',
+    type: 'tip',
+    user: MOCK_USERS[1],
+    timestamp: '5m ago',
+    read: false,
+    amount: 50,
+    text: 'sent you 50 Nexus Gold!'
+  },
+  {
     id: 'n1',
     type: 'like',
     user: MOCK_USERS[0],
-    post: INITIAL_POSTS[0],
-    timestamp: '2m ago',
+    post: INITIAL_POSTS[1],
+    timestamp: '10m ago',
     read: false,
   },
   {
-    id: 'n3',
-    type: 'repost',
-    user: MOCK_USERS[3],
-    post: INITIAL_POSTS[0],
-    timestamp: '1h ago',
+    id: 'n-sub1',
+    type: 'subscription',
+    user: MOCK_USERS[4],
+    timestamp: '2h ago',
     read: false,
-  },
-  {
-    id: 'n6',
-    type: 'follow',
-    user: MOCK_USERS[2],
-    timestamp: '1d ago',
-    read: true,
+    text: 'subscribed to your channel! Welcome to the inner circle. 🎉'
   }
 ];

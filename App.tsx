@@ -13,6 +13,8 @@ import Notifications from './components/Notifications.tsx';
 import PostDetail from './components/PostDetail.tsx';
 import MobileMenu from './components/MobileMenu.tsx';
 import Bookmarks from './components/Bookmarks.tsx';
+import Monetization from './components/Monetization.tsx';
+import Store from './components/Store.tsx';
 import { ViewState, Post, User, Comment, Notification } from './types.ts';
 import { CURRENT_USER, INITIAL_POSTS, MOCK_USERS, MOCK_NOTIFICATIONS } from './constants.ts';
 import { Sparkles, Search, X } from 'lucide-react';
@@ -107,7 +109,6 @@ export default function App() {
     const originalPost = posts.find(p => p.id === postId);
     if (!originalPost || !currentUser) return;
 
-    // Added missing 'shares' property to fix TypeScript error on line 110
     const newPost: Post = {
         id: `rp-${Date.now()}`,
         user: currentUser,
@@ -153,7 +154,6 @@ export default function App() {
       }
     });
 
-    // Added missing 'shares' property to fix TypeScript error on line 154
     const newPost: Post = {
       id: `p-${Date.now()}`,
       user: currentUser,
@@ -340,6 +340,10 @@ export default function App() {
                 currentUser={currentUser || undefined}
             />
         );
+      case 'monetization':
+        return currentUser ? <Monetization currentUser={currentUser} /> : null;
+      case 'store':
+        return <Store />;
       case 'profile':
         return viewingUser ? (
             <Profile 
