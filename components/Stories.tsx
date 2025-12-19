@@ -1,6 +1,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Plus, X, ChevronLeft, ChevronRight, Image as ImageIcon, Heart, Send } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { Plus, X, ChevronLeft, ChevronRight, Heart, Send } from 'lucide-react';
 import { User, Story } from '../types';
 import { MOCK_STORIES } from '../constants';
 
@@ -92,6 +93,134 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
   const handleMouseDown = () => setIsPaused(true);
   const handleMouseUp = () => setIsPaused(false);
 
+  // Esc key to close
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeViewer();
+    };
+    if (viewerOpen) window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [viewerOpen, closeViewer]);
+
+  const renderViewer = () => {
+    if (!viewerOpen || !stories[currentStoryIndex]) return null;
+
+    return createPortal(
+      <div 
+        className="fixed inset-0 z-[10000] bg-black flex flex-col items-center justify-center transition-opacity duration-300"
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onTouchStart={handleMouseDown}
+        onTouchEnd={handleMouseUp}
+      >
+         {/* Cinematic Background Blur */}
+         <div 
+           className="absolute inset-0 opacity-60 scale-125 bg-cover bg-center blur-[80px] pointer-events-none"
+           style={{ backgroundImage: `url(${stories[currentStoryIndex].imageUrl})` }}
+         ></div>
+
+         {/* Progress Bars Container */}
+         <div className="absolute top-0 inset-x-0 z-[10010] px-3 pt-4 flex gap-1.5">
+              {stories.map((_, idx) => (
+                  <div key={idx} className="h-[2px] flex-1 bg-white/20 rounded-full overflow-hidden">
+                      <div 
+                          className={`h-full bg-white transition-all ease-linear ${
+                              idx < currentStoryIndex ? 'w-full' : 
+                              idx === currentStoryIndex ? '' : 'w-0'
+                          }`}
+                          style={{ 
+                              width: idx === currentStoryIndex ? `${progress}%` : undefined,
+                              transitionDuration: isPaused ? '0ms' : '30ms'
+                          }}
+                      ></div>
+                  </div>
+              ))}
+         </div>
+
+         {/* Top Info Bar */}
+         <div className="absolute top-8 inset-x-0 z-[10010] px-4 flex items-center justify-between max-w-lg mx-auto w-full">
+              <div className="flex items-center gap-3">
+                  <img 
+                      src={stories[currentStoryIndex].user.avatar} 
+                      className="w-9 h-9 rounded-full border border-white/40 shadow-xl object-cover" 
+                      alt=""
+                  />
+                  <div className="flex flex-col">
+                      <span className="text-white text-sm font-bold shadow-black drop-shadow-md">
+                          {stories[currentStoryIndex].user.name}
+                      </span>
+                      <span className="text-white/70 text-[11px] font-medium">
+                          {stories[currentStoryIndex].timestamp}
+                      </span>
+                  </div>
+              </div>
+              <button 
+                  onClick={(e) => { e.stopPropagation(); closeViewer(); }}
+                  className="p-2 text-white/80 hover:text-white bg-black/20 hover:bg-black/40 rounded-full backdrop-blur-md transition-all"
+              >
+                  <X className="w-6 h-6" />
+              </button>
+         </div>
+
+         {/* Main Content Area */}
+         <div className="relative w-full h-full flex items-center justify-center">
+              {/* Navigation Tap Zones */}
+              <div className="absolute inset-0 flex z-[10005]">
+                  <div 
+                      className="w-1/3 h-full cursor-pointer group" 
+                      onClick={(e) => { e.stopPropagation(); handlePrev(); }}
+                  >
+                      <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <ChevronLeft className="text-white/50 w-8 h-8" />
+                      </div>
+                  </div>
+                  <div 
+                      className="w-2/3 h-full cursor-pointer group" 
+                      onClick={(e) => { e.stopPropagation(); handleNext(); }}
+                  >
+                      <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <ChevronRight className="text-white/50 w-8 h-8" />
+                      </div>
+                  </div>
+              </div>
+
+              {/* Story Media */}
+              <div className="relative z-[10006] flex items-center justify-center w-full h-full p-2">
+                <img 
+                    src={stories[currentStoryIndex].imageUrl} 
+                    alt="Story Content" 
+                    className="max-h-[85vh] max-w-full md:max-w-[450px] object-contain rounded-xl shadow-2xl transition-transform duration-500 scale-100 border border-white/10"
+                />
+              </div>
+         </div>
+
+         {/* Bottom Action Bar */}
+         <div className="absolute bottom-0 inset-x-0 z-[10010] p-6 bg-gradient-to-t from-black/60 to-transparent">
+              <div className="max-w-md mx-auto flex items-center gap-4">
+                  <div className="flex-1 bg-white/10 border border-white/20 rounded-full px-5 py-3.5 backdrop-blur-2xl transition-all hover:bg-white/15">
+                      <input 
+                          type="text" 
+                          placeholder={`Reply to ${stories[currentStoryIndex].user.name.split(' ')[0]}...`} 
+                          className="w-full bg-transparent text-white placeholder-white/50 focus:outline-none text-sm font-medium"
+                          onClick={(e) => { e.stopPropagation(); setIsPaused(true); }}
+                          onBlur={() => setIsPaused(false)}
+                      />
+                  </div>
+                  <div className="flex items-center gap-3">
+                      <button className="text-white hover:text-pink-400 transition-colors p-1">
+                          <Heart className="w-7 h-7" />
+                      </button>
+                      <button className="text-white hover:text-nexus-primary transition-colors p-1">
+                          <Send className="w-7 h-7" />
+                      </button>
+                  </div>
+              </div>
+         </div>
+      </div>,
+      document.body
+    );
+  };
+
   return (
     <div className={`${connected ? 'bg-transparent' : 'bg-white dark:bg-nexus-900 border-b border-gray-100 dark:border-gray-800'} pt-2 pb-4 overflow-x-auto no-scrollbar`}>
       <div className="flex gap-4 px-4 min-w-max items-center">
@@ -148,118 +277,7 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
         ))}
       </div>
 
-      {/* FULL SCREEN IMMERSIVE VIEWER */}
-      {viewerOpen && stories[currentStoryIndex] && (
-        <div 
-          className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center animate-in fade-in duration-300"
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          onTouchStart={handleMouseDown}
-          onTouchEnd={handleMouseUp}
-        >
-           {/* Cinematic Background Blur */}
-           <div 
-             className="absolute inset-0 opacity-60 scale-125 bg-cover bg-center blur-[80px] pointer-events-none"
-             style={{ backgroundImage: `url(${stories[currentStoryIndex].imageUrl})` }}
-           ></div>
-
-           {/* Progress Bars Container */}
-           <div className="absolute top-0 inset-x-0 z-[100] px-3 pt-4 flex gap-1.5">
-                {stories.map((_, idx) => (
-                    <div key={idx} className="h-[2px] flex-1 bg-white/20 rounded-full overflow-hidden">
-                        <div 
-                            className={`h-full bg-white transition-all ease-linear ${
-                                idx < currentStoryIndex ? 'w-full' : 
-                                idx === currentStoryIndex ? '' : 'w-0'
-                            }`}
-                            style={{ 
-                                width: idx === currentStoryIndex ? `${progress}%` : undefined,
-                                transitionDuration: isPaused ? '0ms' : '30ms'
-                            }}
-                        ></div>
-                    </div>
-                ))}
-           </div>
-
-           {/* Top Info Bar */}
-           <div className="absolute top-8 inset-x-0 z-[100] px-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <img 
-                        src={stories[currentStoryIndex].user.avatar} 
-                        className="w-9 h-9 rounded-full border border-white/40 shadow-xl" 
-                        alt=""
-                    />
-                    <div className="flex flex-col">
-                        <span className="text-white text-sm font-bold shadow-black drop-shadow-md">
-                            {stories[currentStoryIndex].user.name}
-                        </span>
-                        <span className="text-white/70 text-[11px] font-medium">
-                            {stories[currentStoryIndex].timestamp}
-                        </span>
-                    </div>
-                </div>
-                <button 
-                    onClick={(e) => { e.stopPropagation(); closeViewer(); }}
-                    className="p-2 text-white/80 hover:text-white bg-black/20 hover:bg-black/40 rounded-full backdrop-blur-md transition-all"
-                >
-                    <X className="w-6 h-6" />
-                </button>
-           </div>
-
-           {/* Main Content Area */}
-           <div className="relative w-full h-full flex items-center justify-center">
-                {/* Navigation Tap Zones */}
-                <div className="absolute inset-0 flex z-[90]">
-                    <div 
-                        className="w-1/3 h-full cursor-pointer group" 
-                        onClick={(e) => { e.stopPropagation(); handlePrev(); }}
-                    >
-                        <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <ChevronLeft className="text-white/50 w-8 h-8" />
-                        </div>
-                    </div>
-                    <div 
-                        className="w-2/3 h-full cursor-pointer group" 
-                        onClick={(e) => { e.stopPropagation(); handleNext(); }}
-                    >
-                        <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <ChevronRight className="text-white/50 w-8 h-8" />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Story Media */}
-                <img 
-                    src={stories[currentStoryIndex].imageUrl} 
-                    alt="Story Content" 
-                    className="max-h-[90vh] max-w-[95vw] md:max-w-[450px] object-contain rounded-xl shadow-2xl animate-in zoom-in-95 duration-500 border border-white/10"
-                />
-           </div>
-
-           {/* Bottom Action Bar */}
-           <div className="absolute bottom-0 inset-x-0 z-[100] p-6 bg-gradient-to-t from-black/60 to-transparent">
-                <div className="max-w-md mx-auto flex items-center gap-4">
-                    <div className="flex-1 bg-white/10 border border-white/20 rounded-full px-5 py-3.5 backdrop-blur-2xl transition-all hover:bg-white/15">
-                        <input 
-                            type="text" 
-                            placeholder={`Reply to ${stories[currentStoryIndex].user.name.split(' ')[0]}...`} 
-                            className="w-full bg-transparent text-white placeholder-white/50 focus:outline-none text-sm font-medium"
-                            onClick={(e) => { e.stopPropagation(); setIsPaused(true); }}
-                            onBlur={() => setIsPaused(false)}
-                        />
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <button className="text-white hover:text-pink-400 transition-colors p-1">
-                            <Heart className="w-7 h-7" />
-                        </button>
-                        <button className="text-white hover:text-nexus-primary transition-colors p-1">
-                            <Send className="w-7 h-7" />
-                        </button>
-                    </div>
-                </div>
-           </div>
-        </div>
-      )}
+      {renderViewer()}
     </div>
   );
 };
