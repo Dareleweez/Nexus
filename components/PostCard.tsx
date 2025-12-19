@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Post, User, Comment } from '../types.ts';
-import { Heart, MessageCircle, Send, MoreHorizontal, Pencil, Trash2, Eye, ChevronDown, ChevronUp, Repeat2, Quote, Bookmark, Link, Share2, Mail } from 'lucide-react';
+import { Heart, MessageCircle, Send, MoreHorizontal, Pencil, Trash2, Eye, ChevronDown, ChevronUp, Repeat2, Quote, Bookmark, Link, Share2, Mail, X } from 'lucide-react';
 import { CURRENT_USER, MOCK_USERS } from '../constants.ts';
 
 interface CommentItemProps {
@@ -246,7 +247,7 @@ const PostCard: React.FC<PostCardProps> = ({
   
   const commentInputRef = useRef<HTMLTextAreaElement>(null);
   const repostMenuRef = useRef<HTMLDivElement>(null);
-  const shareMenuRef = useRef<HTMLDivElement>(null);
+  const shareModalRef = useRef<HTMLDivElement>(null);
 
   const isOwner = post.user.id === currentUser.id;
 
@@ -272,13 +273,15 @@ const PostCard: React.FC<PostCardProps> = ({
         if (repostMenuRef.current && !repostMenuRef.current.contains(event.target as Node)) {
             setShowRepostMenu(false);
         }
-        if (shareMenuRef.current && !shareMenuRef.current.contains(event.target as Node)) {
+        if (shareModalRef.current && !shareModalRef.current.contains(event.target as Node)) {
             setShowShareMenu(false);
         }
     };
-    document.addEventListener("mousedown", handleClickOutside);
+    if (showShareMenu || showRepostMenu) {
+        document.addEventListener("mousedown", handleClickOutside);
+    }
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [showShareMenu, showRepostMenu]);
 
   const formatCount = (num: number) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -574,8 +577,8 @@ const PostCard: React.FC<PostCardProps> = ({
                     )}
                   </div>
                   
-                  {/* SHARE MENU */}
-                  <div className="relative" ref={shareMenuRef}>
+                  {/* SHARE BUTTON - Triggers centered modal */}
+                  <div className="relative">
                     <button 
                       onClick={(e) => { e.stopPropagation(); setShowShareMenu(!showShareMenu); }} 
                       className="flex items-center gap-1.5 group transition-all duration-300"
@@ -583,19 +586,6 @@ const PostCard: React.FC<PostCardProps> = ({
                       <Send className="w-[22px] h-[22px] text-gray-900 dark:text-white" strokeWidth={2.5} />
                       <span className="text-[16px] font-bold tracking-tight">{formatCount(shareCount)}</span>
                     </button>
-                    {showShareMenu && (
-                        <div className="absolute left-0 bottom-full mb-3 w-56 bg-white dark:bg-nexus-800 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.7)] border border-gray-100 dark:border-gray-700 py-2 z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
-                            <button onClick={(e) => handleShareAction(e, 'copy')} className="w-full text-left px-4 py-3 text-[15px] font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-4 transition-colors">
-                                <Link className="w-5 h-5 text-gray-400" /> Copy link
-                            </button>
-                            <button onClick={(e) => handleShareAction(e, 'dm')} className="w-full text-left px-4 py-3 text-[15px] font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-4 transition-colors">
-                                <Mail className="w-5 h-5 text-gray-400" /> Send via DM
-                            </button>
-                            <button onClick={(e) => handleShareAction(e, 'ext')} className="w-full text-left px-4 py-3 text-[15px] font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-4 transition-colors">
-                                <Share2 className="w-5 h-5 text-gray-400" /> Share to...
-                            </button>
-                        </div>
-                    )}
                   </div>
                 </div>
 
@@ -617,6 +607,55 @@ const PostCard: React.FC<PostCardProps> = ({
                 </div>
               </div>
             </>
+          )}
+
+          {/* Centered Share Modal */}
+          {showShareMenu && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[3px] animate-in fade-in duration-300">
+              <div 
+                ref={shareModalRef}
+                className="w-full max-w-sm bg-white dark:bg-nexus-800 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.4)] border border-gray-100 dark:border-gray-700 overflow-hidden animate-in zoom-in duration-300"
+              >
+                <div className="px-6 py-5 border-b border-gray-50 dark:border-gray-700 flex items-center justify-between bg-gray-50/50 dark:bg-nexus-900/50">
+                    <span className="font-black text-xl tracking-tight text-gray-900 dark:text-white">Share Post</span>
+                    <button onClick={() => setShowShareMenu(false)} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-nexus-700 transition-colors">
+                        <X className="w-5 h-5 text-gray-500" />
+                    </button>
+                </div>
+                
+                <div className="p-2">
+                    <button onClick={(e) => handleShareAction(e, 'copy')} className="w-full text-left px-5 py-4 text-[16px] font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-4 transition-all rounded-2xl">
+                        <div className="p-2.5 bg-gray-100 dark:bg-nexus-900 rounded-full">
+                            <Link className="w-6 h-6 text-nexus-primary" />
+                        </div>
+                        <div className="flex flex-col">
+                            <span>Copy link</span>
+                            <span className="text-xs font-normal text-gray-400">Share via clipboard</span>
+                        </div>
+                    </button>
+                    
+                    <button onClick={(e) => handleShareAction(e, 'dm')} className="w-full text-left px-5 py-4 text-[16px] font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-4 transition-all rounded-2xl">
+                        <div className="p-2.5 bg-gray-100 dark:bg-nexus-900 rounded-full">
+                            <Mail className="w-6 h-6 text-nexus-accent" />
+                        </div>
+                        <div className="flex flex-col">
+                            <span>Send via DM</span>
+                            <span className="text-xs font-normal text-gray-400">Message your friends</span>
+                        </div>
+                    </button>
+                    
+                    <button onClick={(e) => handleShareAction(e, 'ext')} className="w-full text-left px-5 py-4 text-[16px] font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-4 transition-all rounded-2xl">
+                        <div className="p-2.5 bg-gray-100 dark:bg-nexus-900 rounded-full">
+                            <Share2 className="w-6 h-6 text-green-500" />
+                        </div>
+                        <div className="flex flex-col">
+                            <span>Share to...</span>
+                            <span className="text-xs font-normal text-gray-400">Apps and social networks</span>
+                        </div>
+                    </button>
+                </div>
+              </div>
+            </div>
           )}
 
           {!isEditing && showComments && !isNested && (
