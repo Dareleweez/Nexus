@@ -517,13 +517,22 @@ const PostCard: React.FC<PostCardProps> = ({
 
           {!isEditing && !isNested && (
               <div className="flex justify-between mt-4 text-gray-500 dark:text-gray-400 max-w-lg items-center px-1">
-                <button onClick={() => setShowComments(!showComments)} className={`flex items-center gap-2 group transition-all duration-200 p-1 ${showComments ? 'text-nexus-primary' : 'hover:text-nexus-primary'}`}>
-                    <div className={`relative p-2 rounded-full ${showComments ? 'bg-nexus-primary/10' : 'group-hover:bg-nexus-primary/10'}`}>
-                        <MessageCircle className="w-5 h-5" />
+                {/* LIKE */}
+                <button 
+                    onClick={handleDefaultLike} 
+                    className={`flex items-center gap-2 group transition-all duration-300 p-1 ${reaction ? 'text-pink-600' : 'hover:text-pink-600'}`}
+                >
+                    <div className={`p-2 rounded-full transition-all duration-300 ${reaction ? 'bg-pink-600/5' : 'group-hover:bg-pink-600/10'} flex items-center justify-center`}>
+                        {reaction ? (
+                            <span className={`text-lg transform transition-transform duration-300 ${showLikePulse ? 'scale-150 rotate-12' : 'scale-100'}`}>{reaction}</span>
+                        ) : (
+                            <Heart className={`w-5 h-5 ${showLikePulse ? 'fill-current scale-150' : ''}`} />
+                        )}
                     </div>
-                    <span className="text-sm font-medium">{comments.length || ''}</span>
+                    <span className={`text-sm font-bold transition-all duration-300 ${showLikePulse ? 'scale-110 text-pink-600' : ''}`}>{likeCount || ''}</span>
                 </button>
-                
+
+                {/* REPOST */}
                 <div className="relative" ref={repostMenuRef}>
                     <button 
                         onClick={(e) => { e.stopPropagation(); setShowRepostMenu(!showRepostMenu); }}
@@ -546,31 +555,28 @@ const PostCard: React.FC<PostCardProps> = ({
                     )}
                 </div>
 
-                <button 
-                    onClick={handleDefaultLike} 
-                    className={`flex items-center gap-2 group transition-all duration-300 p-1 ${reaction ? 'text-pink-600 scale-105' : 'hover:text-pink-600'}`}
-                >
-                    <div className={`p-2 rounded-full transition-all duration-300 ${reaction ? 'bg-pink-600/5' : 'group-hover:bg-pink-600/10'} flex items-center justify-center`}>
-                        {reaction ? (
-                            <span className={`text-lg transform transition-transform duration-300 ${showLikePulse ? 'scale-150 rotate-12' : 'scale-100'}`}>{reaction}</span>
-                        ) : (
-                            <Heart className={`w-5 h-5 ${showLikePulse ? 'fill-current scale-150' : ''}`} />
-                        )}
+                {/* COMMENT */}
+                <button onClick={() => setShowComments(!showComments)} className={`flex items-center gap-2 group transition-all duration-200 p-1 ${showComments ? 'text-nexus-primary' : 'hover:text-nexus-primary'}`}>
+                    <div className={`relative p-2 rounded-full ${showComments ? 'bg-nexus-primary/10' : 'group-hover:bg-nexus-primary/10'}`}>
+                        <MessageCircle className="w-5 h-5" />
                     </div>
-                    <span className={`text-sm font-bold transition-all duration-300 ${showLikePulse ? 'scale-110 text-pink-600' : ''}`}>{likeCount || ''}</span>
+                    <span className="text-sm font-medium">{comments.length || ''}</span>
+                </button>
+                
+                {/* SHARE */}
+                <button className="flex items-center gap-2 group hover:text-sky-500 transition-colors p-1">
+                    <div className="p-2 rounded-full group-hover:bg-sky-500/10">
+                        <Share2 className="w-5 h-5" />
+                    </div>
                 </button>
 
-                <div className="flex items-center gap-2">
-                    <button 
-                        onClick={handleBookmarkAction} 
-                        className={`p-2 rounded-full transition-all duration-300 ${isBookmarked ? 'text-nexus-primary bg-nexus-primary/10' : 'hover:text-nexus-primary hover:bg-nexus-primary/10'}`}
-                    >
-                        <Bookmark className={`w-5 h-5 transition-transform duration-300 ${showBookmarkPulse ? 'scale-125' : 'scale-100'} ${isBookmarked ? 'fill-current' : ''}`} />
-                    </button>
-                    <button className="flex items-center gap-2 group hover:text-nexus-primary transition-colors p-1">
-                        <div className="p-2 rounded-full group-hover:bg-nexus-primary/10"><Share2 className="w-5 h-5" /></div>
-                    </button>
-                </div>
+                {/* BOOKMARK */}
+                <button 
+                    onClick={handleBookmarkAction} 
+                    className={`p-2 rounded-full transition-all duration-300 ${isBookmarked ? 'text-nexus-primary bg-nexus-primary/10' : 'hover:text-nexus-primary hover:bg-nexus-primary/10'}`}
+                >
+                    <Bookmark className={`w-5 h-5 transition-transform duration-300 ${showBookmarkPulse ? 'scale-125' : 'scale-100'} ${isBookmarked ? 'fill-current' : ''}`} />
+                </button>
             </div>
           )}
 
