@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Post, User, Comment } from '../types.ts';
-import { Heart, MessageCircle, Share2, MoreHorizontal, Pencil, Send, Trash2, X, Eye, ChevronDown, ChevronUp, Repeat2, Quote, Bookmark } from 'lucide-react';
+import { Heart, MessageCircle, Send, MoreHorizontal, Pencil, Trash2, Eye, ChevronDown, ChevronUp, Repeat2, Quote, Bookmark } from 'lucide-react';
 import { CURRENT_USER } from '../constants.ts';
 
 interface CommentItemProps {
@@ -235,7 +235,6 @@ const PostCard: React.FC<PostCardProps> = ({
   
   const [showComments, setShowComments] = useState(isDetailView);
   const [comments, setComments] = useState<Comment[]>(post.comments || []);
-  const [sortOrder, setSortOrder] = useState<'oldest' | 'newest'>('oldest');
   const [newCommentText, setNewCommentText] = useState('');
   const [newCommentId, setNewCommentId] = useState<string | null>(null);
   const [viewedCommentIds, setViewedCommentIds] = useState<Set<string>>(new Set());
@@ -266,6 +265,12 @@ const PostCard: React.FC<PostCardProps> = ({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const formatCount = (num: number) => {
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return num.toLocaleString();
+  };
 
   const handleRepostAction = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -516,32 +521,27 @@ const PostCard: React.FC<PostCardProps> = ({
           )}
 
           {!isEditing && !isNested && (
-              <div className="flex justify-between mt-6 text-gray-500 dark:text-gray-400 max-w-xl items-center px-1">
-                {/* LIKE */}
-                <button 
-                    onClick={handleDefaultLike} 
-                    className={`flex items-center gap-3 group transition-all duration-300 p-1 ${reaction ? 'text-pink-600' : 'hover:text-pink-600'}`}
-                >
-                    <div className={`p-2.5 rounded-full transition-all duration-300 ${reaction ? 'bg-pink-600/10' : 'group-hover:bg-pink-600/10'} flex items-center justify-center`}>
-                        {reaction ? (
-                            <span className={`text-2xl transform transition-transform duration-300 ${showLikePulse ? 'scale-150 rotate-12' : 'scale-100'}`}>{reaction}</span>
-                        ) : (
-                            <Heart className={`w-6 h-6 ${showLikePulse ? 'fill-current scale-150' : ''}`} />
-                        )}
-                    </div>
-                    <span className={`text-[15px] font-bold transition-all duration-300 ${showLikePulse ? 'scale-125 text-pink-600' : ''}`}>{likeCount || ''}</span>
-                </button>
+            <>
+              {/* Bold Icon Bar - Matched to Image */}
+              <div className="flex justify-between mt-5 text-gray-900 dark:text-gray-100 items-center px-1">
+                <div className="flex items-center gap-6 md:gap-8">
+                  {/* LIKE */}
+                  <button onClick={handleDefaultLike} className="flex items-center gap-2 group transition-all duration-300">
+                    <Heart className={`w-[26px] h-[26px] ${reaction ? 'fill-red-500 text-red-500' : 'text-gray-900 dark:text-white'}`} strokeWidth={2.5} />
+                    <span className="text-[17px] font-bold tracking-tight">{formatCount(likeCount)}</span>
+                  </button>
 
-                {/* REPOST */}
-                <div className="relative" ref={repostMenuRef}>
-                    <button 
-                        onClick={(e) => { e.stopPropagation(); setShowRepostMenu(!showRepostMenu); }}
-                        className={`flex items-center gap-3 group transition-all duration-200 p-1 ${post.isReposted ? 'text-green-600' : 'hover:text-green-600'}`}
-                    >
-                        <div className={`p-2.5 rounded-full ${post.isReposted ? 'bg-green-600/15' : 'group-hover:bg-green-600/10'}`}>
-                            <Repeat2 className={`w-6 h-6 ${post.isReposted ? 'scale-110' : ''}`} />
-                        </div>
-                        <span className="text-[15px] font-bold">{repostCount || ''}</span>
+                  {/* COMMENT */}
+                  <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-2 group transition-all duration-300">
+                    <MessageCircle className="w-[26px] h-[26px] text-gray-900 dark:text-white" strokeWidth={2.5} />
+                    <span className="text-[17px] font-bold tracking-tight">{formatCount(comments.length)}</span>
+                  </button>
+
+                  {/* REPOST */}
+                  <div className="relative" ref={repostMenuRef}>
+                    <button onClick={(e) => { e.stopPropagation(); setShowRepostMenu(!showRepostMenu); }} className="flex items-center gap-2 group transition-all duration-300">
+                      <Repeat2 className={`w-[26px] h-[26px] ${post.isReposted ? 'text-green-500' : 'text-gray-900 dark:text-white'}`} strokeWidth={2.5} />
+                      <span className="text-[17px] font-bold tracking-tight">{formatCount(repostCount)}</span>
                     </button>
                     {showRepostMenu && (
                         <div className="absolute left-0 bottom-full mb-2 w-48 bg-white dark:bg-nexus-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 py-1.5 z-40 animate-in fade-in zoom-in duration-150">
@@ -553,31 +553,31 @@ const PostCard: React.FC<PostCardProps> = ({
                             </button>
                         </div>
                     )}
+                  </div>
+                  
+                  {/* SEND / SHARE */}
+                  <button className="flex items-center gap-2 group transition-all duration-300">
+                    <Send className="w-[24px] h-[24px] text-gray-900 dark:text-white" strokeWidth={2.5} />
+                    <span className="text-[17px] font-bold tracking-tight">4,014</span>
+                  </button>
                 </div>
 
-                {/* COMMENT */}
-                <button onClick={() => setShowComments(!showComments)} className={`flex items-center gap-3 group transition-all duration-200 p-1 ${showComments ? 'text-nexus-primary' : 'hover:text-nexus-primary'}`}>
-                    <div className={`relative p-2.5 rounded-full ${showComments ? 'bg-nexus-primary/15' : 'group-hover:bg-nexus-primary/10'}`}>
-                        <MessageCircle className="w-6 h-6" />
-                    </div>
-                    <span className="text-[15px] font-bold">{comments.length || ''}</span>
-                </button>
-                
-                {/* SHARE */}
-                <button className="flex items-center gap-3 group hover:text-sky-500 transition-colors p-1">
-                    <div className="p-2.5 rounded-full group-hover:bg-sky-500/10">
-                        <Share2 className="w-6 h-6" />
-                    </div>
-                </button>
-
                 {/* BOOKMARK */}
-                <button 
-                    onClick={handleBookmarkAction} 
-                    className={`p-2.5 rounded-full transition-all duration-300 ${isBookmarked ? 'text-nexus-primary bg-nexus-primary/15' : 'hover:text-nexus-primary hover:bg-nexus-primary/10'}`}
-                >
-                    <Bookmark className={`w-6 h-6 transition-transform duration-300 ${showBookmarkPulse ? 'scale-125' : 'scale-100'} ${isBookmarked ? 'fill-current' : ''}`} />
+                <button onClick={handleBookmarkAction} className="transition-all duration-300">
+                  <Bookmark className={`w-[26px] h-[26px] ${isBookmarked ? 'fill-gray-900 text-gray-900 dark:fill-white dark:text-white' : 'text-gray-900 dark:text-white'}`} strokeWidth={2.5} />
                 </button>
-            </div>
+              </div>
+
+              {/* Liked by Section - Matched to Image */}
+              <div className="mt-4 flex items-center gap-2 px-1">
+                <div className="flex -space-x-1.5 overflow-hidden">
+                    <img className="inline-block h-5 w-5 rounded-full ring-2 ring-white dark:ring-nexus-900" src="https://picsum.photos/id/65/50/50" alt="" />
+                </div>
+                <div className="text-[15px] text-gray-900 dark:text-gray-100">
+                    Liked by <span className="font-bold hover:underline cursor-pointer">lyricstrybe</span> and <span className="font-bold hover:underline cursor-pointer">others</span>
+                </div>
+              </div>
+            </>
           )}
 
           {!isEditing && showComments && !isNested && (
