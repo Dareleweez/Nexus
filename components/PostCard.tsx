@@ -1,7 +1,7 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Post, User, Comment } from '../types.ts';
-import { Heart, MessageCircle, Send, MoreHorizontal, Pencil, Trash2, Eye, ChevronDown, ChevronUp, Repeat2, Quote, Bookmark } from 'lucide-react';
+import { Heart, MessageCircle, Send, MoreHorizontal, Pencil, Trash2, Eye, ChevronDown, ChevronUp, Repeat2, Quote, Bookmark, Link, Share2, Mail } from 'lucide-react';
 import { CURRENT_USER, MOCK_USERS } from '../constants.ts';
 
 interface CommentItemProps {
@@ -227,9 +227,11 @@ const PostCard: React.FC<PostCardProps> = ({
   const [reaction, setReaction] = useState<string | null>(post.isLiked ? '❤️' : null);
   const [likeCount, setLikeCount] = useState(post.likes);
   const [repostCount, setRepostCount] = useState(post.reposts);
+  const [shareCount, setShareCount] = useState(post.shares || 0);
   const [isBookmarked, setIsBookmarked] = useState(post.isBookmarked);
   const [showMenu, setShowMenu] = useState(false);
   const [showRepostMenu, setShowRepostMenu] = useState(false);
+  const [showShareMenu, setShowShareMenu] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(post.content);
   
@@ -245,23 +247,24 @@ const PostCard: React.FC<PostCardProps> = ({
   
   const commentInputRef = useRef<HTMLTextAreaElement>(null);
   const repostMenuRef = useRef<HTMLDivElement>(null);
+  const shareMenuRef = useRef<HTMLDivElement>(null);
 
   const isOwner = post.user.id === currentUser.id;
 
-  // Derive a dynamic primary liker based on the post ID to ensure diversity across the feed
-  const getPrimaryLiker = (postId: string) => {
+  // Stable dynamic liker selection from Nexus users based on post ID
+  const primaryLiker = useMemo(() => {
     let hash = 0;
-    for (let i = 0; i < postId.length; i++) {
-        hash = postId.charCodeAt(i) + ((hash << 5) - hash);
+    const idStr = post.id.toString();
+    for (let i = 0; i < idStr.length; i++) {
+        hash = idStr.charCodeAt(i) + ((hash << 5) - hash);
     }
     const index = Math.abs(hash) % MOCK_USERS.length;
     return MOCK_USERS[index];
-  };
-
-  const primaryLiker = getPrimaryLiker(post.id);
+  }, [post.id]);
 
   useEffect(() => { setLikeCount(post.likes); }, [post.likes]);
   useEffect(() => { setRepostCount(post.reposts); }, [post.reposts]);
+  useEffect(() => { setShareCount(post.shares || 0); }, [post.shares]);
   useEffect(() => { setComments(post.comments || []); }, [post.comments]);
   useEffect(() => { setReaction(post.isLiked ? '❤️' : null); }, [post.isLiked]);
   useEffect(() => { setIsBookmarked(post.isBookmarked); }, [post.isBookmarked]);
@@ -271,6 +274,9 @@ const PostCard: React.FC<PostCardProps> = ({
         if (repostMenuRef.current && !repostMenuRef.current.contains(event.target as Node)) {
             setShowRepostMenu(false);
         }
+        if (shareMenuRef.current && !shareMenuRef.current.contains(event.target as Node)) {
+            setShowShareMenu(false);
+        }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -278,8 +284,8 @@ const PostCard: React.FC<PostCardProps> = ({
 
   const formatCount = (num: number) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-    return num.toLocaleString();
+    if (num >= 10000) return Math.floor(num / 1000) + 'K';
+    return num.toLocaleString(); // Handles the comma like in "4,014"
   };
 
   const handleRepostAction = (e: React.MouseEvent) => {
@@ -293,6 +299,15 @@ const PostCard: React.FC<PostCardProps> = ({
     e.stopPropagation();
     onQuote(post);
     setShowRepostMenu(false);
+  };
+
+  const handleShareAction = (e: React.MouseEvent, type: string) => {
+    e.stopPropagation();
+    if (type === 'copy') {
+      navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
+    }
+    setShareCount(prev => prev + 1);
+    setShowShareMenu(false);
   };
 
   const handleDefaultLike = (e: React.MouseEvent) => {
@@ -528,7 +543,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
           {!isEditing && !isNested && (
             <>
-              {/* Bold Icon Bar - COMPRESSED */}
+              {/* Bold Icon Bar - COMPRESSED - Matched to provided zoom screenshot */}
               <div className="flex justify-between mt-5 text-gray-900 dark:text-gray-100 items-center px-1">
                 <div className="flex items-center gap-4 md:gap-6">
                   {/* LIKE */}
@@ -561,11 +576,29 @@ const PostCard: React.FC<PostCardProps> = ({
                     )}
                   </div>
                   
-                  {/* SEND / SHARE */}
-                  <button className="flex items-center gap-1.5 group transition-all duration-300">
-                    <Send className="w-[22px] h-[22px] text-gray-900 dark:text-white" strokeWidth={2.5} />
-                    <span className="text-[16px] font-bold tracking-tight">4,014</span>
-                  </button>
+                  {/* SEND / SHARE - Functional per-post counter with context menu */}
+                  <div className="relative" ref={shareMenuRef}>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setShowShareMenu(!showShareMenu); }} 
+                      className="flex items-center gap-1.5 group transition-all duration-300"
+                    >
+                      <Send className="w-[22px] h-[22px] text-gray-900 dark:text-white" strokeWidth={2.5} />
+                      <span className="text-[16px] font-bold tracking-tight">{formatCount(shareCount)}</span>
+                    </button>
+                    {showShareMenu && (
+                        <div className="absolute left-0 bottom-full mb-2 w-48 bg-white dark:bg-nexus-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 py-1.5 z-40 animate-in fade-in zoom-in duration-150">
+                            <button onClick={(e) => handleShareAction(e, 'copy')} className="w-full text-left px-4 py-3 text-[15px] text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-3 transition-colors">
+                                <Link className="w-4 h-4" /> Copy link
+                            </button>
+                            <button onClick={(e) => handleShareAction(e, 'dm')} className="w-full text-left px-4 py-3 text-[15px] text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-3 transition-colors">
+                                <Mail className="w-4 h-4" /> Send via DM
+                            </button>
+                            <button onClick={(e) => handleShareAction(e, 'ext')} className="w-full text-left px-4 py-3 text-[15px] text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-3 transition-colors">
+                                <Share2 className="w-4 h-4" /> Share to...
+                            </button>
+                        </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* BOOKMARK */}
@@ -574,13 +607,15 @@ const PostCard: React.FC<PostCardProps> = ({
                 </button>
               </div>
 
-              {/* Dynamic Liked by Section - Uses dynamic primary liker from Nexus */}
+              {/* Dynamic Liked by Section - Uses dynamic primary liker from Nexus users based on post ID */}
               <div className="mt-4 flex items-center gap-2 px-1">
-                <div className="flex -space-x-1.5 overflow-hidden">
-                    <img className="inline-block h-5 w-5 rounded-full ring-2 ring-white dark:ring-nexus-900 object-cover" src={primaryLiker.avatar} alt={primaryLiker.name} />
-                </div>
+                <img 
+                    className="h-5 w-5 rounded-full object-cover border border-gray-100 dark:border-gray-800" 
+                    src={primaryLiker.avatar} 
+                    alt={primaryLiker.name} 
+                />
                 <div className="text-[15px] text-gray-900 dark:text-gray-100">
-                    Liked by <span className="font-bold hover:underline cursor-pointer" onClick={() => onUserClick(primaryLiker)}>{primaryLiker.name}</span> and <span className="font-bold hover:underline cursor-pointer">others</span>
+                    Liked by <span className="font-bold hover:underline cursor-pointer" onClick={() => onUserClick(primaryLiker)}>{primaryLiker.name}</span> and <span className="font-bold">others</span>
                 </div>
               </div>
             </>

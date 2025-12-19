@@ -26,6 +26,7 @@ export interface Post {
   videoUrl?: string;
   likes: number;
   reposts: number;
+  shares: number;
   quotes: number;
   comments: Comment[];
   timestamp: string;

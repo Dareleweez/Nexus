@@ -107,12 +107,14 @@ export default function App() {
     const originalPost = posts.find(p => p.id === postId);
     if (!originalPost || !currentUser) return;
 
+    // Added missing 'shares' property to fix TypeScript error on line 110
     const newPost: Post = {
         id: `rp-${Date.now()}`,
         user: currentUser,
         content: '', 
         likes: 0,
         reposts: 0,
+        shares: 0,
         quotes: 0,
         comments: [],
         timestamp: 'Just now',
@@ -151,6 +153,7 @@ export default function App() {
       }
     });
 
+    // Added missing 'shares' property to fix TypeScript error on line 154
     const newPost: Post = {
       id: `p-${Date.now()}`,
       user: currentUser,
@@ -159,6 +162,7 @@ export default function App() {
       videoUrl,
       likes: 0,
       reposts: 0,
+      shares: 0,
       quotes: 0,
       comments: [],
       timestamp: 'Just now',
