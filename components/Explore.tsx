@@ -63,7 +63,7 @@ const Explore: React.FC = () => {
         <div className="relative group flex items-center gap-4">
             <div className="relative flex-1">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Search className="h-5 w-5 text-gray-500" />
+                    <Search className="h-6 w-6 text-nexus-primary" />
                 </div>
                 <input 
                     type="text" 

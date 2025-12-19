@@ -15,7 +15,7 @@ import MobileMenu from './components/MobileMenu.tsx';
 import Bookmarks from './components/Bookmarks.tsx';
 import { ViewState, Post, User, Comment, Notification } from './types.ts';
 import { CURRENT_USER, INITIAL_POSTS, MOCK_USERS, MOCK_NOTIFICATIONS } from './constants.ts';
-import { Sparkles, ArrowUp, Compass, X } from 'lucide-react';
+import { Sparkles, ArrowUp, Search, X } from 'lucide-react';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
@@ -269,8 +269,8 @@ export default function App() {
                         <h1 className="text-2xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-nexus-primary to-nexus-accent">NEXUS</h1>
                     </div>
                     <div className="flex items-center gap-3">
-                         <button onClick={() => handleViewChange('explore')}>
-                             <Compass className="w-6 h-6 text-gray-900 dark:text-gray-100" />
+                         <button onClick={() => handleViewChange('explore')} className="p-1">
+                             <Search className="w-7 h-7 text-nexus-primary" />
                          </button>
                          <img 
                             src={currentUser?.avatar} 
@@ -391,6 +391,11 @@ export default function App() {
     }
   };
 
+  const handleMobileCreatePost = () => {
+    setQuotingPost(null);
+    setIsCreateModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-white dark:bg-nexus-900 transition-colors duration-300">
       <div className="max-w-7xl mx-auto flex justify-center">
@@ -399,7 +404,7 @@ export default function App() {
                 <Sidebar 
                     currentView={currentView} 
                     onViewChange={handleViewChange} 
-                    onCreatePost={() => { setQuotingPost(null); setIsCreateModalOpen(true); }}
+                    onCreatePost={handleMobileCreatePost}
                     currentUser={currentUser}
                 />
             </div>
@@ -410,7 +415,7 @@ export default function App() {
                  <Sidebar 
                     currentView={currentView} 
                     onViewChange={handleViewChange} 
-                    onCreatePost={() => { setQuotingPost(null); setIsCreateModalOpen(true); }}
+                    onCreatePost={handleMobileCreatePost}
                     currentUser={currentUser}
                 />
              )}

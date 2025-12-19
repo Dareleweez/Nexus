@@ -190,7 +190,7 @@ const Messages: React.FC = () => {
       <div className="p-4 border-b border-gray-50">
         <div className="relative group">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-400" strokeWidth={1.5} />
+            <Search className="h-6 w-6 text-nexus-primary" />
           </div>
           <input
             type="text"

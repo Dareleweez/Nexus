@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Search, TrendingUp, ExternalLink, Loader2 } from 'lucide-react';
 import { getTrendingTopics } from '../services/geminiService';
@@ -25,12 +26,12 @@ const RightPanel: React.FC = () => {
     <div className="hidden lg:block w-[350px] pl-8 py-4 sticky top-0 h-screen overflow-y-auto no-scrollbar">
       {/* Search Bar */}
       <div className="relative group mb-6">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Search className="h-4 w-4 text-gray-500 group-focus-within:text-nexus-primary" />
+        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <Search className="h-5 w-5 text-nexus-primary" />
         </div>
         <input
           type="text"
-          className="block w-full pl-10 pr-3 py-2.5 border border-gray-200/50 rounded-full leading-5 bg-white/50 backdrop-blur-md text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-nexus-primary focus:bg-white/80 transition-all shadow-sm"
+          className="block w-full pl-12 pr-3 py-2.5 border border-gray-200/50 rounded-full leading-5 bg-white/50 backdrop-blur-md text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-nexus-primary focus:bg-white/80 transition-all shadow-sm"
           placeholder="Search Nexus"
         />
       </div>
