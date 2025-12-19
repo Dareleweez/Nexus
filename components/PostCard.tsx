@@ -248,8 +248,17 @@ const PostCard: React.FC<PostCardProps> = ({
 
   const isOwner = post.user.id === currentUser.id;
 
-  // Use a user from Nexus for the "Liked by" section
-  const primaryLiker = MOCK_USERS[0];
+  // Derive a dynamic primary liker based on the post ID to ensure diversity across the feed
+  const getPrimaryLiker = (postId: string) => {
+    let hash = 0;
+    for (let i = 0; i < postId.length; i++) {
+        hash = postId.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % MOCK_USERS.length;
+    return MOCK_USERS[index];
+  };
+
+  const primaryLiker = getPrimaryLiker(post.id);
 
   useEffect(() => { setLikeCount(post.likes); }, [post.likes]);
   useEffect(() => { setRepostCount(post.reposts); }, [post.reposts]);
@@ -519,7 +528,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
           {!isEditing && !isNested && (
             <>
-              {/* Bold Icon Bar - Matched to Image - COMPRESSED */}
+              {/* Bold Icon Bar - COMPRESSED */}
               <div className="flex justify-between mt-5 text-gray-900 dark:text-gray-100 items-center px-1">
                 <div className="flex items-center gap-4 md:gap-6">
                   {/* LIKE */}
@@ -565,7 +574,7 @@ const PostCard: React.FC<PostCardProps> = ({
                 </button>
               </div>
 
-              {/* Dynamic Liked by Section - Uses user from Nexus */}
+              {/* Dynamic Liked by Section - Uses dynamic primary liker from Nexus */}
               <div className="mt-4 flex items-center gap-2 px-1">
                 <div className="flex -space-x-1.5 overflow-hidden">
                     <img className="inline-block h-5 w-5 rounded-full ring-2 ring-white dark:ring-nexus-900 object-cover" src={primaryLiker.avatar} alt={primaryLiker.name} />
