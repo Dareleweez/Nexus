@@ -17,8 +17,6 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, onCreatePo
     { id: 'notifications', icon: Bell, label: 'Notifications' },
     { id: 'create', icon: Plus, label: 'Post', mobileOnly: true, isAction: true },
     { id: 'messages', icon: Mail, label: 'Messages' },
-    { id: 'monetization', icon: Wallet, label: 'Earnings' },
-    { id: 'store', icon: ShoppingBag, label: 'Store' },
     { id: 'profile', icon: UserIcon, label: 'Profile', desktopOnly: true },
     { id: 'menu', icon: Menu, label: 'Menu', mobileOnly: true },
   ];

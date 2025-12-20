@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { User, Settings, User as UserIcon, Compass, LogOut, X, ChevronRight, Bookmark, Moon, Sun, Wallet } from 'lucide-react';
+import { User, Settings, User as UserIcon, Compass, LogOut, X, ChevronRight, Bookmark, Moon, Sun } from 'lucide-react';
 import { ViewState, User as UserType } from '../types';
 
 interface MobileMenuProps {
@@ -26,11 +26,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ currentUser, onViewChange, onCl
       icon: Compass, 
       label: 'Explore', 
       onClick: () => onViewChange('explore') 
-    },
-    { 
-      icon: Wallet, 
-      label: 'Monetization', 
-      onClick: () => onViewChange('monetization') 
     },
     { 
       icon: Bookmark, 

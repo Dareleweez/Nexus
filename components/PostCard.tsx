@@ -315,6 +315,21 @@ const PostCard: React.FC<PostCardProps> = ({
     setShowRepostMenu(false);
   };
 
+  const handleQuoteAction = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onQuote(post);
+    setShowRepostMenu(false);
+  };
+
+  const handleShareAction = (e: React.MouseEvent, type: string) => {
+    e.stopPropagation();
+    if (type === 'copy') {
+      navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
+    }
+    setShareCount(prev => prev + 1);
+    setShowShareMenu(false);
+  };
+
   const handleDefaultLike = (e: React.MouseEvent) => {
      e.stopPropagation();
      if (reaction) {
@@ -440,14 +455,40 @@ const PostCard: React.FC<PostCardProps> = ({
           {!isNested && (
             <div className="flex justify-between mt-5 text-gray-900 dark:text-gray-100 items-center px-1">
                 <div className="flex items-center gap-4 md:gap-6">
+                  {/* LIKE */}
                   <button onClick={handleDefaultLike} className="flex items-center gap-1.5">
                     <Heart className={`w-[22px] h-[22px] ${reaction ? 'fill-red-500 text-red-500' : 'text-gray-900 dark:text-white'}`} strokeWidth={2.5} />
                     <span className="text-[14px] font-bold">{formatCount(likeCount)}</span>
                   </button>
 
+                  {/* COMMENT */}
                   <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1.5">
                     <MessageCircle className="w-[22px] h-[22px]" strokeWidth={2.5} />
                     <span className="text-[14px] font-bold">{formatCount(comments.length)}</span>
+                  </button>
+
+                  {/* REPOST */}
+                  <div className="relative" ref={repostMenuRef}>
+                    <button onClick={(e) => { e.stopPropagation(); setShowRepostMenu(!showRepostMenu); }} className="flex items-center gap-1.5">
+                      <Repeat2 className={`w-[22px] h-[22px] ${post.isReposted ? 'text-green-500' : 'text-gray-900 dark:text-white'}`} strokeWidth={2.5} />
+                      <span className="text-[14px] font-bold">{formatCount(repostCount)}</span>
+                    </button>
+                    {showRepostMenu && (
+                        <div className="absolute left-0 bottom-full mb-2 w-48 bg-white dark:bg-nexus-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 py-1.5 z-40 animate-in fade-in zoom-in duration-150">
+                            <button onClick={handleRepostAction} className="w-full text-left px-4 py-3 text-[15px] text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-3 transition-colors">
+                                <Repeat2 className="w-5 h-5" /> Repost
+                            </button>
+                            <button onClick={handleQuoteAction} className="w-full text-left px-4 py-3 text-[15px] text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-3 transition-colors">
+                                <Quote className="w-5 h-5" /> Quote Post
+                            </button>
+                        </div>
+                    )}
+                  </div>
+
+                  {/* SHARE */}
+                  <button onClick={(e) => { e.stopPropagation(); setShowShareMenu(!showShareMenu); }} className="flex items-center gap-1.5">
+                    <Send className="w-[20px] h-[20px]" strokeWidth={2.5} />
+                    <span className="text-[14px] font-bold">{formatCount(shareCount)}</span>
                   </button>
 
                   {/* TIP ACTION */}
@@ -460,7 +501,7 @@ const PostCard: React.FC<PostCardProps> = ({
                     </button>
                     {showTipMenu && (
                         <div className="absolute left-0 bottom-full mb-3 w-64 bg-white dark:bg-nexus-800 rounded-3xl shadow-2xl border border-gray-100 dark:border-gray-700 p-4 z-50 animate-in slide-in-from-bottom-4">
-                            <h4 className="font-black text-lg mb-3 flex items-center gap-2">
+                            <h4 className="font-black text-lg mb-3 flex items-center gap-2 text-gray-900 dark:text-white">
                                 <Coins className="w-5 h-5 text-nexus-accent" />
                                 Send Tip
                             </h4>
@@ -469,7 +510,7 @@ const PostCard: React.FC<PostCardProps> = ({
                                     <button 
                                         key={amt}
                                         onClick={() => handleSendTip(amt)}
-                                        className="py-2.5 rounded-2xl bg-gray-50 dark:bg-nexus-900 border border-gray-100 dark:border-gray-700 font-bold text-sm hover:border-nexus-accent transition-all flex items-center justify-center gap-1"
+                                        className="py-2.5 rounded-2xl bg-gray-50 dark:bg-nexus-900 border border-gray-100 dark:border-gray-700 font-bold text-sm hover:border-nexus-accent transition-all flex items-center justify-center gap-1 text-gray-900 dark:text-white"
                                     >
                                         <Coins className="w-3.5 h-3.5" />
                                         {amt}
@@ -481,9 +522,59 @@ const PostCard: React.FC<PostCardProps> = ({
                   </div>
                 </div>
 
+                {/* BOOKMARK */}
                 <button onClick={handleBookmarkAction}>
-                  <Bookmark className={`w-[22px] h-[22px] ${isBookmarked ? 'fill-gray-900 dark:fill-white' : ''}`} strokeWidth={2.5} />
+                  <Bookmark className={`w-[22px] h-[22px] ${isBookmarked ? 'fill-gray-900 dark:fill-white text-gray-900 dark:text-white' : ''}`} strokeWidth={2.5} />
                 </button>
+            </div>
+          )}
+
+          {/* Centered Share Modal */}
+          {showShareMenu && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[3px] animate-in fade-in duration-300">
+              <div 
+                ref={shareModalRef}
+                className="w-full max-w-sm bg-white dark:bg-nexus-800 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.4)] border border-gray-100 dark:border-gray-700 overflow-hidden animate-in zoom-in duration-300"
+              >
+                <div className="px-6 py-5 border-b border-gray-50 dark:border-gray-700 flex items-center justify-between bg-gray-50/50 dark:bg-nexus-900/50">
+                    <span className="font-black text-xl tracking-tight text-gray-900 dark:text-white">Share Post</span>
+                    <button onClick={() => setShowShareMenu(false)} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-nexus-700 transition-colors">
+                        <X className="w-5 h-5 text-gray-500" />
+                    </button>
+                </div>
+                
+                <div className="p-2">
+                    <button onClick={(e) => handleShareAction(e, 'copy')} className="w-full text-left px-5 py-4 text-[16px] font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-4 transition-all rounded-2xl">
+                        <div className="p-2.5 bg-gray-100 dark:bg-nexus-900 rounded-full">
+                            <Link className="w-6 h-6 text-nexus-primary" />
+                        </div>
+                        <div className="flex flex-col">
+                            <span>Copy link</span>
+                            <span className="text-xs font-normal text-gray-400">Share via clipboard</span>
+                        </div>
+                    </button>
+                    
+                    <button onClick={(e) => handleShareAction(e, 'dm')} className="w-full text-left px-5 py-4 text-[16px] font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-4 transition-all rounded-2xl">
+                        <div className="p-2.5 bg-gray-100 dark:bg-nexus-900 rounded-full">
+                            <Mail className="w-6 h-6 text-nexus-accent" />
+                        </div>
+                        <div className="flex flex-col">
+                            <span>Send via DM</span>
+                            <span className="text-xs font-normal text-gray-400">Message your friends</span>
+                        </div>
+                    </button>
+                    
+                    <button onClick={(e) => handleShareAction(e, 'ext')} className="w-full text-left px-5 py-4 text-[16px] font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-4 transition-all rounded-2xl">
+                        <div className="p-2.5 bg-gray-100 dark:bg-nexus-900 rounded-full">
+                            <Share2 className="w-6 h-6 text-green-500" />
+                        </div>
+                        <div className="flex flex-col">
+                            <span>Share to...</span>
+                            <span className="text-xs font-normal text-gray-400">Apps and social networks</span>
+                        </div>
+                    </button>
+                </div>
+              </div>
             </div>
           )}
         </div>
