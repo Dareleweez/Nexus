@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, Compass, Bell, User as UserIcon, Settings, Mail, Plus, Menu } from 'lucide-react';
+import { Home, Compass, Bell, User as UserIcon, Settings, Mail, Plus, Menu, Wallet } from 'lucide-react';
 import { ViewState, User } from '../types';
 
 interface SidebarProps {
@@ -17,6 +17,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, onCreatePo
     { id: 'notifications', icon: Bell, label: 'Notifications' },
     { id: 'create', icon: Plus, label: 'Post', mobileOnly: true, isAction: true },
     { id: 'messages', icon: Mail, label: 'Messages' },
+    { id: 'monetization', icon: Wallet, label: 'Monetization' },
     { id: 'profile', icon: UserIcon, label: 'Profile', desktopOnly: true },
     { id: 'menu', icon: Menu, label: 'Menu', mobileOnly: true },
   ];

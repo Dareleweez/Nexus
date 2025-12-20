@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Post, User, Comment, ViewState } from '../types.ts';
-import { Heart, MessageCircle, Send, MoreHorizontal, Pencil, Trash2, Eye, ChevronDown, ChevronUp, Repeat2, Quote, Bookmark, Link, Share2, Mail, X, Sparkles, ExternalLink, ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import { Heart, MessageCircle, Send, MoreHorizontal, Pencil, Trash2, Eye, ChevronDown, ChevronUp, Repeat2, Quote, Bookmark, Link, Share2, Mail, X, Sparkles, ExternalLink, ChevronLeft, ChevronRight, Play, DollarSign } from 'lucide-react';
 import { CURRENT_USER, MOCK_USERS } from '../constants.ts';
 
 interface CommentItemProps {
@@ -576,6 +576,9 @@ const PostCard: React.FC<PostCardProps> = ({
                         <span onClick={handleUserClick} className="font-bold truncate text-gray-900 dark:text-gray-100 cursor-pointer hover:underline text-sm md:text-base leading-none">
                           {displayPost.user.name}
                         </span>
+                        {displayPost.user.isMonetized && !displayPost.isSponsored && (
+                            <span title="Ad Revenue Share Active"><DollarSign className="w-3.5 h-3.5 text-nexus-primary" /></span>
+                        )}
                       </div>
                       <span onClick={handleUserClick} className="text-gray-500 dark:text-gray-400 truncate cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 text-xs">
                         {displayPost.user.handle}
@@ -625,6 +628,17 @@ const PostCard: React.FC<PostCardProps> = ({
           )}
 
           {!isEditing && renderMedia()}
+
+          {/* Ad Revenue Insight for Owner */}
+          {isOwner && post.adRevenue !== undefined && !isNested && !isEditing && (
+            <div className="mt-4 px-4 py-2 bg-nexus-primary/5 rounded-xl border border-nexus-primary/10 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-nexus-primary" />
+                    <span className="text-xs font-bold text-nexus-primary uppercase tracking-wider">Ad Share Earned</span>
+                </div>
+                <span className="text-sm font-black text-nexus-primary">${post.adRevenue.toFixed(2)}</span>
+            </div>
+          )}
 
           {/* Ad Call to Action */}
           {displayPost.isSponsored && !isNested && !isEditing && (

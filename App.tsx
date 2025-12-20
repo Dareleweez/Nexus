@@ -13,6 +13,7 @@ import Notifications from './components/Notifications.tsx';
 import PostDetail from './components/PostDetail.tsx';
 import MobileMenu from './components/MobileMenu.tsx';
 import Bookmarks from './components/Bookmarks.tsx';
+import Monetization from './components/Monetization.tsx';
 import { ViewState, Post, User, Comment, Notification } from './types.ts';
 import { CURRENT_USER, INITIAL_POSTS, MOCK_USERS, MOCK_NOTIFICATIONS, MOCK_ADS } from './constants.ts';
 import { Search, X } from 'lucide-react';
@@ -168,7 +169,8 @@ export default function App() {
       quotes: 0,
       comments: [],
       timestamp: 'Just now',
-      quotedPost: quotedPost
+      quotedPost: quotedPost,
+      adRevenue: 0
     };
 
     setPosts([newPost, ...posts]);
@@ -258,6 +260,8 @@ export default function App() {
           setCurrentView('post');
       } else if (notification.type === 'follow') {
           handleUserClick(notification.user);
+      } else if (notification.type === 'payout') {
+          setCurrentView('monetization');
       }
       setNotifications(prev => prev.map(n => n.id === notification.id ? { ...n, read: true } : n));
   };
@@ -344,6 +348,8 @@ export default function App() {
                 currentUser={currentUser || undefined}
             />
         );
+      case 'monetization':
+        return currentUser ? <Monetization currentUser={currentUser} /> : null;
       case 'profile':
         return viewingUser ? (
             <Profile 
