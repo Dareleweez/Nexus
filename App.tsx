@@ -23,7 +23,6 @@ import { Search, X } from 'lucide-react';
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     const saved = localStorage.getItem('nexus_current_user');
-    // If nothing saved, we return null to force the Auth screen
     return saved ? JSON.parse(saved) : null;
   });
 
@@ -34,7 +33,13 @@ export default function App() {
   });
 
   const [currentView, setCurrentView] = useState<ViewState>('home');
-  const [posts, setPosts] = useState<Post[]>(INITIAL_POSTS);
+  
+  // Persist posts to localStorage
+  const [posts, setPosts] = useState<Post[]>(() => {
+    const saved = localStorage.getItem('nexus_posts');
+    return saved ? JSON.parse(saved) : INITIAL_POSTS;
+  });
+
   const [notifications, setNotifications] = useState<Notification[]>(MOCK_NOTIFICATIONS);
   const [showHeader, setShowHeader] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -44,6 +49,7 @@ export default function App() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [quotingPost, setQuotingPost] = useState<Post | null>(null);
 
+  // Sync theme
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
@@ -52,6 +58,11 @@ export default function App() {
     }
     localStorage.setItem('nexus_dark_mode', String(isDarkMode));
   }, [isDarkMode]);
+
+  // Sync posts
+  useEffect(() => {
+    localStorage.setItem('nexus_posts', JSON.stringify(posts));
+  }, [posts]);
 
   useEffect(() => {
     if (currentUser && !viewingUser) {
@@ -62,13 +73,11 @@ export default function App() {
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
-      
       if (currentY <= 10) {
         setShowHeader(true);
       } else if (currentY > lastScrollY) {
         setShowHeader(false);
       }
-      
       setLastScrollY(currentY);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -94,7 +103,7 @@ export default function App() {
   }, [posts]);
 
   const handleLike = (postId: string) => {
-    setPosts(posts.map(post => {
+    setPosts(prev => prev.map(post => {
       if (post.id === postId) {
         const isLiked = !post.isLiked;
         return {
@@ -108,12 +117,9 @@ export default function App() {
   };
 
   const handleBookmark = (postId: string) => {
-    setPosts(posts.map(post => {
+    setPosts(prev => prev.map(post => {
         if (post.id === postId) {
-            return {
-                ...post,
-                isBookmarked: !post.isBookmarked
-            };
+            return { ...post, isBookmarked: !post.isBookmarked };
         }
         return post;
     }));
@@ -184,11 +190,11 @@ export default function App() {
   };
 
   const handleUpdatePost = (postId: string, newContent: string) => {
-    setPosts(posts.map(p => p.id === postId ? { ...p, content: newContent } : p));
+    setPosts(prev => prev.map(p => p.id === postId ? { ...p, content: newContent } : p));
   };
 
   const handleComment = (postId: string, comment: Comment, parentId?: string) => {
-    setPosts(posts.map(p => {
+    setPosts(prev => prev.map(p => {
         if (p.id === postId) {
             if (parentId) {
                 const addReplyRecursive = (comments: Comment[]): Comment[] => {
@@ -212,7 +218,7 @@ export default function App() {
   };
 
   const handleCommentUpdate = (postId: string, commentId: string, newText: string) => {
-    setPosts(posts.map(p => {
+    setPosts(prev => prev.map(p => {
         if (p.id === postId) {
             const updateRecursive = (comments: Comment[]): Comment[] => {
                 return comments.map(c => {
@@ -228,7 +234,7 @@ export default function App() {
   };
 
   const handleCommentDelete = (postId: string, commentId: string) => {
-    setPosts(posts.map(p => {
+    setPosts(prev => prev.map(p => {
         if (p.id === postId) {
              const deleteRecursive = (comments: Comment[]): Comment[] => {
                 return comments.filter(c => {
@@ -274,7 +280,6 @@ export default function App() {
       setCurrentUser(user);
       localStorage.setItem('nexus_current_user', JSON.stringify(user));
     } else {
-      // Sign in fallback - just use hardcoded CURRENT_USER for demo
       setCurrentUser(CURRENT_USER);
       localStorage.setItem('nexus_current_user', JSON.stringify(CURRENT_USER));
     }
@@ -285,6 +290,11 @@ export default function App() {
     localStorage.removeItem('nexus_current_user');
     setCurrentUser(null);
     setCurrentView('home');
+  };
+
+  const handleClearData = () => {
+    localStorage.clear();
+    window.location.reload();
   };
 
   if (!currentUser) {
@@ -315,11 +325,9 @@ export default function App() {
                 </div>
                 {currentUser && <Stories currentUser={currentUser} connected={true} />}
              </div>
-            
             <div className="hidden md:block">
                 {currentUser && <Stories currentUser={currentUser} />}
             </div>
-            
             <div className="hidden md:block">
                  {currentUser && (
                     <CreatePost 
@@ -330,7 +338,6 @@ export default function App() {
                     />
                  )}
             </div>
-
             {postsWithAds.map(post => (
               <PostCard 
                 key={post.id} 
@@ -351,12 +358,9 @@ export default function App() {
             ))}
           </div>
         );
-      case 'explore':
-        return <Explore />;
-      case 'notifications':
-        return <Notifications notifications={notifications} onNotificationClick={handleNotificationClick} />;
-      case 'messages':
-        return <Messages />;
+      case 'explore': return <Explore />;
+      case 'notifications': return <Notifications notifications={notifications} onNotificationClick={handleNotificationClick} />;
+      case 'messages': return <Messages />;
       case 'bookmarks':
         return (
             <Bookmarks 
@@ -373,10 +377,8 @@ export default function App() {
                 currentUser={currentUser || undefined}
             />
         );
-      case 'monetization':
-        return currentUser ? <Monetization currentUser={currentUser} /> : null;
-      case 'store':
-        return <Store />;
+      case 'monetization': return currentUser ? <Monetization currentUser={currentUser} /> : null;
+      case 'store': return <Store />;
       case 'profile':
         return viewingUser ? (
             <Profile 
@@ -396,7 +398,12 @@ export default function App() {
             />
         ) : null;
       case 'settings':
-        return <Settings onLogout={handleLogout} isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />;
+        return <Settings 
+          onLogout={handleLogout} 
+          onClearData={handleClearData}
+          isDarkMode={isDarkMode} 
+          toggleDarkMode={toggleDarkMode} 
+        />;
       case 'post':
         return viewingPost ? (
             <PostDetail 
@@ -427,8 +434,7 @@ export default function App() {
             toggleDarkMode={toggleDarkMode}
           />
         ) : null;
-      default:
-        return null;
+      default: return null;
     }
   };
 
@@ -450,7 +456,6 @@ export default function App() {
                 />
             </div>
         )}
-
         <div className="md:hidden">
              {currentUser && (
                  <Sidebar 
@@ -461,11 +466,9 @@ export default function App() {
                 />
              )}
         </div>
-
         <main className="w-full max-w-[750px] border-x border-gray-100 dark:border-gray-800 min-h-screen pb-20 md:pb-0">
           {renderContent()}
         </main>
-
         <RightPanel />
       </div>
 
