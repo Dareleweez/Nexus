@@ -48,9 +48,9 @@ export const getTrendingTopics = async (): Promise<TrendingTopic[]> => {
 
   try {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-    // Using gemini-2.5-flash for grounded search tasks
+    // Using gemini-3-flash-preview for grounded search tasks as per latest guidelines
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-3-flash-preview",
       contents: "What are the top 5 trending news topics in technology and science right now? Provide a brief title and a summary for each.",
       config: {
         tools: [{ googleSearch: {} }],

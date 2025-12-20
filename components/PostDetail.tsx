@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Post, User, Comment } from '../types';
+import { Post, User, Comment, ViewState } from '../types';
 import PostCard from './PostCard';
 import { ArrowLeft } from 'lucide-react';
 
@@ -17,6 +17,7 @@ interface PostDetailProps {
     onCommentUpdate?: (postId: string, commentId: string, newText: string) => void;
     onCommentDelete?: (postId: string, commentId: string) => void;
     currentUser?: User;
+    onViewChange?: (view: ViewState) => void;
 }
 
 const PostDetail: React.FC<PostDetailProps> = ({ post, onBack, ...postCardProps }) => {

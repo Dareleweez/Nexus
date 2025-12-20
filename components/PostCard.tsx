@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Post, User, Comment } from '../types.ts';
-import { Heart, MessageCircle, Send, MoreHorizontal, Pencil, Trash2, Eye, ChevronDown, ChevronUp, Repeat2, Quote, Bookmark, Link, Share2, Mail, X, Coins, Lock, BadgeCheck, Sparkles, ExternalLink } from 'lucide-react';
+import { Post, User, Comment, ViewState } from '../types.ts';
+import { Heart, MessageCircle, Send, MoreHorizontal, Pencil, Trash2, Eye, ChevronDown, ChevronUp, Repeat2, Quote, Bookmark, Link, Share2, Mail, X, Coins, Lock, BadgeCheck, Sparkles, ExternalLink, ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { CURRENT_USER, MOCK_USERS } from '../constants.ts';
 
 interface CommentItemProps {
@@ -126,7 +126,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
                                   <MoreHorizontal className="w-4 h-4" />
                               </button>
                               {showActions && (
-                                  <div className="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-nexus-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-1 z-30 animate-in fade-in zoom-in duration-150">
+                                  <div className="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-nexus-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-1.5 z-30 animate-in fade-in zoom-in duration-150">
                                       <button 
                                           onClick={() => { handleEditComment(comment); setShowActions(false); }}
                                           className="w-full text-left px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-2 transition-colors"
@@ -206,6 +206,7 @@ interface PostCardProps {
   onCommentUpdate?: (postId: string, commentId: string, newText: string) => void;
   onCommentDelete?: (postId: string, commentId: string) => void;
   onViewPost?: (post: Post) => void;
+  onViewChange?: (view: ViewState) => void;
   isDetailView?: boolean;
   currentUser?: User;
   isNested?: boolean;
@@ -223,6 +224,7 @@ const PostCard: React.FC<PostCardProps> = ({
   onCommentUpdate,
   onCommentDelete,
   onViewPost,
+  onViewChange,
   isDetailView = false,
   currentUser = CURRENT_USER,
   isNested = false
@@ -249,10 +251,18 @@ const PostCard: React.FC<PostCardProps> = ({
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editCommentText, setEditCommentText] = useState('');
   
+  // Carousel State
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  
+  // Pre-roll Ad State
+  const [showPreRoll, setShowPreRoll] = useState(false);
+  const [preRollCountdown, setPreRollCountdown] = useState(5);
+  
   const commentInputRef = useRef<HTMLTextAreaElement>(null);
   const repostMenuRef = useRef<HTMLDivElement>(null);
   const shareModalRef = useRef<HTMLDivElement>(null);
   const tipModalRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const isOwner = post.user.id === currentUser.id;
 
@@ -290,6 +300,19 @@ const PostCard: React.FC<PostCardProps> = ({
     }
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showShareMenu, showRepostMenu, showTipMenu]);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setInterval>;
+    if (showPreRoll && preRollCountdown > 0) {
+        timer = setInterval(() => {
+            setPreRollCountdown(prev => prev - 1);
+        }, 1000);
+    } else if (preRollCountdown === 0) {
+        setShowPreRoll(false);
+        if (videoRef.current) videoRef.current.play();
+    }
+    return () => clearInterval(timer);
+  }, [showPreRoll, preRollCountdown]);
 
   const formatCount = (num: number) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -414,6 +437,17 @@ const PostCard: React.FC<PostCardProps> = ({
     if (onCommentDelete) onCommentDelete(post.id, commentId);
   };
 
+  const handleVideoClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!currentUser.isPremium && !post.isSponsored && !showPreRoll) {
+        setShowPreRoll(true);
+        if (videoRef.current) videoRef.current.pause();
+    } else if (videoRef.current) {
+        if (videoRef.current.paused) videoRef.current.play();
+        else videoRef.current.pause();
+    }
+  };
+
   const displayPost = post.repostedFrom || post;
   const isActuallyARepost = !!post.repostedFrom;
 
@@ -440,10 +474,82 @@ const PostCard: React.FC<PostCardProps> = ({
 
     if (displayPost.videoUrl) {
       return (
-        <div className={`mt-3 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-neutral-900 shadow-sm flex justify-center items-center group/media relative h-[500px] w-full mx-auto`}>
-          <video src={displayPost.videoUrl} className="w-full h-full object-cover" controls playsInline />
+        <div 
+          className={`mt-3 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-neutral-900 shadow-sm flex justify-center items-center group/media relative h-[500px] w-full mx-auto cursor-pointer`}
+          onClick={handleVideoClick}
+        >
+          <video 
+            ref={videoRef}
+            src={displayPost.videoUrl} 
+            className="w-full h-full object-cover" 
+            playsInline 
+            loop
+          />
+          {!showPreRoll && videoRef.current?.paused && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[2px]">
+                <div className="p-4 bg-white/20 rounded-full backdrop-blur-md border border-white/40">
+                    <Play className="w-12 h-12 text-white fill-current" />
+                </div>
+            </div>
+          )}
+          {showPreRoll && (
+             <div className="absolute inset-0 bg-black/80 backdrop-blur-xl flex flex-col items-center justify-center p-8 text-center z-10 animate-in fade-in duration-300">
+                <div className="p-4 bg-nexus-primary/20 rounded-full mb-4 animate-pulse">
+                    <Sparkles className="w-12 h-12 text-nexus-primary" />
+                </div>
+                <h4 className="text-white font-black text-xl mb-2">Nexus In-Stream Ad</h4>
+                <p className="text-white/60 text-sm mb-6">Your content will play in {preRollCountdown} seconds...</p>
+                <div className="w-full max-w-[200px] h-1 bg-white/20 rounded-full overflow-hidden">
+                    <div 
+                        className="h-full bg-nexus-primary transition-all duration-1000 ease-linear"
+                        style={{ width: `${(5 - preRollCountdown) * 20}%` }}
+                    ></div>
+                </div>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); onViewChange?.('store'); }}
+                  className="mt-8 bg-white text-black font-black py-2 px-6 rounded-full text-xs hover:scale-105 transition-transform"
+                >
+                    Go Premium to Skip Ads
+                </button>
+             </div>
+          )}
         </div>
       );
+    }
+
+    if (displayPost.isCarousel && displayPost.imageUrls) {
+        return (
+            <div className="mt-3 relative rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-nexus-800 shadow-sm group/carousel aspect-square">
+                <div className="flex h-full w-full transition-transform duration-500 ease-out" style={{ transform: `translateX(-${carouselIndex * 100}%)` }}>
+                    {displayPost.imageUrls.map((img, i) => (
+                        <img key={i} src={img} alt="" className="w-full h-full object-cover flex-shrink-0" />
+                    ))}
+                </div>
+                
+                {carouselIndex > 0 && (
+                    <button 
+                        onClick={(e) => { e.stopPropagation(); setCarouselIndex(prev => prev - 1); }}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/40 hover:bg-black/60 text-white rounded-full backdrop-blur-md opacity-0 group-hover/carousel:opacity-100 transition-opacity"
+                    >
+                        <ChevronLeft className="w-5 h-5" />
+                    </button>
+                )}
+                {carouselIndex < (displayPost.imageUrls.length - 1) && (
+                    <button 
+                        onClick={(e) => { e.stopPropagation(); setCarouselIndex(prev => prev + 1); }}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/40 hover:bg-black/60 text-white rounded-full backdrop-blur-md opacity-0 group-hover/carousel:opacity-100 transition-opacity"
+                    >
+                        <ChevronRight className="w-5 h-5" />
+                    </button>
+                )}
+
+                <div className="absolute bottom-4 inset-x-0 flex justify-center gap-1.5">
+                    {displayPost.imageUrls.map((_, i) => (
+                        <div key={i} className={`h-1.5 rounded-full transition-all ${i === carouselIndex ? 'w-4 bg-white shadow-md' : 'w-1.5 bg-white/40'}`} />
+                    ))}
+                </div>
+            </div>
+        );
     }
 
     if (!displayPost.imageUrls || displayPost.imageUrls.length === 0) return null;
@@ -565,9 +671,9 @@ const PostCard: React.FC<PostCardProps> = ({
 
           {/* Ad Call to Action */}
           {displayPost.isSponsored && !isNested && !isEditing && (
-            <button className="mt-4 w-full bg-white dark:bg-nexus-800 border-2 border-nexus-primary/30 text-nexus-primary font-black py-3 rounded-2xl hover:bg-nexus-primary hover:text-white transition-all flex items-center justify-center gap-2 shadow-sm group">
-                Learn More
-                <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            <button className="mt-4 w-full bg-nexus-primary text-white font-black py-4 rounded-2xl hover:bg-nexus-primary/90 transition-all flex items-center justify-center gap-2 shadow-[0_10px_30px_rgba(99,102,241,0.2)] group">
+                {displayPost.ctaLabel || 'Learn More'}
+                <ExternalLink className="w-5 h-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </button>
           )}
 
@@ -580,6 +686,7 @@ const PostCard: React.FC<PostCardProps> = ({
                 onQuote={() => {}} 
                 onBookmark={() => {}}
                 onUserClick={onUserClick} 
+                onViewChange={onViewChange}
             />
           )}
 

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Post, User, Comment } from '../types';
+import { Post, User, Comment, ViewState } from '../types';
 import PostCard from './PostCard';
 import { Bookmark, Inbox } from 'lucide-react';
 
@@ -15,6 +15,7 @@ interface BookmarksProps {
     onCommentUpdate?: (postId: string, commentId: string, newText: string) => void;
     onCommentDelete?: (postId: string, commentId: string) => void;
     currentUser?: User;
+    onViewChange?: (view: ViewState) => void;
 }
 
 const Bookmarks: React.FC<BookmarksProps> = ({ 
@@ -27,7 +28,8 @@ const Bookmarks: React.FC<BookmarksProps> = ({
     onUpdate,
     onCommentUpdate,
     onCommentDelete,
-    currentUser 
+    currentUser,
+    onViewChange
 }) => {
     const [showHeader, setShowHeader] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
@@ -85,6 +87,7 @@ const Bookmarks: React.FC<BookmarksProps> = ({
                             onCommentUpdate={onCommentUpdate}
                             onCommentDelete={onCommentDelete}
                             currentUser={currentUser}
+                            onViewChange={onViewChange}
                         />
                     ))
                 )}

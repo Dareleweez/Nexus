@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { User, Post } from '../types';
+import { User, Post, ViewState } from '../types';
 import PostCard from './PostCard';
 import { Calendar, MapPin, Link as LinkIcon, ArrowLeft, Image as ImageIcon, Heart, X } from 'lucide-react';
 import { CURRENT_USER } from '../constants';
@@ -19,6 +19,7 @@ interface ProfileProps {
   onUpdateProfile?: (data: { name: string; handle: string; bio: string }) => void;
   onCommentUpdate?: (postId: string, commentId: string, newText: string) => void;
   onCommentDelete?: (postId: string, commentId: string) => void;
+  onViewChange?: (view: ViewState) => void;
 }
 
 type Tab = 'posts' | 'replies' | 'media' | 'likes';
@@ -36,7 +37,8 @@ const Profile: React.FC<ProfileProps> = ({
     onUpdate, 
     onUpdateProfile,
     onCommentUpdate,
-    onCommentDelete 
+    onCommentDelete,
+    onViewChange
 }) => {
   const [activeTab, setActiveTab] = useState<Tab>('posts');
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -223,6 +225,7 @@ const Profile: React.FC<ProfileProps> = ({
                   onUpdate={onUpdate}
                   onCommentUpdate={onCommentUpdate}
                   onCommentDelete={onCommentDelete}
+                  onViewChange={onViewChange}
                 />
             ))
         )}

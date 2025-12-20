@@ -328,6 +328,7 @@ export default function App() {
                 onCommentUpdate={handleCommentUpdate}
                 onCommentDelete={handleCommentDelete}
                 onViewPost={(p) => { setViewingPost(p); setCurrentView('post'); }}
+                onViewChange={handleViewChange}
                 currentUser={currentUser || undefined}
               />
             ))}
@@ -351,6 +352,7 @@ export default function App() {
                 onUpdate={handleUpdatePost}
                 onCommentUpdate={handleCommentUpdate}
                 onCommentDelete={handleCommentDelete}
+                onViewChange={handleViewChange}
                 currentUser={currentUser || undefined}
             />
         );
@@ -373,6 +375,7 @@ export default function App() {
                 onUpdate={handleUpdatePost}
                 onCommentUpdate={handleCommentUpdate}
                 onCommentDelete={handleCommentDelete}
+                onViewChange={handleViewChange}
             />
         ) : null;
       case 'settings':
@@ -391,6 +394,7 @@ export default function App() {
                 onComment={handleComment}
                 onCommentUpdate={handleCommentUpdate}
                 onCommentDelete={handleCommentDelete}
+                onViewChange={handleViewChange}
                 currentUser={currentUser || undefined}
             />
         ) : null;

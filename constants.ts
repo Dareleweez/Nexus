@@ -83,7 +83,8 @@ export const MOCK_ADS: Post[] = [
     comments: [],
     timestamp: 'Sponsored',
     isSponsored: true,
-    imageUrls: ['https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800']
+    imageUrls: ['https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800'],
+    ctaLabel: 'Try 7 Days Free'
   },
   {
     id: 'ad-gaming-1',
@@ -104,7 +105,34 @@ export const MOCK_ADS: Post[] = [
     comments: [],
     timestamp: 'Promoted',
     isSponsored: true,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+    ctaLabel: 'Play Now'
+  },
+  {
+    id: 'ad-carousel-1',
+    user: {
+      id: 'brand-fashion',
+      name: 'Luxe Wear',
+      handle: '@luxewear',
+      avatar: 'https://picsum.photos/id/237/150/150',
+      followers: 85000,
+      following: 10,
+    },
+    content: 'Our Spring Collection has arrived. Sustainable fabrics meets timeless design. Shop the look today. 🌿👗',
+    likes: 3200,
+    reposts: 150,
+    shares: 890,
+    quotes: 40,
+    comments: [],
+    timestamp: 'Sponsored',
+    isSponsored: true,
+    isCarousel: true,
+    imageUrls: [
+      'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1539109132314-34a773577f5a?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=800'
+    ],
+    ctaLabel: 'Shop Collection'
   }
 ];
 

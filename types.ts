@@ -44,6 +44,9 @@ export interface Post {
   isSponsored?: boolean;
   isExclusive?: boolean;
   isLocked?: boolean;
+  ctaLabel?: string;
+  ctaUrl?: string;
+  isCarousel?: boolean;
 }
 
 export interface Story {
