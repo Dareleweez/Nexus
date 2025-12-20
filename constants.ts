@@ -11,7 +11,9 @@ export const CURRENT_USER: User = {
   following: 432,
   isPremium: true,
   isMonetized: true,
-  balance: 450.75
+  balance: 1450.75,
+  subscriptionPrice: 4.99,
+  isSubscribedTo: ['u2']
 };
 
 export const MOCK_USERS: User[] = [
@@ -22,15 +24,8 @@ export const MOCK_USERS: User[] = [
     avatar: 'https://picsum.photos/id/65/150/150',
     followers: 8900,
     following: 120,
-    isMonetized: true
-  },
-  {
-    id: 'u3',
-    name: 'David Miller',
-    handle: '@dmiller',
-    avatar: 'https://picsum.photos/id/91/150/150',
-    followers: 450,
-    following: 500,
+    isMonetized: true,
+    subscriptionPrice: 9.99
   },
   {
     id: 'u4',
@@ -39,7 +34,8 @@ export const MOCK_USERS: User[] = [
     avatar: 'https://picsum.photos/id/338/150/150',
     followers: 3200,
     following: 150,
-    isMonetized: true
+    isMonetized: true,
+    subscriptionPrice: 5.00
   },
   {
     id: 'u5',
@@ -48,15 +44,7 @@ export const MOCK_USERS: User[] = [
     avatar: 'https://picsum.photos/id/334/150/150',
     followers: 1200,
     following: 800
-  },
-  {
-    id: 'u6',
-    name: 'Sofia Rodriguez',
-    handle: '@sofiar',
-    avatar: 'https://picsum.photos/id/342/150/150',
-    followers: 5600,
-    following: 430,
-  },
+  }
 ];
 
 export const MOCK_ADS: Post[] = [
@@ -80,67 +68,42 @@ export const MOCK_ADS: Post[] = [
     isSponsored: true,
     imageUrls: ['https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800'],
     ctaLabel: 'Learn More'
-  },
-  {
-    id: 'ad-gaming-1',
-    user: {
-      id: 'brand-gaming',
-      name: 'Vortex Gaming',
-      handle: '@vortex_play',
-      avatar: 'https://picsum.photos/id/201/150/150',
-      followers: 250000,
-      following: 50
-    },
-    content: 'The future of cloud gaming is here. Play any AAA title on any device with zero latency. Join the beta today! 🎮🔥',
-    likes: 45000,
-    reposts: 12000,
-    shares: 34000,
-    quotes: 800,
-    comments: [],
-    timestamp: 'Promoted',
-    isSponsored: true,
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-    ctaLabel: 'Play Now'
-  }
-];
-
-export const MOCK_STORIES: Story[] = [
-  {
-    id: 's1',
-    user: MOCK_USERS[0],
-    imageUrl: 'https://picsum.photos/id/129/600/1000',
-    timestamp: '2h ago',
-    isViewed: false,
-  },
-  {
-    id: 'ad-story-1',
-    user: {
-      id: 'brand-coffee',
-      name: 'StarBrew Coffee',
-      handle: '@starbrew',
-      avatar: 'https://picsum.photos/id/225/150/150',
-      followers: 50000,
-      following: 0,
-    },
-    imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&q=80&w=800',
-    timestamp: 'Sponsored',
-    isViewed: false,
-    isSponsored: true,
-  },
-  {
-    id: 's2',
-    user: MOCK_USERS[1],
-    imageUrl: 'https://picsum.photos/id/111/600/1000',
-    timestamp: '5h ago',
-    isViewed: false,
   }
 ];
 
 export const INITIAL_POSTS: Post[] = [
   {
+    id: 'ex-1',
+    user: MOCK_USERS[0], // Sarah Chen
+    content: 'EXCLUSIVE: My full 2025 AI production workflow. Only for my inner circle! 💎',
+    likes: 156,
+    reposts: 12,
+    shares: 4,
+    quotes: 2,
+    comments: [],
+    timestamp: '1h ago',
+    isExclusive: true,
+    isLocked: false, // User is subscribed by default in this mock
+    imageUrls: ['https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?auto=format&fit=crop&q=80&w=800']
+  },
+  {
+    id: 'locked-1',
+    user: MOCK_USERS[1], // Emily Zhang
+    content: 'Behind the scenes of the new project... Subscribe to see the full set! 📸',
+    likes: 340,
+    reposts: 22,
+    shares: 10,
+    quotes: 5,
+    comments: [],
+    timestamp: '3h ago',
+    isExclusive: true,
+    isLocked: true, // User is NOT subscribed to Emily
+    imageUrls: ['https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&q=80&w=800']
+  },
+  {
     id: 'v1',
     user: MOCK_USERS[0],
-    content: 'The scale of this cinematic world is breathtaking. Loving the progress on this open-source film project! 🎬✨ #Cinematics #OpenSource',
+    content: 'The scale of this cinematic world is breathtaking. 🎬✨ #Cinematics #OpenSource',
     likes: 2453,
     reposts: 432,
     shares: 4014,
@@ -149,66 +112,92 @@ export const INITIAL_POSTS: Post[] = [
     timestamp: '15m ago',
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
     adRevenue: 12.45
-  },
-  {
-    id: 'v2',
-    user: MOCK_USERS[2],
-    content: 'Testing out the new motion blur effects. The detail in these renders is getting out of hand! 💻🔥 #DigitalArt #Tech',
-    likes: 1890,
-    reposts: 211,
-    shares: 1205,
-    quotes: 45,
-    comments: [],
-    timestamp: '45m ago',
-    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-    adRevenue: 5.20
-  },
-  {
-    id: 'n-p1',
-    user: MOCK_USERS[3],
-    content: 'Golden hour in the city is something else. 🌆 #UrbanPhotography #Sunset #Vibes',
-    likes: 3421,
-    reposts: 521,
-    shares: 892,
-    quotes: 42,
-    comments: [],
-    timestamp: '1h ago',
-    imageUrls: ['https://picsum.photos/id/10/800/1000'],
-    adRevenue: 8.90
-  },
-];
-
-export const MOCK_CONVERSATIONS: Conversation[] = [
-  {
-    id: 'c1',
-    user: MOCK_USERS[0],
-    lastMessage: 'Did you see the new AI model released yesterday?',
-    timestamp: '2m',
-    unread: true,
-    messages: [
-      { id: 'm1', senderId: 'u2', text: 'Hey Alex! Long time no see.', timestamp: '10:00 AM', isOwn: false },
-      { id: 'm2', senderId: 'u1', text: 'Hi Sarah! Yeah, been busy with the new project.', timestamp: '10:05 AM', isOwn: true },
-      { id: 'm3', senderId: 'u2', text: 'Did you see the new AI model released yesterday?', timestamp: '10:07 AM', isOwn: false }
-    ]
   }
 ];
 
 export const MOCK_NOTIFICATIONS: Notification[] = [
   {
     id: 'n1',
-    type: 'like',
-    user: MOCK_USERS[0],
-    post: INITIAL_POSTS[1],
-    timestamp: '10m ago',
+    type: 'tip',
+    user: MOCK_USERS[2],
+    timestamp: '5m ago',
     read: false,
+    text: 'sent you 50 Nexus Gold!',
+    amount: 50
   },
   {
-    id: 'p-1',
-    type: 'payout',
-    user: { id: 'nexus', name: 'Nexus Payments', handle: '@nexus', avatar: 'https://picsum.photos/id/20/150/150', followers: 0, following: 0 },
-    timestamp: '1h ago',
+    id: 'n2',
+    type: 'subscription',
+    user: MOCK_USERS[0],
+    timestamp: '20m ago',
     read: false,
-    text: 'Your ad revenue payout of $125.40 has been processed.',
-    amount: 125.40
+    text: 'just joined your Fan Club! 🎉'
+  }
+];
+
+// Added MOCK_STORIES to resolve error in Stories.tsx
+export const MOCK_STORIES: Story[] = [
+  {
+    id: 's1',
+    user: MOCK_USERS[0],
+    imageUrl: 'https://picsum.photos/id/10/800/1200',
+    timestamp: '2h ago',
+    isViewed: false
+  },
+  {
+    id: 's2',
+    user: MOCK_USERS[1],
+    imageUrl: 'https://picsum.photos/id/20/800/1200',
+    timestamp: '5h ago',
+    isViewed: false
+  },
+  {
+    id: 's-ad',
+    user: MOCK_ADS[0].user,
+    imageUrl: 'https://picsum.photos/id/30/800/1200',
+    timestamp: 'Sponsored',
+    isSponsored: true
+  }
+];
+
+// Added MOCK_CONVERSATIONS to resolve error in Messages.tsx
+export const MOCK_CONVERSATIONS: Conversation[] = [
+  {
+    id: 'c1',
+    user: MOCK_USERS[0],
+    lastMessage: 'The new AI tools are incredible!',
+    timestamp: '2m',
+    unread: true,
+    messages: [
+      {
+        id: 'm1',
+        senderId: MOCK_USERS[0].id,
+        text: 'Hey Alex, did you see the new update?',
+        timestamp: '10:00 AM',
+        isOwn: false
+      },
+      {
+        id: 'm2',
+        senderId: 'u1',
+        text: 'Not yet, what happened?',
+        timestamp: '10:05 AM',
+        isOwn: true
+      },
+      {
+        id: 'm3',
+        senderId: MOCK_USERS[0].id,
+        text: 'The new AI tools are incredible!',
+        timestamp: '10:10 AM',
+        isOwn: false
+      }
+    ]
+  },
+  {
+    id: 'c2',
+    user: MOCK_USERS[1],
+    lastMessage: 'See you there!',
+    timestamp: '1h',
+    unread: false,
+    messages: []
   }
 ];

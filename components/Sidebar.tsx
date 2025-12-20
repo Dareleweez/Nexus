@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, Compass, Bell, User as UserIcon, Settings, Mail, Plus, Menu, Wallet } from 'lucide-react';
+import { Home, Compass, Bell, User as UserIcon, Settings, Mail, Plus, Menu, Wallet, ShoppingBag } from 'lucide-react';
 import { ViewState, User } from '../types';
 
 interface SidebarProps {
@@ -17,14 +17,15 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, onCreatePo
     { id: 'notifications', icon: Bell, label: 'Notifications' },
     { id: 'create', icon: Plus, label: 'Post', mobileOnly: true, isAction: true },
     { id: 'messages', icon: Mail, label: 'Messages' },
-    { id: 'monetization', icon: Wallet, label: 'Monetization' },
+    { id: 'monetization', icon: Wallet, label: 'Earnings' },
+    { id: 'store', icon: ShoppingBag, label: 'Store' },
     { id: 'profile', icon: UserIcon, label: 'Profile', desktopOnly: true },
     { id: 'menu', icon: Menu, label: 'Menu', mobileOnly: true },
   ];
 
   return (
     <div className="fixed bottom-0 w-full md:w-64 md:h-screen md:sticky md:top-0 bg-white/80 dark:bg-nexus-900/80 md:bg-white/60 dark:md:bg-nexus-900/60 backdrop-blur-xl border-t md:border-t-0 md:border-r border-gray-200/60 dark:border-gray-800 z-50 flex md:flex-col justify-between p-4 transition-all duration-300">
-      <div className="flex md:flex-col w-full md:w-auto justify-around md:justify-start gap-1 md:gap-4">
+      <div className="flex md:flex-col w-full md:w-auto justify-around md:justify-start gap-1 md:gap-4 overflow-y-auto no-scrollbar">
         <div className="hidden md:flex items-center mb-8 px-4">
             <h1 className="text-4xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-nexus-primary to-nexus-accent">NEXUS</h1>
         </div>
@@ -71,18 +72,6 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, onCreatePo
           );
         })}
         
-        <button 
-          onClick={() => onViewChange('settings')}
-          className={`hidden md:flex mt-4 items-center gap-4 p-3 rounded-full transition-all ${
-             currentView === 'settings'
-               ? 'bg-nexus-primary/10 text-nexus-primary font-bold'
-               : 'text-gray-600 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-nexus-800/40 hover:text-black dark:hover:text-white'
-          }`}
-        >
-             <Settings className="w-6 h-6" />
-             <span className="text-lg">Settings</span>
-        </button>
-
         <button 
             onClick={onCreatePost}
             className="hidden md:block mt-6 bg-gradient-to-r from-nexus-primary to-nexus-accent text-white font-bold py-3.5 px-8 rounded-full hover:opacity-90 transition-all shadow-lg shadow-nexus-primary/20"
