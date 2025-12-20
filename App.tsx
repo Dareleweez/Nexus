@@ -13,11 +13,9 @@ import Notifications from './components/Notifications.tsx';
 import PostDetail from './components/PostDetail.tsx';
 import MobileMenu from './components/MobileMenu.tsx';
 import Bookmarks from './components/Bookmarks.tsx';
-import Monetization from './components/Monetization.tsx';
-import Store from './components/Store.tsx';
 import { ViewState, Post, User, Comment, Notification } from './types.ts';
 import { CURRENT_USER, INITIAL_POSTS, MOCK_USERS, MOCK_NOTIFICATIONS, MOCK_ADS } from './constants.ts';
-import { Sparkles, Search, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
@@ -79,19 +77,17 @@ export default function App() {
 
   const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
 
-  // Intersperse ads into the feed every 3 posts
   const postsWithAds = useMemo(() => {
     const result: Post[] = [];
     posts.forEach((post, index) => {
       result.push(post);
-      // Inject an ad every 3 posts for non-premium users
-      if (!currentUser?.isPremium && (index + 1) % 3 === 0) {
+      if ((index + 1) % 3 === 0) {
         const adIndex = Math.floor(index / 3) % MOCK_ADS.length;
         result.push(MOCK_ADS[adIndex]);
       }
     });
     return result;
-  }, [posts, currentUser]);
+  }, [posts]);
 
   const handleLike = (postId: string) => {
     setPosts(posts.map(post => {
@@ -138,14 +134,6 @@ export default function App() {
     };
 
     setPosts([newPost, ...posts]);
-    setNotifications(prev => [{
-        id: `n-${Date.now()}`,
-        type: 'repost',
-        user: currentUser,
-        post: originalPost,
-        timestamp: 'Just now',
-        read: false
-    }, ...prev]);
   };
 
   const handleQuote = (post: Post) => {
@@ -356,10 +344,6 @@ export default function App() {
                 currentUser={currentUser || undefined}
             />
         );
-      case 'monetization':
-        return currentUser ? <Monetization currentUser={currentUser} /> : null;
-      case 'store':
-        return <Store />;
       case 'profile':
         return viewingUser ? (
             <Profile 

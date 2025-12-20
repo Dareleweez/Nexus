@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { User, Settings, User as UserIcon, Compass, LogOut, X, ChevronRight, Bookmark, Moon, Sun, Wallet, ShoppingBag } from 'lucide-react';
+import { User, Settings, User as UserIcon, Compass, LogOut, X, ChevronRight, Bookmark, Moon, Sun } from 'lucide-react';
 import { ViewState, User as UserType } from '../types';
 
 interface MobileMenuProps {
@@ -28,16 +28,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ currentUser, onViewChange, onCl
       onClick: () => onViewChange('explore') 
     },
     { 
-      icon: Wallet, 
-      label: 'Monetization', 
-      onClick: () => onViewChange('monetization') 
-    },
-    { 
-      icon: ShoppingBag, 
-      label: 'Nexus Store', 
-      onClick: () => onViewChange('store') 
-    },
-    { 
       icon: Bookmark, 
       label: 'Bookmarks', 
       onClick: () => onViewChange('bookmarks')
@@ -63,16 +53,11 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ currentUser, onViewChange, onCl
 
       {/* Profile Card */}
       <div className="p-4 m-4 bg-gray-50 dark:bg-nexus-800 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center gap-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-nexus-700 transition-colors" onClick={() => onUserClick(currentUser)}>
-        <div className="relative">
-          <img 
-              src={currentUser.avatar} 
-              alt={currentUser.name} 
-              className="w-14 h-14 rounded-full object-cover border-2 border-white dark:border-nexus-900 shadow-sm"
-          />
-          {currentUser.isPremium && (
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-nexus-primary rounded-full border-2 border-white dark:border-nexus-900" />
-          )}
-        </div>
+        <img 
+            src={currentUser.avatar} 
+            alt={currentUser.name} 
+            className="w-14 h-14 rounded-full object-cover border-2 border-white dark:border-nexus-900 shadow-sm"
+        />
         <div className="flex-1">
             <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">{currentUser.name}</h3>
             <p className="text-gray-500 dark:text-gray-400">{currentUser.handle}</p>
@@ -94,7 +79,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ currentUser, onViewChange, onCl
                     <item.icon className="w-6 h-6" />
                 </div>
                 <span className="flex-1 font-semibold text-gray-700 dark:text-gray-200 text-lg">{item.label}</span>
-                <ChevronRight className="w-5 h-5 text-gray-300 dark:text-gray-600" />
+                <ChevronRight className="w-5 h-5 text-300 dark:text-gray-600" />
             </button>
         ))}
 

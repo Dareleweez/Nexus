@@ -8,11 +8,7 @@ export const CURRENT_USER: User = {
   avatar: 'https://picsum.photos/id/64/150/150',
   bio: 'Digital explorer | AI enthusiast | Building the future 🚀',
   followers: 1250,
-  following: 432,
-  isPremium: true,
-  balance: 2450,
-  isMonetized: true,
-  subscriptionPrice: 4.99
+  following: 432
 };
 
 export const MOCK_USERS: User[] = [
@@ -22,9 +18,7 @@ export const MOCK_USERS: User[] = [
     handle: '@sarahc',
     avatar: 'https://picsum.photos/id/65/150/150',
     followers: 8900,
-    following: 120,
-    isPremium: true,
-    isPro: true,
+    following: 120
   },
   {
     id: 'u3',
@@ -40,8 +34,7 @@ export const MOCK_USERS: User[] = [
     handle: '@emilyz',
     avatar: 'https://picsum.photos/id/338/150/150',
     followers: 3200,
-    following: 150,
-    isPremium: true,
+    following: 150
   },
   {
     id: 'u5',
@@ -49,9 +42,7 @@ export const MOCK_USERS: User[] = [
     handle: '@jwilson',
     avatar: 'https://picsum.photos/id/334/150/150',
     followers: 1200,
-    following: 800,
-    isMonetized: true,
-    subscriptionPrice: 9.99
+    following: 800
   },
   {
     id: 'u6',
@@ -72,10 +63,9 @@ export const MOCK_ADS: Post[] = [
       handle: '@nexus_official',
       avatar: 'https://picsum.photos/id/101/150/150',
       followers: 1000000,
-      following: 0,
-      isPremium: true
+      following: 0
     },
-    content: 'Upgrade to Nexus Pro and unlock the full potential of AI-powered content creation. Get 2K image generation, advanced analytics, and zero ads! ✨',
+    content: 'Experience the next generation of social media. AI-powered tools, real-time trends, and a community built for the future. ✨',
     likes: 12400,
     reposts: 890,
     shares: 4500,
@@ -84,7 +74,7 @@ export const MOCK_ADS: Post[] = [
     timestamp: 'Sponsored',
     isSponsored: true,
     imageUrls: ['https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800'],
-    ctaLabel: 'Try 7 Days Free'
+    ctaLabel: 'Learn More'
   },
   {
     id: 'ad-gaming-1',
@@ -94,8 +84,7 @@ export const MOCK_ADS: Post[] = [
       handle: '@vortex_play',
       avatar: 'https://picsum.photos/id/201/150/150',
       followers: 250000,
-      following: 50,
-      isPremium: true
+      following: 50
     },
     content: 'The future of cloud gaming is here. Play any AAA title on any device with zero latency. Join the beta today! 🎮🔥',
     likes: 45000,
@@ -222,19 +211,6 @@ export const INITIAL_POSTS: Post[] = [
     videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
   },
   {
-    id: 'ex-p1',
-    user: MOCK_USERS[4],
-    content: 'EXCLUSIVE: My raw workflow for the upcoming film. Available for subscribers only! 💎✨',
-    likes: 450,
-    reposts: 12,
-    shares: 5,
-    quotes: 2,
-    comments: [],
-    timestamp: '2h ago',
-    isExclusive: true,
-    isLocked: true
-  },
-  {
     id: 'n-p1',
     user: MOCK_USERS[4],
     content: 'Golden hour in the city is something else. 🌆 #UrbanPhotography #Sunset #Vibes',
@@ -265,15 +241,6 @@ export const MOCK_CONVERSATIONS: Conversation[] = [
 
 export const MOCK_NOTIFICATIONS: Notification[] = [
   {
-    id: 'n-tip1',
-    type: 'tip',
-    user: MOCK_USERS[1],
-    timestamp: '5m ago',
-    read: false,
-    amount: 50,
-    text: 'sent you 50 Nexus Gold!'
-  },
-  {
     id: 'n1',
     type: 'like',
     user: MOCK_USERS[0],
@@ -282,11 +249,10 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     read: false,
   },
   {
-    id: 'n-sub1',
-    type: 'subscription',
-    user: MOCK_USERS[4],
-    timestamp: '2h ago',
+    id: 'n2',
+    type: 'follow',
+    user: MOCK_USERS[1],
+    timestamp: '20m ago',
     read: false,
-    text: 'subscribed to your channel! Welcome to the inner circle. 🎉'
   }
 ];

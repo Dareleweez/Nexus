@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, Compass, Bell, User as UserIcon, Settings, Sparkles, Mail, Plus, Menu, Bookmark, Wallet, ShoppingBag } from 'lucide-react';
+import { Home, Compass, Bell, User as UserIcon, Settings, Mail, Plus, Menu } from 'lucide-react';
 import { ViewState, User } from '../types';
 
 interface SidebarProps {
@@ -17,8 +17,6 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, onCreatePo
     { id: 'notifications', icon: Bell, label: 'Notifications' },
     { id: 'create', icon: Plus, label: 'Post', mobileOnly: true, isAction: true },
     { id: 'messages', icon: Mail, label: 'Messages' },
-    { id: 'monetization', icon: Wallet, label: 'Earnings', desktopOnly: true },
-    { id: 'store', icon: ShoppingBag, label: 'Shop', desktopOnly: true },
     { id: 'profile', icon: UserIcon, label: 'Profile', desktopOnly: true },
     { id: 'menu', icon: Menu, label: 'Menu', mobileOnly: true },
   ];
@@ -59,16 +57,11 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, onCreatePo
               }`}
             >
               {item.id === 'profile' ? (
-                  <div className="relative">
-                      <img 
-                        src={currentUser.avatar} 
-                        alt="Profile"
-                        className={`w-8 h-8 rounded-full object-cover ${isActive ? 'ring-2 ring-nexus-primary' : ''}`}
-                      />
-                      {currentUser.isPremium && (
-                          <div className="absolute -top-1 -right-1 w-3 h-3 bg-nexus-accent rounded-full border border-white dark:border-nexus-900" title="Premium User" />
-                      )}
-                  </div>
+                  <img 
+                    src={currentUser.avatar} 
+                    alt="Profile"
+                    className={`w-8 h-8 rounded-full object-cover ${isActive ? 'ring-2 ring-nexus-primary' : ''}`}
+                  />
               ) : (
                   <item.icon className={`w-6 h-6 ${isActive ? 'fill-current' : ''}`} />
               )}

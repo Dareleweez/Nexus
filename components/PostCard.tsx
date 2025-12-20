@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Post, User, Comment, ViewState } from '../types.ts';
-import { Heart, MessageCircle, Send, MoreHorizontal, Pencil, Trash2, Eye, ChevronDown, ChevronUp, Repeat2, Quote, Bookmark, Link, Share2, Mail, X, Coins, Lock, BadgeCheck, Sparkles, ExternalLink, ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import { Heart, MessageCircle, Send, MoreHorizontal, Pencil, Trash2, Eye, ChevronDown, ChevronUp, Repeat2, Quote, Bookmark, Link, Share2, Mail, X, Sparkles, ExternalLink, ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { CURRENT_USER, MOCK_USERS } from '../constants.ts';
 
 interface CommentItemProps {
@@ -85,7 +85,6 @@ const CommentItem: React.FC<CommentItemProps> = ({
                               >
                                   {comment.user.name}
                               </span>
-                              {comment.user.isPremium && <BadgeCheck className="w-3.5 h-3.5 text-nexus-primary shrink-0" />}
                           </div>
                           <div className="flex items-center gap-2">
                               {showHighlight && (
@@ -126,7 +125,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
                                   <MoreHorizontal className="w-4 h-4" />
                               </button>
                               {showActions && (
-                                  <div className="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-nexus-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-1.5 z-30 animate-in fade-in zoom-in duration-150">
+                                  <div className="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-nexus-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 py-1.5 z-40 animate-in fade-in zoom-in duration-150">
                                       <button 
                                           onClick={() => { handleEditComment(comment); setShowActions(false); }}
                                           className="w-full text-left px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-2 transition-colors"
@@ -237,7 +236,6 @@ const PostCard: React.FC<PostCardProps> = ({
   const [showMenu, setShowMenu] = useState(false);
   const [showRepostMenu, setShowRepostMenu] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
-  const [showTipMenu, setShowTipMenu] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(post.content);
   
@@ -251,17 +249,13 @@ const PostCard: React.FC<PostCardProps> = ({
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editCommentText, setEditCommentText] = useState('');
   
-  // Carousel State
   const [carouselIndex, setCarouselIndex] = useState(0);
-  
-  // Pre-roll Ad State
   const [showPreRoll, setShowPreRoll] = useState(false);
   const [preRollCountdown, setPreRollCountdown] = useState(5);
   
   const commentInputRef = useRef<HTMLTextAreaElement>(null);
   const repostMenuRef = useRef<HTMLDivElement>(null);
   const shareModalRef = useRef<HTMLDivElement>(null);
-  const tipModalRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const isOwner = post.user.id === currentUser.id;
@@ -291,15 +285,12 @@ const PostCard: React.FC<PostCardProps> = ({
         if (shareModalRef.current && !shareModalRef.current.contains(event.target as Node)) {
             setShowShareMenu(false);
         }
-        if (tipModalRef.current && !tipModalRef.current.contains(event.target as Node)) {
-            setShowTipMenu(false);
-        }
     };
-    if (showShareMenu || showRepostMenu || showTipMenu) {
+    if (showShareMenu || showRepostMenu) {
         document.addEventListener("mousedown", handleClickOutside);
     }
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showShareMenu, showRepostMenu, showTipMenu]);
+  }, [showShareMenu, showRepostMenu]);
 
   useEffect(() => {
     let timer: ReturnType<typeof setInterval>;
@@ -340,12 +331,6 @@ const PostCard: React.FC<PostCardProps> = ({
     }
     setShareCount(prev => prev + 1);
     setShowShareMenu(false);
-  };
-
-  const handleSendTip = (amount: number) => {
-      // Simulate sending tip
-      alert(`Sent ${amount} Nexus Gold to ${post.user.name}!`);
-      setShowTipMenu(false);
   };
 
   const handleDefaultLike = (e: React.MouseEvent) => {
@@ -439,7 +424,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
   const handleVideoClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!currentUser.isPremium && !post.isSponsored && !showPreRoll) {
+    if (!post.isSponsored && !showPreRoll) {
         setShowPreRoll(true);
         if (videoRef.current) videoRef.current.pause();
     } else if (videoRef.current) {
@@ -452,26 +437,6 @@ const PostCard: React.FC<PostCardProps> = ({
   const isActuallyARepost = !!post.repostedFrom;
 
   const renderMedia = () => {
-    if (displayPost.isLocked) {
-        return (
-            <div className="mt-3 relative rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-nexus-800 h-64 flex flex-col items-center justify-center p-8 text-center gap-4">
-                <div className="p-4 bg-nexus-primary/10 rounded-full">
-                    <Lock className="w-10 h-10 text-nexus-primary" />
-                </div>
-                <div>
-                    <h4 className="font-bold text-lg">Exclusive Content</h4>
-                    <p className="text-sm text-gray-500">Subscribe to {displayPost.user.name} to unlock this post and more exclusive content.</p>
-                </div>
-                <button 
-                  onClick={(e) => { e.stopPropagation(); onUserClick(displayPost.user); }}
-                  className="bg-nexus-primary text-white font-bold py-2 px-6 rounded-full hover:bg-nexus-primary/90 transition-all shadow-sm"
-                >
-                    Subscribe
-                </button>
-            </div>
-        );
-    }
-
     if (displayPost.videoUrl) {
       return (
         <div 
@@ -497,20 +462,14 @@ const PostCard: React.FC<PostCardProps> = ({
                 <div className="p-4 bg-nexus-primary/20 rounded-full mb-4 animate-pulse">
                     <Sparkles className="w-12 h-12 text-nexus-primary" />
                 </div>
-                <h4 className="text-white font-black text-xl mb-2">Nexus In-Stream Ad</h4>
-                <p className="text-white/60 text-sm mb-6">Your content will play in {preRollCountdown} seconds...</p>
+                <h4 className="text-white font-black text-xl mb-2">Sponsored Content</h4>
+                <p className="text-white/60 text-sm mb-6">Your video will play in {preRollCountdown} seconds...</p>
                 <div className="w-full max-w-[200px] h-1 bg-white/20 rounded-full overflow-hidden">
                     <div 
                         className="h-full bg-nexus-primary transition-all duration-1000 ease-linear"
                         style={{ width: `${(5 - preRollCountdown) * 20}%` }}
                     ></div>
                 </div>
-                <button 
-                  onClick={(e) => { e.stopPropagation(); onViewChange?.('store'); }}
-                  className="mt-8 bg-white text-black font-black py-2 px-6 rounded-full text-xs hover:scale-105 transition-transform"
-                >
-                    Go Premium to Skip Ads
-                </button>
              </div>
           )}
         </div>
@@ -617,8 +576,6 @@ const PostCard: React.FC<PostCardProps> = ({
                         <span onClick={handleUserClick} className="font-bold truncate text-gray-900 dark:text-gray-100 cursor-pointer hover:underline text-sm md:text-base leading-none">
                           {displayPost.user.name}
                         </span>
-                        {displayPost.user.isPremium && <span title="Nexus Premium"><BadgeCheck className="w-4 h-4 text-nexus-primary shrink-0" /></span>}
-                        {displayPost.user.isPro && <span title="Nexus Pro"><Sparkles className="w-4 h-4 text-nexus-accent shrink-0" /></span>}
                       </div>
                       <span onClick={handleUserClick} className="text-gray-500 dark:text-gray-400 truncate cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 text-xs">
                         {displayPost.user.handle}
@@ -662,7 +619,7 @@ const PostCard: React.FC<PostCardProps> = ({
                  </div>
              </div>
           ) : (
-            <div className={`mt-1 whitespace-pre-wrap ${isNested ? 'text-sm' : 'text-[16px]'} leading-relaxed text-gray-900 dark:text-gray-100 ${displayPost.isLocked ? 'blur-sm select-none opacity-40 pointer-events-none' : ''}`}>
+            <div className={`mt-1 whitespace-pre-wrap ${isNested ? 'text-sm' : 'text-[16px]'} leading-relaxed text-gray-900 dark:text-gray-100`}>
                 {post.content}
             </div>
           )}
@@ -721,38 +678,6 @@ const PostCard: React.FC<PostCardProps> = ({
                             <button onClick={handleQuoteAction} className="w-full text-left px-4 py-3 text-[15px] text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-nexus-700 flex items-center gap-3 transition-colors">
                                 <Quote className="w-5 h-5" /> Quote Post
                             </button>
-                        </div>
-                    )}
-                  </div>
-
-                  {/* TIP (Nexus Gold) */}
-                  <div className="relative" ref={tipModalRef}>
-                    <button 
-                        onClick={(e) => { e.stopPropagation(); setShowTipMenu(!showTipMenu); }}
-                        className="flex items-center gap-1.5 text-nexus-accent hover:bg-nexus-accent/10 p-1.5 rounded-full transition-all"
-                        title="Tip with Nexus Gold"
-                    >
-                        <Coins className="w-[22px] h-[22px]" strokeWidth={2.5} />
-                    </button>
-                    {showTipMenu && (
-                        <div className="absolute left-0 bottom-full mb-3 w-64 bg-white dark:bg-nexus-800 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.3)] border border-gray-100 dark:border-gray-700 p-4 z-50 animate-in fade-in slide-in-from-bottom-4">
-                            <h4 className="font-black text-lg mb-3 flex items-center gap-2">
-                                <Coins className="w-5 h-5 text-nexus-accent" />
-                                Send Tip
-                            </h4>
-                            <div className="grid grid-cols-2 gap-2 mb-4">
-                                {[10, 50, 100, 500].map(amt => (
-                                    <button 
-                                        key={amt}
-                                        onClick={() => handleSendTip(amt)}
-                                        className="py-2.5 rounded-2xl bg-gray-50 dark:bg-nexus-900 border border-gray-100 dark:border-gray-700 font-bold text-sm hover:border-nexus-accent hover:bg-nexus-accent/5 transition-all flex items-center justify-center gap-1"
-                                    >
-                                        <Coins className="w-3.5 h-3.5" />
-                                        {amt}
-                                    </button>
-                                ))}
-                            </div>
-                            <p className="text-[10px] text-gray-400 text-center uppercase font-bold tracking-tighter">Your Balance: {currentUser.balance || 0} Gold</p>
                         </div>
                     )}
                   </div>

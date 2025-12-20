@@ -36,7 +36,7 @@ const RightPanel: React.FC = () => {
         />
       </div>
 
-      {/* Sidebar Ad Unit */}
+      {/* Sidebar Feature Unit */}
       <div className="mb-6 p-6 rounded-2xl bg-gradient-to-br from-nexus-primary to-nexus-accent text-white shadow-lg relative overflow-hidden group cursor-pointer">
           <div className="absolute -right-4 -bottom-4 opacity-10 transform group-hover:scale-110 transition-transform">
               <Zap className="w-32 h-32" />
@@ -44,12 +44,12 @@ const RightPanel: React.FC = () => {
           <div className="relative z-10">
               <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest mb-2 opacity-80">
                   <Sparkles className="w-3 h-3" />
-                  Sponsored
+                  New Feature
               </div>
-              <h3 className="font-black text-lg leading-tight mb-2">Build your dreams with Nexus Pro</h3>
-              <p className="text-xs font-medium text-white/80 mb-4">Get exclusive access to the latest Gemini 3 models and advanced creation tools.</p>
+              <h3 className="font-black text-lg leading-tight mb-2">Connect with Nexus Groups</h3>
+              <p className="text-xs font-medium text-white/80 mb-4">Find your community and dive deeper into the topics you love with our new Groups feature.</p>
               <button className="w-full bg-white text-nexus-primary font-black py-2 rounded-xl text-xs hover:scale-105 transition-transform shadow-md">
-                  Upgrade Now
+                  Explore Groups
               </button>
           </div>
       </div>

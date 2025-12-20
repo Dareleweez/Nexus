@@ -19,10 +19,7 @@ const Stories: React.FC<StoriesProps> = ({ currentUser, connected = false }) => 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const progressInterval = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Filter ads for premium users
-  const displayedStories = currentUser.isPremium 
-    ? stories.filter(s => !s.isSponsored) 
-    : stories;
+  const displayedStories = stories;
 
   const handleNext = useCallback(() => {
     if (currentStoryIndex < displayedStories.length - 1) {

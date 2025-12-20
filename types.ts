@@ -7,12 +7,6 @@ export interface User {
   bio?: string;
   followers: number;
   following: number;
-  isPremium?: boolean;
-  isPro?: boolean;
-  isMonetized?: boolean;
-  subscriptionPrice?: number;
-  balance?: number; // In Nexus Gold
-  isSubscribedTo?: boolean; // Current user status relative to this user
 }
 
 export interface Comment {
@@ -42,8 +36,6 @@ export interface Post {
   repostedFrom?: Post;
   quotedPost?: Post;
   isSponsored?: boolean;
-  isExclusive?: boolean;
-  isLocked?: boolean;
   ctaLabel?: string;
   ctaUrl?: string;
   isCarousel?: boolean;
@@ -83,7 +75,7 @@ export interface Conversation {
   messages: Message[];
 }
 
-export type ViewState = 'home' | 'explore' | 'notifications' | 'profile' | 'settings' | 'messages' | 'post' | 'menu' | 'bookmarks' | 'monetization' | 'store';
+export type ViewState = 'home' | 'explore' | 'notifications' | 'profile' | 'settings' | 'messages' | 'post' | 'menu' | 'bookmarks';
 
 export interface GroundingMetadata {
   groundingChunks?: Array<{
@@ -94,7 +86,7 @@ export interface GroundingMetadata {
   }>;
 }
 
-export type NotificationType = 'like' | 'comment' | 'follow' | 'mention' | 'repost' | 'quote' | 'tip' | 'subscription';
+export type NotificationType = 'like' | 'comment' | 'follow' | 'mention' | 'repost' | 'quote';
 
 export interface Notification {
   id: string;
@@ -104,5 +96,4 @@ export interface Notification {
   text?: string;
   timestamp: string;
   read: boolean;
-  amount?: number; // For tips
 }
