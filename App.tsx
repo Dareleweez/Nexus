@@ -15,6 +15,7 @@ import MobileMenu from './components/MobileMenu.tsx';
 import Bookmarks from './components/Bookmarks.tsx';
 import Monetization from './components/Monetization.tsx';
 import Store from './components/Store.tsx';
+import Auth from './components/Auth.tsx';
 import { ViewState, Post, User, Comment, Notification } from './types.ts';
 import { CURRENT_USER, INITIAL_POSTS, MOCK_USERS, MOCK_NOTIFICATIONS, MOCK_ADS } from './constants.ts';
 import { Search, X } from 'lucide-react';
@@ -22,7 +23,8 @@ import { Search, X } from 'lucide-react';
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     const saved = localStorage.getItem('nexus_current_user');
-    return saved ? JSON.parse(saved) : CURRENT_USER;
+    // If nothing saved, we return null to force the Auth screen
+    return saved ? JSON.parse(saved) : null;
   });
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -267,6 +269,28 @@ export default function App() {
       setNotifications(prev => prev.map(n => n.id === notification.id ? { ...n, read: true } : n));
   };
 
+  const handleAuthComplete = (user: User | null) => {
+    if (user) {
+      setCurrentUser(user);
+      localStorage.setItem('nexus_current_user', JSON.stringify(user));
+    } else {
+      // Sign in fallback - just use hardcoded CURRENT_USER for demo
+      setCurrentUser(CURRENT_USER);
+      localStorage.setItem('nexus_current_user', JSON.stringify(CURRENT_USER));
+    }
+    setCurrentView('home');
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('nexus_current_user');
+    setCurrentUser(null);
+    setCurrentView('home');
+  };
+
+  if (!currentUser) {
+    return <Auth onAuthComplete={handleAuthComplete} />;
+  }
+
   const renderContent = () => {
     switch (currentView) {
       case 'home':
@@ -372,7 +396,7 @@ export default function App() {
             />
         ) : null;
       case 'settings':
-        return <Settings onLogout={() => window.location.reload()} isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />;
+        return <Settings onLogout={handleLogout} isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />;
       case 'post':
         return viewingPost ? (
             <PostDetail 
@@ -397,7 +421,7 @@ export default function App() {
             currentUser={currentUser} 
             onViewChange={handleViewChange} 
             onClose={() => handleViewChange('home')}
-            onLogout={() => window.location.reload()}
+            onLogout={handleLogout}
             onUserClick={handleUserClick}
             isDarkMode={isDarkMode}
             toggleDarkMode={toggleDarkMode}
