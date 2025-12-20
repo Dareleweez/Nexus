@@ -14,6 +14,7 @@ import PostDetail from './components/PostDetail.tsx';
 import MobileMenu from './components/MobileMenu.tsx';
 import Bookmarks from './components/Bookmarks.tsx';
 import Monetization from './components/Monetization.tsx';
+import Store from './components/Store.tsx';
 import { ViewState, Post, User, Comment, Notification } from './types.ts';
 import { CURRENT_USER, INITIAL_POSTS, MOCK_USERS, MOCK_NOTIFICATIONS, MOCK_ADS } from './constants.ts';
 import { Search, X } from 'lucide-react';
@@ -350,6 +351,8 @@ export default function App() {
         );
       case 'monetization':
         return currentUser ? <Monetization currentUser={currentUser} /> : null;
+      case 'store':
+        return <Store />;
       case 'profile':
         return viewingUser ? (
             <Profile 
