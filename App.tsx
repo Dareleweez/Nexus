@@ -15,15 +15,14 @@ import MobileMenu from './components/MobileMenu.tsx';
 import Bookmarks from './components/Bookmarks.tsx';
 import Monetization from './components/Monetization.tsx';
 import Store from './components/Store.tsx';
-import Auth from './components/Auth.tsx';
 import { ViewState, Post, User, Comment, Notification } from './types.ts';
 import { CURRENT_USER, INITIAL_POSTS, MOCK_USERS, MOCK_NOTIFICATIONS, MOCK_ADS } from './constants.ts';
 import { Search, X } from 'lucide-react';
 
 export default function App() {
-  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+  const [currentUser, setCurrentUser] = useState<User>(() => {
     const saved = localStorage.getItem('nexus_current_user');
-    return saved ? JSON.parse(saved) : null;
+    return saved ? JSON.parse(saved) : CURRENT_USER;
   });
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -286,31 +285,17 @@ export default function App() {
       setNotifications(prev => prev.map(n => n.id === notification.id ? { ...n, read: true } : n));
   };
 
-  const handleAuthComplete = (user: User | null) => {
-    if (user) {
-      setCurrentUser(user);
-      localStorage.setItem('nexus_current_user', JSON.stringify(user));
-    } else {
-      setCurrentUser(CURRENT_USER);
-      localStorage.setItem('nexus_current_user', JSON.stringify(CURRENT_USER));
-    }
-    setCurrentView('home');
-  };
-
   const handleLogout = () => {
     localStorage.removeItem('nexus_current_user');
-    setCurrentUser(null);
+    setCurrentUser(CURRENT_USER);
     setCurrentView('home');
+    scrollToTop();
   };
 
   const handleClearData = () => {
     localStorage.clear();
     window.location.reload();
   };
-
-  if (!currentUser) {
-    return <Auth onAuthComplete={handleAuthComplete} />;
-  }
 
   const renderContent = () => {
     switch (currentView) {

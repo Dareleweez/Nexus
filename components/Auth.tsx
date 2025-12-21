@@ -1,245 +1,148 @@
 
-import React, { useState, useRef } from 'react';
-import { User, Sparkles, ChevronRight, UserCircle, AtSign, Fingerprint, Rocket, RefreshCw, LogIn, Camera, Image as ImageIcon } from 'lucide-react';
+import React, { useState } from 'react';
+import { 
+  Rocket, 
+  RefreshCw, 
+  ChevronRight, 
+  Fingerprint, 
+  Github, 
+  Chrome, 
+  Apple, 
+  Lock, 
+  Mail 
+} from 'lucide-react';
+import { MOCK_USERS } from '../constants';
 
 interface AuthProps {
   onAuthComplete: (user: any) => void;
 }
 
 const Auth: React.FC<AuthProps> = ({ onAuthComplete }) => {
-  const [isLogin, setIsLogin] = useState(false);
-  const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    name: '',
-    handle: '',
-    bio: '',
-    avatar: `https://picsum.photos/id/${Math.floor(Math.random() * 100)}/200/200`
-  });
-  
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleRandomizeAvatar = () => {
-    setFormData({
-      ...formData,
-      avatar: `https://picsum.photos/id/${Math.floor(Math.random() * 500)}/200/200`
-    });
-  };
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          setFormData({
-            ...formData,
-            avatar: event.target.result as string
-          });
-        }
-      };
-      reader.readAsDataURL(e.target.files[0]);
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newUser = {
-      id: `u-${Date.now()}`,
-      name: formData.name,
-      handle: formData.handle.startsWith('@') ? formData.handle : `@${formData.handle}`,
-      avatar: formData.avatar,
-      bio: formData.bio,
-      followers: 0,
-      following: 0,
-      balance: 0,
-      isPremium: false,
-      isMonetized: false,
-      isSubscribedTo: []
-    };
-    onAuthComplete(newUser);
+  const handleQuickLogin = (user: any) => {
+    setLoading(true);
+    // Simulate API delay for professional feel
+    setTimeout(() => {
+      onAuthComplete(user);
+      setLoading(false);
+    }, 800);
   };
 
   return (
-    <div className="min-h-screen bg-nexus-950 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Dynamic Background Effects */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-nexus-primary/20 rounded-full blur-[120px] animate-pulse"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-nexus-accent/20 rounded-full blur-[120px] animate-pulse delay-700"></div>
+    <div className="min-h-screen bg-[#020617] flex items-center justify-center p-4 relative overflow-hidden font-sans">
+      {/* Immersive Background */}
+      <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-indigo-600/10 rounded-full blur-[140px] animate-pulse"></div>
+      <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] bg-purple-600/10 rounded-full blur-[140px] animate-pulse delay-1000"></div>
+      <div className="absolute top-[40%] left-[30%] w-[20%] h-[20%] bg-blue-500/5 rounded-full blur-[80px]"></div>
 
-      <div className="w-full max-w-md relative z-10">
-        <div className="text-center mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
-          <h1 className="text-6xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-nexus-primary to-nexus-accent mb-2">
-            NEXUS
+      <div className="w-full max-w-xl relative z-10">
+        {/* Branding */}
+        <div className="text-center mb-12 animate-in fade-in slide-in-from-top-6 duration-1000">
+          <div className="inline-flex items-center justify-center p-3 mb-4 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl">
+            <Rocket className="w-8 h-8 text-indigo-400" />
+          </div>
+          <h1 className="text-7xl font-black tracking-tighter text-white mb-3">
+            NEXUS<span className="text-indigo-500">.</span>
           </h1>
-          <p className="text-gray-400 font-medium tracking-wide">The future of social is yours to create.</p>
+          <p className="text-slate-400 text-lg font-medium max-w-sm mx-auto leading-relaxed">
+            Welcome back to the future of social connectivity.
+          </p>
         </div>
 
-        <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-8 shadow-2xl animate-in zoom-in-95 duration-500">
-          <div className="flex mb-8 bg-black/20 p-1 rounded-2xl">
-            <button 
-              onClick={() => setIsLogin(false)}
-              className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!isLogin ? 'bg-nexus-primary text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
-            >
-              Join Nexus
-            </button>
-            <button 
-              onClick={() => setIsLogin(true)}
-              className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${isLogin ? 'bg-nexus-primary text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
-            >
-              Sign In
-            </button>
-          </div>
+        {/* Auth Container - Now Login Only */}
+        <div className="bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[3rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] overflow-hidden relative">
+          <div className="p-8 md:p-12">
+            <div className="space-y-10 animate-in fade-in duration-500">
+              <div className="text-center">
+                <h2 className="text-3xl font-black text-white">Sign In</h2>
+                <p className="text-slate-500 text-sm mt-1">Access your Nexus dashboard and creator tools.</p>
+              </div>
 
-          {!isLogin ? (
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {step === 1 ? (
-                <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                  <div className="text-center">
-                    <div className="relative inline-block group">
-                      <div className="relative">
-                        <img 
-                          src={formData.avatar} 
-                          className="w-32 h-32 rounded-full border-4 border-nexus-primary/30 p-1 object-cover shadow-2xl group-hover:scale-105 transition-transform" 
-                          alt="Avatar Preview" 
-                        />
-                        <div className="absolute inset-0 bg-black/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                            <Camera className="w-8 h-8 text-white" />
+              <div className="space-y-6">
+                {/* Account Selection for Demo */}
+                <div className="space-y-3">
+                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] px-2">Choose an Account</p>
+                  <div className="grid grid-cols-1 gap-2">
+                    {MOCK_USERS.slice(0, 3).map(user => (
+                      <button
+                        key={user.id}
+                        onClick={() => handleQuickLogin(user)}
+                        disabled={loading}
+                        className="flex items-center gap-4 p-4 rounded-3xl bg-white/[0.03] border border-white/5 hover:border-indigo-500/50 hover:bg-white/[0.06] transition-all group disabled:opacity-50"
+                      >
+                        <img src={user.avatar} className="w-12 h-12 rounded-full object-cover border border-white/10" alt={user.name} />
+                        <div className="flex-1 text-left">
+                          <div className="font-bold text-white text-base">{user.name}</div>
+                          <div className="text-slate-500 text-xs">{user.handle}</div>
                         </div>
-                      </div>
-                      
-                      <div className="absolute -bottom-2 -right-2 flex gap-1">
-                        <button 
-                          type="button"
-                          onClick={handleRandomizeAvatar}
-                          className="bg-nexus-accent text-white p-2.5 rounded-full shadow-lg hover:rotate-180 transition-transform duration-500"
-                          title="Randomize Avatar"
-                        >
-                          <RefreshCw className="w-4 h-4" />
-                        </button>
-                        <button 
-                          type="button"
-                          onClick={() => fileInputRef.current?.click()}
-                          className="bg-nexus-primary text-white p-2.5 rounded-full shadow-lg hover:scale-110 transition-transform"
-                          title="Upload Avatar"
-                        >
-                          <ImageIcon className="w-4 h-4" />
-                        </button>
-                      </div>
-                      <input 
-                        type="file" 
-                        ref={fileInputRef} 
-                        className="hidden" 
-                        accept="image/*" 
-                        onChange={handleFileUpload} 
-                      />
-                    </div>
-                    <p className="text-xs text-gray-500 mt-5 font-bold uppercase tracking-widest">Identify Yourself</p>
+                        <ChevronRight className="w-5 h-5 text-slate-600 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" />
+                      </button>
+                    ))}
                   </div>
+                </div>
 
-                  <div className="space-y-4">
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <UserCircle className="w-5 h-5 text-gray-500" />
-                      </div>
-                      <input 
-                        type="text" 
-                        required
-                        placeholder="Full Name"
-                        value={formData.name}
-                        onChange={(e) => setFormData({...formData, name: e.target.value})}
-                        className="w-full bg-black/30 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:ring-2 focus:ring-nexus-primary/50 transition-all outline-none"
-                      />
+                <div className="relative flex items-center py-4">
+                  <div className="flex-grow border-t border-white/5"></div>
+                  <span className="flex-shrink mx-4 text-slate-600 text-[10px] font-black uppercase tracking-widest">Or login with</span>
+                  <div className="flex-grow border-t border-white/5"></div>
+                </div>
+
+                {/* Manual Login */}
+                <div className="space-y-4">
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-slate-500 group-focus-within:text-indigo-400 transition-colors">
+                      <Fingerprint className="w-5 h-5" />
                     </div>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <AtSign className="w-5 h-5 text-gray-500" />
-                      </div>
-                      <input 
-                        type="text" 
-                        required
-                        placeholder="Unique Handle"
-                        value={formData.handle}
-                        onChange={(e) => setFormData({...formData, handle: e.target.value})}
-                        className="w-full bg-black/30 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:ring-2 focus:ring-nexus-primary/50 transition-all outline-none"
-                      />
-                    </div>
+                    <input 
+                      type="text" 
+                      placeholder="Email or Username"
+                      className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-14 pr-4 text-white placeholder-slate-600 focus:ring-2 focus:ring-indigo-500/50 outline-none text-base"
+                    />
                   </div>
-
+                  
                   <button 
-                    type="button"
-                    onClick={() => formData.name && formData.handle && setStep(2)}
-                    className="w-full bg-nexus-primary text-white font-black py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-nexus-primary/90 transition-all shadow-xl shadow-nexus-primary/20"
+                    onClick={() => handleQuickLogin(null)}
+                    disabled={loading}
+                    className="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-indigo-500 transition-all shadow-xl active:scale-95 disabled:opacity-50"
                   >
-                    Continue
-                    <ChevronRight className="w-5 h-5" />
+                    {loading ? <RefreshCw className="w-5 h-5 animate-spin" /> : 'Continue to Dashboard'}
                   </button>
                 </div>
-              ) : (
-                <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                   <div className="relative">
-                      <textarea 
-                        placeholder="Tell the world about yourself (Bio)"
-                        value={formData.bio}
-                        onChange={(e) => setFormData({...formData, bio: e.target.value})}
-                        rows={4}
-                        className="w-full bg-black/30 border border-white/10 rounded-2xl py-4 px-4 text-white focus:ring-2 focus:ring-nexus-primary/50 transition-all outline-none resize-none"
-                      />
-                    </div>
-                    <div className="p-4 bg-nexus-primary/10 border border-nexus-primary/20 rounded-2xl">
-                      <div className="flex items-start gap-3">
-                        <Sparkles className="w-5 h-5 text-nexus-primary shrink-0" />
-                        <p className="text-xs text-gray-400 leading-relaxed">
-                          By joining, you unlock the <span className="text-white font-bold">Nexus Network</span>, AI-powered tools, and the Creator Economy dashboard.
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex gap-3">
-                      <button 
-                        type="button"
-                        onClick={() => setStep(1)}
-                        className="flex-1 border border-white/10 text-gray-400 font-bold py-4 rounded-2xl hover:bg-white/5 transition-all"
-                      >
-                        Back
-                      </button>
-                      <button 
-                        type="submit"
-                        className="flex-[2] bg-gradient-to-r from-nexus-primary to-nexus-accent text-white font-black py-4 rounded-2xl flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-xl shadow-nexus-primary/20"
-                      >
-                        Launch Nexus
-                        <Rocket className="w-5 h-5" />
-                      </button>
-                    </div>
+
+                {/* Social Buttons */}
+                <div className="grid grid-cols-3 gap-3">
+                  <button className="flex items-center justify-center p-4 bg-white/[0.03] border border-white/10 rounded-2xl hover:bg-white/[0.08] transition-all text-slate-400 hover:text-white">
+                    <Chrome className="w-5 h-5" />
+                  </button>
+                  <button className="flex items-center justify-center p-4 bg-white/[0.03] border border-white/10 rounded-2xl hover:bg-white/[0.08] transition-all text-slate-400 hover:text-white">
+                    <Apple className="w-5 h-5" />
+                  </button>
+                  <button className="flex items-center justify-center p-4 bg-white/[0.03] border border-white/10 rounded-2xl hover:bg-white/[0.08] transition-all text-slate-400 hover:text-white">
+                    <Github className="w-5 h-5" />
+                  </button>
                 </div>
-              )}
-            </form>
-          ) : (
-            <div className="space-y-6 animate-in fade-in duration-300">
-               <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Fingerprint className="w-5 h-5 text-gray-500" />
-                  </div>
-                  <input 
-                    type="text" 
-                    placeholder="Enter handle to sign in"
-                    className="w-full bg-black/30 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:ring-2 focus:ring-nexus-primary/50 transition-all outline-none"
-                  />
-                </div>
-                <button 
-                  onClick={() => onAuthComplete(null)} // Mocking sign in for demo
-                  className="w-full bg-white text-black font-black py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-gray-100 transition-all shadow-xl shadow-white/10"
-                >
-                  Sign In
-                  <LogIn className="w-5 h-5" />
-                </button>
-                <p className="text-center text-gray-500 text-xs font-medium italic">
-                  Demo note: In this version, any handle works or simply create a new one.
-                </p>
+              </div>
             </div>
-          )}
+          </div>
+
+          {/* Footer Info */}
+          <div className="px-8 py-6 bg-white/[0.02] border-t border-white/5 flex items-center justify-center gap-6">
+            <div className="flex items-center gap-2 text-[10px] font-black text-slate-600 uppercase tracking-widest">
+              <Lock className="w-3 h-3" />
+              Secure AES-256
+            </div>
+            <div className="w-1 h-1 bg-slate-700 rounded-full"></div>
+            <div className="flex items-center gap-2 text-[10px] font-black text-slate-600 uppercase tracking-widest">
+              <Mail className="w-3 h-3" />
+              Nexus Identity
+            </div>
+          </div>
         </div>
 
-        <div className="mt-8 text-center">
-          <p className="text-gray-600 text-xs font-bold uppercase tracking-widest">
-            Safe • Encrypted • Community Focused
-          </p>
+        {/* Global Footer */}
+        <div className="mt-12 text-center text-slate-500 text-xs font-bold uppercase tracking-[0.2em]">
+          Authorized Access Only • © 2025 Nexus Inc.
         </div>
       </div>
     </div>
