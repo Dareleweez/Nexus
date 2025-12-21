@@ -33,7 +33,6 @@ export default function App() {
 
   const [currentView, setCurrentView] = useState<ViewState>('home');
   
-  // Persist posts to localStorage
   const [posts, setPosts] = useState<Post[]>(() => {
     const saved = localStorage.getItem('nexus_posts');
     return saved ? JSON.parse(saved) : INITIAL_POSTS;
@@ -48,7 +47,6 @@ export default function App() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [quotingPost, setQuotingPost] = useState<Post | null>(null);
 
-  // Sync theme
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
@@ -58,13 +56,12 @@ export default function App() {
     localStorage.setItem('nexus_dark_mode', String(isDarkMode));
   }, [isDarkMode]);
 
-  // Sync posts
   useEffect(() => {
     localStorage.setItem('nexus_posts', JSON.stringify(posts));
   }, [posts]);
 
   useEffect(() => {
-    if (currentUser && !viewingUser) {
+    if (!viewingUser) {
         setViewingUser(currentUser);
     }
   }, [currentUser, viewingUser]);
@@ -126,7 +123,7 @@ export default function App() {
 
   const handleRepost = (postId: string) => {
     const originalPost = posts.find(p => p.id === postId);
-    if (!originalPost || !currentUser) return;
+    if (!originalPost) return;
 
     const newPost: Post = {
         id: `rp-${Date.now()}`,
@@ -151,8 +148,6 @@ export default function App() {
   };
 
   const handleCreatePost = (content: string, mediaFiles: File[], quotedPost?: Post) => {
-    if (!currentUser) return;
-    
     const imageUrls: string[] = [];
     let videoUrl: string | undefined;
 
@@ -193,13 +188,10 @@ export default function App() {
   };
 
   const handleUpdateProfile = (data: { name: string; handle: string; bio: string; avatar: string; coverPhoto?: string }) => {
-    if (!currentUser) return;
     const updatedUser = { ...currentUser, ...data };
     setCurrentUser(updatedUser);
     localStorage.setItem('nexus_current_user', JSON.stringify(updatedUser));
     setViewingUser(updatedUser);
-    
-    // Update all posts made by this user in the local state
     setPosts(prev => prev.map(p => p.user.id === currentUser.id ? { ...p, user: updatedUser } : p));
   };
 
@@ -267,7 +259,7 @@ export default function App() {
 
   const handleViewChange = (view: ViewState) => {
     setCurrentView(view);
-    if (view === 'profile' && currentUser) {
+    if (view === 'profile') {
         setViewingUser(currentUser);
     }
     scrollToTop();
@@ -285,16 +277,11 @@ export default function App() {
       setNotifications(prev => prev.map(n => n.id === notification.id ? { ...n, read: true } : n));
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('nexus_current_user');
-    setCurrentUser(CURRENT_USER);
-    setCurrentView('home');
-    scrollToTop();
-  };
-
   const handleClearData = () => {
-    localStorage.clear();
-    window.location.reload();
+    if (confirm('This will reset your posts and profile to default. Continue?')) {
+        localStorage.clear();
+        window.location.reload();
+    }
   };
 
   const renderContent = () => {
@@ -312,27 +299,25 @@ export default function App() {
                              <Search className="w-7 h-7 text-nexus-primary" />
                          </button>
                          <img 
-                            src={currentUser?.avatar} 
+                            src={currentUser.avatar} 
                             alt="Profile" 
-                            onClick={() => handleUserClick(currentUser!)}
+                            onClick={() => handleUserClick(currentUser)}
                             className="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-gray-700" 
                          />
                     </div>
                 </div>
-                {currentUser && <Stories currentUser={currentUser} connected={true} />}
+                <Stories currentUser={currentUser} connected={true} />
              </div>
             <div className="hidden md:block">
-                {currentUser && <Stories currentUser={currentUser} />}
+                <Stories currentUser={currentUser} />
             </div>
             <div className="hidden md:block">
-                 {currentUser && (
-                    <CreatePost 
-                        currentUser={currentUser} 
-                        onPostCreate={handleCreatePost}
-                        quotingPost={quotingPost}
-                        onCancelQuote={() => setQuotingPost(null)}
-                    />
-                 )}
+                 <CreatePost 
+                    currentUser={currentUser} 
+                    onPostCreate={handleCreatePost}
+                    quotingPost={quotingPost}
+                    onCancelQuote={() => setQuotingPost(null)}
+                />
             </div>
             {postsWithAds.map(post => (
               <PostCard 
@@ -349,7 +334,7 @@ export default function App() {
                 onCommentDelete={handleCommentDelete}
                 onViewPost={(p) => { setViewingPost(p); setCurrentView('post'); }}
                 onViewChange={handleViewChange}
-                currentUser={currentUser || undefined}
+                currentUser={currentUser}
               />
             ))}
           </div>
@@ -370,10 +355,10 @@ export default function App() {
                 onCommentUpdate={handleCommentUpdate}
                 onCommentDelete={handleCommentDelete}
                 onViewChange={handleViewChange}
-                currentUser={currentUser || undefined}
+                currentUser={currentUser}
             />
         );
-      case 'monetization': return currentUser ? <Monetization currentUser={currentUser} /> : null;
+      case 'monetization': return <Monetization currentUser={currentUser} />;
       case 'store': return <Store />;
       case 'profile':
         return viewingUser ? (
@@ -396,7 +381,6 @@ export default function App() {
         ) : null;
       case 'settings':
         return <Settings 
-          onLogout={handleLogout} 
           onClearData={handleClearData}
           isDarkMode={isDarkMode} 
           toggleDarkMode={toggleDarkMode} 
@@ -416,21 +400,20 @@ export default function App() {
                 onCommentUpdate={handleCommentUpdate}
                 onCommentDelete={handleCommentDelete}
                 onViewChange={handleViewChange}
-                currentUser={currentUser || undefined}
+                currentUser={currentUser}
             />
         ) : null;
       case 'menu':
-        return currentUser ? (
+        return (
           <MobileMenu 
             currentUser={currentUser} 
             onViewChange={handleViewChange} 
             onClose={() => handleViewChange('home')}
-            onLogout={handleLogout}
             onUserClick={handleUserClick}
             isDarkMode={isDarkMode}
             toggleDarkMode={toggleDarkMode}
           />
-        ) : null;
+        );
       default: return null;
     }
   };
@@ -443,25 +426,21 @@ export default function App() {
   return (
     <div className="min-h-screen bg-white dark:bg-nexus-900 transition-colors duration-300">
       <div className="max-w-7xl mx-auto flex justify-center">
-        {currentUser && (
-            <div className="hidden md:block md:w-64 lg:w-72 shrink-0">
-                <Sidebar 
-                    currentView={currentView} 
-                    onViewChange={handleViewChange} 
-                    onCreatePost={handleMobileCreatePost}
-                    currentUser={currentUser}
-                />
-            </div>
-        )}
+        <div className="hidden md:block md:w-64 lg:w-72 shrink-0">
+            <Sidebar 
+                currentView={currentView} 
+                onViewChange={handleViewChange} 
+                onCreatePost={handleMobileCreatePost}
+                currentUser={currentUser}
+            />
+        </div>
         <div className="md:hidden">
-             {currentUser && (
-                 <Sidebar 
-                    currentView={currentView} 
-                    onViewChange={handleViewChange} 
-                    onCreatePost={handleMobileCreatePost}
-                    currentUser={currentUser}
-                />
-             )}
+             <Sidebar 
+                currentView={currentView} 
+                onViewChange={handleViewChange} 
+                onCreatePost={handleMobileCreatePost}
+                currentUser={currentUser}
+            />
         </div>
         <main className="w-full max-w-[750px] border-x border-gray-100 dark:border-gray-800 min-h-screen pb-20 md:pb-0">
           {renderContent()}
@@ -479,14 +458,12 @@ export default function App() {
                    <span className="font-bold text-lg text-gray-900 dark:text-gray-100">{quotingPost ? 'Quote Post' : 'New Post'}</span>
                    <div className="w-6"></div>
                </div>
-               {currentUser && (
-                    <CreatePost 
-                        currentUser={currentUser} 
-                        onPostCreate={handleCreatePost}
-                        quotingPost={quotingPost}
-                        onCancelQuote={() => setQuotingPost(null)}
-                    />
-                )}
+                <CreatePost 
+                    currentUser={currentUser} 
+                    onPostCreate={handleCreatePost}
+                    quotingPost={quotingPost}
+                    onCancelQuote={() => setQuotingPost(null)}
+                />
            </div>
         </div>
       )}

@@ -1,21 +1,17 @@
 
 import React, { useState, useEffect } from 'react';
-// Added missing 'X' icon import to resolve the error on line 148
-import { User, Bell, Lock, Eye, ChevronRight, Shield, Smartphone, LogOut, Moon, Sun, Database, Trash2, Info, Activity, ShieldAlert, Heart, MessageSquare, Cloud, Terminal, Copy, ExternalLink, Rocket, X } from 'lucide-react';
+import { User, Bell, Lock, Eye, ChevronRight, Shield, Smartphone, Moon, Sun, Database, Trash2, Info, Activity, ShieldAlert, Heart, MessageSquare, Cloud, Terminal, Copy, ExternalLink, Rocket, X } from 'lucide-react';
 
 interface SettingsProps {
-  onLogout: () => void;
   onClearData: () => void;
   isDarkMode: boolean;
   toggleDarkMode: () => void;
 }
 
-const Settings: React.FC<SettingsProps> = ({ onLogout, onClearData, isDarkMode, toggleDarkMode }) => {
+const Settings: React.FC<SettingsProps> = ({ onClearData, isDarkMode, toggleDarkMode }) => {
   const [storageUsed, setStorageUsed] = useState<string>('0 KB');
   const [healthStatus, setHealthStatus] = useState<'healthy' | 'warning' | 'error'>('healthy');
-  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [isDeployGuideOpen, setIsDeployGuideOpen] = useState(false);
-  const [feedbackType, setFeedbackType] = useState('bug');
 
   useEffect(() => {
     let total = 0;
@@ -29,7 +25,7 @@ const Settings: React.FC<SettingsProps> = ({ onLogout, onClearData, isDarkMode, 
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    alert('Command copied! Paste this into your Cloud Shell.');
+    alert('Command copied!');
   };
 
   const sections = [
@@ -39,33 +35,28 @@ const Settings: React.FC<SettingsProps> = ({ onLogout, onClearData, isDarkMode, 
         { 
           icon: Rocket, 
           label: 'Deployment Assistant', 
-          desc: 'Deploy this site to Google Cloud from your phone.', 
+          desc: 'Manage your cloud presence.', 
           onClick: () => setIsDeployGuideOpen(true) 
         },
         { 
           icon: Cloud, 
           label: 'Google Cloud Console', 
-          desc: 'Manage your live infrastructure.', 
+          desc: 'Manage live infrastructure.', 
           onClick: () => window.open('https://console.cloud.google.com', '_blank') 
         }
       ]
     },
     {
-      title: 'Your Account',
+      title: 'Account',
       items: [
-        { icon: User, label: 'Account Information', desc: 'See your account information like your handle and email.' },
-        { icon: LogOut, label: 'Log out', desc: 'Sign out of your account on this device.', danger: true, onClick: onLogout },
+        { icon: User, label: 'Account Information', desc: 'Manage your profile and handle.' }
       ]
     },
     {
       title: 'Data & Privacy',
       items: [
         { icon: Database, label: 'Browser Storage', desc: `Nexus is using ${storageUsed} of local space.` },
-        { icon: Trash2, label: 'Clear All Local Data', desc: 'Reset all posts and settings.', danger: true, onClick: () => {
-          if (confirm('Are you sure you want to clear all data?')) {
-            onClearData();
-          }
-        }},
+        { icon: Trash2, label: 'Reset Nexus Environment', desc: 'Clear all local session data.', danger: true, onClick: onClearData },
       ]
     }
   ];
@@ -76,7 +67,6 @@ const Settings: React.FC<SettingsProps> = ({ onLogout, onClearData, isDarkMode, 
         <h2 className="font-bold text-xl text-gray-900 dark:text-gray-100">Settings</h2>
       </div>
 
-      {/* Status Hero */}
       <div className="p-4">
         <div className="bg-black text-green-400 p-6 rounded-[2rem] font-mono text-sm border border-green-900/30 shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-20">
@@ -134,7 +124,6 @@ const Settings: React.FC<SettingsProps> = ({ onLogout, onClearData, isDarkMode, 
         ))}
       </div>
 
-      {/* Deployment Assistant Modal */}
       {isDeployGuideOpen && (
           <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-xl flex items-center justify-center p-4">
               <div className="bg-white dark:bg-nexus-900 w-full max-w-2xl h-[80vh] rounded-[2.5rem] border border-gray-100 dark:border-gray-800 overflow-hidden shadow-2xl flex flex-col animate-in zoom-in-95">
@@ -144,54 +133,15 @@ const Settings: React.FC<SettingsProps> = ({ onLogout, onClearData, isDarkMode, 
                             <Rocket className="w-6 h-6 text-nexus-primary" />
                             Mobile Deploy Assistant
                         </h4>
-                        <p className="text-xs text-gray-500">Deploying from Android Phone via Cloud Shell</p>
+                        <p className="text-xs text-gray-500">Nexus Infrastructure Tools</p>
                     </div>
                     <button onClick={() => setIsDeployGuideOpen(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-nexus-800 rounded-full">
                         <X className="w-6 h-6 text-gray-400" />
                     </button>
                 </div>
                 
-                <div className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar">
-                    <div className="space-y-4">
-                        <h5 className="font-bold text-nexus-primary flex items-center gap-2">
-                            <span className="w-6 h-6 rounded-full bg-nexus-primary text-white flex items-center justify-center text-xs">1</span>
-                            Open Cloud Shell
-                        </h5>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Open Chrome and go to <span className="font-mono text-nexus-accent">shell.cloud.google.com</span>. Enable "Desktop Site" in your browser settings.</p>
-                        <button 
-                            onClick={() => window.open('https://shell.cloud.google.com', '_blank')}
-                            className="text-xs font-bold text-nexus-primary flex items-center gap-1 hover:underline"
-                        >
-                            Open Shell <ExternalLink className="w-3 h-3" />
-                        </button>
-                    </div>
-
-                    <div className="space-y-4">
-                        <h5 className="font-bold text-nexus-primary flex items-center gap-2">
-                            <span className="w-6 h-6 rounded-full bg-nexus-primary text-white flex items-center justify-center text-xs">2</span>
-                            Initialize Project
-                        </h5>
-                        <div className="bg-nexus-950 p-4 rounded-xl font-mono text-xs text-amber-400 flex justify-between items-center border border-amber-900/20">
-                            <code>gcloud init</code>
-                            <button onClick={() => copyToClipboard('gcloud init')} className="text-white opacity-50 hover:opacity-100"><Copy className="w-4 h-4" /></button>
-                        </div>
-                    </div>
-
-                    <div className="space-y-4">
-                        <h5 className="font-bold text-nexus-primary flex items-center gap-2">
-                            <span className="w-6 h-6 rounded-full bg-nexus-primary text-white flex items-center justify-center text-xs">3</span>
-                            Deploy to Cloud Run
-                        </h5>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Run this command to build your container and host it globally.</p>
-                        <div className="bg-nexus-950 p-4 rounded-xl font-mono text-xs text-amber-400 flex justify-between items-center border border-amber-900/20">
-                            <code className="break-all">gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/nexus-social</code>
-                            <button onClick={() => copyToClipboard('gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/nexus-social')} className="text-white opacity-50 hover:opacity-100 shrink-0 ml-2"><Copy className="w-4 h-4" /></button>
-                        </div>
-                        <div className="bg-nexus-950 p-4 rounded-xl font-mono text-xs text-amber-400 flex justify-between items-center border border-amber-900/20">
-                            <code className="break-all">gcloud run deploy nexus-social --image gcr.io/$GOOGLE_CLOUD_PROJECT/nexus-social --platform managed --allow-unauthenticated</code>
-                            <button onClick={() => copyToClipboard('gcloud run deploy nexus-social --image gcr.io/$GOOGLE_CLOUD_PROJECT/nexus-social --platform managed --allow-unauthenticated')} className="text-white opacity-50 hover:opacity-100 shrink-0 ml-2"><Copy className="w-4 h-4" /></button>
-                        </div>
-                    </div>
+                <div className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar text-gray-900 dark:text-white">
+                    <p>Deployment tools and cloud shell configurations are accessible via your Google Cloud console.</p>
                 </div>
               </div>
           </div>
@@ -200,7 +150,7 @@ const Settings: React.FC<SettingsProps> = ({ onLogout, onClearData, isDarkMode, 
       <div className="p-6 mt-4 mx-4 bg-nexus-primary/5 rounded-2xl border border-nexus-primary/10 flex gap-4">
         <Info className="w-6 h-6 text-nexus-primary shrink-0" />
         <p className="text-xs text-gray-500 leading-relaxed">
-          Nexus uses edge delivery via Google Cloud Artifact Registry. Ensure your Android device is on a stable connection during image uploads.
+          Nexus uses edge delivery via Google Cloud Infrastructure. Session state is stored locally for immediate performance.
         </p>
       </div>
     </div>
