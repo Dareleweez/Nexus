@@ -31,7 +31,7 @@ const Store: React.FC = () => {
                     </div>
                     <h3 className="text-4xl font-black mb-4">Nexus Premium</h3>
                     <ul className="space-y-3 mb-8">
-                        {['Exclusive Gold Badge', 'Gemini Post Analytics', 'Zero Sponsored Posts', 'Early Access Features'].map(item => (
+                        {['Exclusive Gold Badge', 'Advanced Post Analytics', 'Zero Sponsored Posts', 'Early Access Features'].map(item => (
                             <li key={item} className="flex items-center gap-3 text-gray-300 font-medium">
                                 <div className="p-1 bg-white/10 rounded-full">
                                     <Check className="w-3 h-3 text-nexus-accent" />

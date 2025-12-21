@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { User, Sparkles, ChevronRight, UserCircle, AtSign, Fingerprint, Rocket, RefreshCw, LogIn } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { User, Sparkles, ChevronRight, UserCircle, AtSign, Fingerprint, Rocket, RefreshCw, LogIn, Camera, Image as ImageIcon } from 'lucide-react';
 
 interface AuthProps {
   onAuthComplete: (user: any) => void;
@@ -15,12 +15,29 @@ const Auth: React.FC<AuthProps> = ({ onAuthComplete }) => {
     bio: '',
     avatar: `https://picsum.photos/id/${Math.floor(Math.random() * 100)}/200/200`
   });
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleRandomizeAvatar = () => {
     setFormData({
       ...formData,
       avatar: `https://picsum.photos/id/${Math.floor(Math.random() * 500)}/200/200`
     });
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setFormData({
+            ...formData,
+            avatar: event.target.result as string
+          });
+        }
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -77,20 +94,44 @@ const Auth: React.FC<AuthProps> = ({ onAuthComplete }) => {
                 <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                   <div className="text-center">
                     <div className="relative inline-block group">
-                      <img 
-                        src={formData.avatar} 
-                        className="w-32 h-32 rounded-full border-4 border-nexus-primary/30 p-1 object-cover shadow-2xl group-hover:scale-105 transition-transform" 
-                        alt="Avatar Preview" 
+                      <div className="relative">
+                        <img 
+                          src={formData.avatar} 
+                          className="w-32 h-32 rounded-full border-4 border-nexus-primary/30 p-1 object-cover shadow-2xl group-hover:scale-105 transition-transform" 
+                          alt="Avatar Preview" 
+                        />
+                        <div className="absolute inset-0 bg-black/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                            <Camera className="w-8 h-8 text-white" />
+                        </div>
+                      </div>
+                      
+                      <div className="absolute -bottom-2 -right-2 flex gap-1">
+                        <button 
+                          type="button"
+                          onClick={handleRandomizeAvatar}
+                          className="bg-nexus-accent text-white p-2.5 rounded-full shadow-lg hover:rotate-180 transition-transform duration-500"
+                          title="Randomize Avatar"
+                        >
+                          <RefreshCw className="w-4 h-4" />
+                        </button>
+                        <button 
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="bg-nexus-primary text-white p-2.5 rounded-full shadow-lg hover:scale-110 transition-transform"
+                          title="Upload Avatar"
+                        >
+                          <ImageIcon className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <input 
+                        type="file" 
+                        ref={fileInputRef} 
+                        className="hidden" 
+                        accept="image/*" 
+                        onChange={handleFileUpload} 
                       />
-                      <button 
-                        type="button"
-                        onClick={handleRandomizeAvatar}
-                        className="absolute bottom-0 right-0 bg-nexus-accent text-white p-2.5 rounded-full shadow-lg hover:rotate-180 transition-transform duration-500"
-                      >
-                        <RefreshCw className="w-4 h-4" />
-                      </button>
                     </div>
-                    <p className="text-xs text-gray-500 mt-3 font-bold uppercase tracking-widest">Identify Yourself</p>
+                    <p className="text-xs text-gray-500 mt-5 font-bold uppercase tracking-widest">Identify Yourself</p>
                   </div>
 
                   <div className="space-y-4">
@@ -146,7 +187,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthComplete }) => {
                       <div className="flex items-start gap-3">
                         <Sparkles className="w-5 h-5 text-nexus-primary shrink-0" />
                         <p className="text-xs text-gray-400 leading-relaxed">
-                          By joining, you unlock the <span className="text-white font-bold">Nexus Network</span>, Gemini-powered AI tools, and the Creator Economy dashboard.
+                          By joining, you unlock the <span className="text-white font-bold">Nexus Network</span>, AI-powered tools, and the Creator Economy dashboard.
                         </p>
                       </div>
                     </div>
@@ -162,7 +203,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthComplete }) => {
                         type="submit"
                         className="flex-[2] bg-gradient-to-r from-nexus-primary to-nexus-accent text-white font-black py-4 rounded-2xl flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-xl shadow-nexus-primary/20"
                       >
-                        Lanch Nexus
+                        Launch Nexus
                         <Rocket className="w-5 h-5" />
                       </button>
                     </div>
@@ -197,7 +238,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthComplete }) => {
 
         <div className="mt-8 text-center">
           <p className="text-gray-600 text-xs font-bold uppercase tracking-widest">
-            Safe • Encrypted • Built with Gemini
+            Safe • Encrypted • Community Focused
           </p>
         </div>
       </div>

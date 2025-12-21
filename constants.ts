@@ -6,6 +6,7 @@ export const CURRENT_USER: User = {
   name: 'Alex Rivera',
   handle: '@alexr',
   avatar: 'https://picsum.photos/id/64/150/150',
+  coverPhoto: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1200',
   bio: 'Digital explorer | AI enthusiast | Building the future 🚀',
   followers: 1250,
   following: 432,
@@ -22,6 +23,7 @@ export const MOCK_USERS: User[] = [
     name: 'Sarah Chen',
     handle: '@sarahc',
     avatar: 'https://picsum.photos/id/65/150/150',
+    coverPhoto: 'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?auto=format&fit=crop&q=80&w=1200',
     followers: 8900,
     following: 120,
     isMonetized: true,
@@ -32,6 +34,7 @@ export const MOCK_USERS: User[] = [
     name: 'Emily Zhang',
     handle: '@emilyz',
     avatar: 'https://picsum.photos/id/338/150/150',
+    coverPhoto: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&q=80&w=1200',
     followers: 3200,
     following: 150,
     isMonetized: true,
@@ -42,6 +45,7 @@ export const MOCK_USERS: User[] = [
     name: 'James Wilson',
     handle: '@jwilson',
     avatar: 'https://picsum.photos/id/334/150/150',
+    coverPhoto: 'https://images.unsplash.com/photo-1635776062127-d379bfcba9f8?auto=format&fit=crop&q=80&w=1200',
     followers: 1200,
     following: 800
   }

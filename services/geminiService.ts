@@ -1,6 +1,6 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { TrendingTopic } from "../types";
+import { TrendingTopic, Comment } from "../types";
 
 export const generatePostCaption = async (
   images: Array<{ base64: string; mimeType: string }>,
@@ -48,7 +48,6 @@ export const getTrendingTopics = async (): Promise<TrendingTopic[]> => {
 
   try {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-    // Using gemini-3-flash-preview for grounded search tasks as per latest guidelines
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: "What are the top 5 trending news topics in technology and science right now? Provide a brief title and a summary for each.",
@@ -98,5 +97,37 @@ export const enhanceText = async (text: string): Promise<string> => {
   } catch (error) {
     console.error("Gemini Enhance Error:", error);
     return text;
+  }
+};
+
+export const analyzeSentiment = async (comments: Comment[]): Promise<{ score: number; summary: string }> => {
+  if (!process.env.API_KEY || comments.length === 0) return { score: 0, summary: "No data to analyze." };
+
+  try {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const commentTexts = comments.map(c => c.text).join("\n---\n");
+    
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: `Analyze the sentiment of the following comments. Return a score from 0 (very negative) to 100 (very positive) and a brief 2-sentence summary of the general feedback. 
+      Comments:
+      ${commentTexts}`,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            score: { type: Type.NUMBER },
+            summary: { type: Type.STRING }
+          },
+          required: ["score", "summary"]
+        }
+      }
+    });
+
+    return JSON.parse(response.text || "{}");
+  } catch (error) {
+    console.error("Sentiment Analysis Error:", error);
+    return { score: 50, summary: "Analysis failed." };
   }
 };

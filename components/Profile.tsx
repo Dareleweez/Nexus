@@ -1,8 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { User, Post, ViewState } from '../types';
 import PostCard from './PostCard';
-import { Calendar, MapPin, Link as LinkIcon, ArrowLeft, Image as ImageIcon, Heart, X } from 'lucide-react';
+import { Calendar, MapPin, Link as LinkIcon, ArrowLeft, Image as ImageIcon, Heart, X, Camera } from 'lucide-react';
 import { CURRENT_USER } from '../constants';
 
 interface ProfileProps {
@@ -16,7 +16,7 @@ interface ProfileProps {
   onQuote: (post: Post) => void;
   onBookmark: (postId: string) => void;
   onUpdate?: (postId: string, newContent: string) => void;
-  onUpdateProfile?: (data: { name: string; handle: string; bio: string }) => void;
+  onUpdateProfile?: (data: { name: string; handle: string; bio: string; avatar: string; coverPhoto?: string }) => void;
   onCommentUpdate?: (postId: string, commentId: string, newText: string) => void;
   onCommentDelete?: (postId: string, commentId: string) => void;
   onViewChange?: (view: ViewState) => void;
@@ -42,9 +42,18 @@ const Profile: React.FC<ProfileProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<Tab>('posts');
   const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [editForm, setEditForm] = useState({ name: '', handle: '', bio: '' });
+  const [editForm, setEditForm] = useState({ 
+    name: user.name, 
+    handle: user.handle, 
+    bio: user.bio || '', 
+    avatar: user.avatar, 
+    coverPhoto: user.coverPhoto || '' 
+  });
   const [showHeader, setShowHeader] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -88,23 +97,27 @@ const Profile: React.FC<ProfileProps> = ({
 
   const displayPosts = getDisplayPosts();
 
-  const getEmptyStateMessage = () => {
-    switch (activeTab) {
-      case 'posts': return "This user hasn't posted anything yet.";
-      case 'media': return "This user has not shared any media yet.";
-      case 'likes': return "No liked posts yet.";
-      case 'replies': return "No replies yet.";
-      default: return "Nothing to see here.";
-    }
-  };
-
   const handleEditClick = () => {
     setEditForm({
         name: user.name,
         handle: user.handle,
-        bio: user.bio || ''
+        bio: user.bio || '',
+        avatar: user.avatar,
+        coverPhoto: user.coverPhoto || ''
     });
     setIsEditingProfile(true);
+  };
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>, field: 'avatar' | 'coverPhoto') => {
+    if (e.target.files && e.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            if (event.target?.result) {
+                setEditForm(prev => ({ ...prev, [field]: event.target?.result as string }));
+            }
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    }
   };
 
   const handleSaveProfile = (e: React.FormEvent) => {
@@ -129,11 +142,14 @@ const Profile: React.FC<ProfileProps> = ({
       </div>
 
       {/* Hero Image */}
-      <div className="h-48 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-nexus-800 dark:to-nexus-700"></div>
+      <div 
+        className="h-48 bg-gradient-to-r from-nexus-primary/20 to-nexus-accent/20 dark:from-nexus-800 dark:to-nexus-700 bg-cover bg-center"
+        style={{ backgroundImage: user.coverPhoto ? `url(${user.coverPhoto})` : undefined }}
+      ></div>
 
       {/* Profile Info */}
       <div className="px-4 pb-4 relative">
-        <div className="absolute -top-16 left-4 border-4 border-white dark:border-nexus-900 rounded-full">
+        <div className="absolute -top-16 left-4 border-4 border-white dark:border-nexus-900 rounded-full bg-white dark:bg-nexus-900">
             <img src={user.avatar} alt={user.name} className="w-32 h-32 rounded-full object-cover bg-gray-200 dark:bg-nexus-800" />
         </div>
         <div className="flex justify-end pt-3">
@@ -209,7 +225,7 @@ const Profile: React.FC<ProfileProps> = ({
             <div className="p-12 text-center text-gray-500 flex flex-col items-center">
                 {activeTab === 'media' && <ImageIcon className="w-10 h-10 mb-2 opacity-20" />}
                 {activeTab === 'likes' && <Heart className="w-10 h-10 mb-2 opacity-20" />}
-                <p>{getEmptyStateMessage()}</p>
+                <p>Nothing to see here yet.</p>
             </div>
         ) : (
             displayPosts.map(post => (
@@ -233,8 +249,8 @@ const Profile: React.FC<ProfileProps> = ({
       {/* Edit Profile Modal */}
       {isEditingProfile && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white dark:bg-nexus-900 w-full max-w-lg rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in duration-200 border dark:border-gray-800">
-                <form onSubmit={handleSaveProfile}>
+            <div className="bg-white dark:bg-nexus-900 w-full max-w-lg rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in duration-200 border dark:border-gray-800 flex flex-col max-h-[90vh]">
+                <form onSubmit={handleSaveProfile} className="flex flex-col h-full">
                     <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
                         <div className="flex items-center gap-4">
                             <button 
@@ -254,10 +270,42 @@ const Profile: React.FC<ProfileProps> = ({
                         </button>
                     </div>
                     
-                    <div className="p-4 space-y-6">
-                        <div className="relative h-32 bg-gray-200 dark:bg-nexus-800 mb-12">
-                            <div className="absolute -bottom-10 left-4 p-1 bg-white dark:bg-nexus-900 rounded-full">
-                                <img src={user.avatar} alt="Avatar" className="w-24 h-24 rounded-full object-cover opacity-75" />
+                    <div className="flex-1 overflow-y-auto p-4 space-y-6 no-scrollbar">
+                        {/* Photo Editing Area */}
+                        <div className="relative mb-12">
+                            {/* Cover Photo Edit */}
+                            <div 
+                                className="h-32 bg-gray-200 dark:bg-nexus-800 bg-cover bg-center relative group cursor-pointer"
+                                style={{ backgroundImage: editForm.coverPhoto ? `url(${editForm.coverPhoto})` : undefined }}
+                                onClick={() => coverInputRef.current?.click()}
+                            >
+                                <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <Camera className="w-8 h-8 text-white" />
+                                </div>
+                                <input 
+                                    type="file" 
+                                    ref={coverInputRef} 
+                                    className="hidden" 
+                                    accept="image/*" 
+                                    onChange={(e) => handlePhotoUpload(e, 'coverPhoto')} 
+                                />
+                            </div>
+
+                            {/* Avatar Edit */}
+                            <div className="absolute -bottom-10 left-4 p-1 bg-white dark:bg-nexus-900 rounded-full group cursor-pointer" onClick={() => avatarInputRef.current?.click()}>
+                                <div className="relative rounded-full overflow-hidden">
+                                    <img src={editForm.avatar} alt="Avatar" className="w-24 h-24 rounded-full object-cover" />
+                                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Camera className="w-6 h-6 text-white" />
+                                    </div>
+                                </div>
+                                <input 
+                                    type="file" 
+                                    ref={avatarInputRef} 
+                                    className="hidden" 
+                                    accept="image/*" 
+                                    onChange={(e) => handlePhotoUpload(e, 'avatar')} 
+                                />
                             </div>
                         </div>
 
@@ -268,8 +316,9 @@ const Profile: React.FC<ProfileProps> = ({
                                     type="text" 
                                     value={editForm.name}
                                     onChange={(e) => setEditForm({...editForm, name: e.target.value})}
-                                    className="w-full bg-transparent outline-none text-gray-900 dark:text-white"
+                                    className="w-full bg-transparent outline-none text-gray-900 dark:text-white font-medium"
                                     maxLength={50}
+                                    required
                                 />
                             </div>
 
@@ -279,8 +328,9 @@ const Profile: React.FC<ProfileProps> = ({
                                     type="text" 
                                     value={editForm.handle}
                                     onChange={(e) => setEditForm({...editForm, handle: e.target.value})}
-                                    className="w-full bg-transparent outline-none text-gray-900 dark:text-white"
+                                    className="w-full bg-transparent outline-none text-gray-900 dark:text-white font-medium"
                                     maxLength={30}
+                                    required
                                 />
                             </div>
 

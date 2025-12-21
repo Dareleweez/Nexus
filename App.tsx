@@ -193,6 +193,17 @@ export default function App() {
     setPosts(prev => prev.map(p => p.id === postId ? { ...p, content: newContent } : p));
   };
 
+  const handleUpdateProfile = (data: { name: string; handle: string; bio: string; avatar: string; coverPhoto?: string }) => {
+    if (!currentUser) return;
+    const updatedUser = { ...currentUser, ...data };
+    setCurrentUser(updatedUser);
+    localStorage.setItem('nexus_current_user', JSON.stringify(updatedUser));
+    setViewingUser(updatedUser);
+    
+    // Update all posts made by this user in the local state
+    setPosts(prev => prev.map(p => p.user.id === currentUser.id ? { ...p, user: updatedUser } : p));
+  };
+
   const handleComment = (postId: string, comment: Comment, parentId?: string) => {
     setPosts(prev => prev.map(p => {
         if (p.id === postId) {
@@ -392,6 +403,7 @@ export default function App() {
                 onQuote={handleQuote}
                 onBookmark={handleBookmark}
                 onUpdate={handleUpdatePost}
+                onUpdateProfile={handleUpdateProfile}
                 onCommentUpdate={handleCommentUpdate}
                 onCommentDelete={handleCommentDelete}
                 onViewChange={handleViewChange}
