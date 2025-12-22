@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, Compass, Bell, User as UserIcon, Settings, Mail, Plus, Menu, Wallet, ShoppingBag } from 'lucide-react';
+import { LayoutGrid, Compass, Zap, User as UserIcon, Settings, MessageSquareText, Plus, AlignRight, Menu, Wallet, ShoppingBag } from 'lucide-react';
 import { ViewState, User } from '../types';
 
 interface SidebarProps {
@@ -12,15 +12,15 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, onCreatePost, currentUser }) => {
   const items = [
-    { id: 'home', icon: Home, label: 'Home' },
+    { id: 'home', icon: LayoutGrid, label: 'Home' },
     { id: 'explore', icon: Compass, label: 'Explore', desktopOnly: true },
-    { id: 'notifications', icon: Bell, label: 'Notifications' },
+    { id: 'notifications', icon: Zap, label: 'Notifications' },
     { id: 'create', icon: Plus, label: 'Post', mobileOnly: true, isAction: true },
-    { id: 'messages', icon: Mail, label: 'Messages' },
+    { id: 'messages', icon: MessageSquareText, label: 'Messages' },
     { id: 'monetization', icon: Wallet, label: 'Monetization', desktopOnly: true },
     { id: 'store', icon: ShoppingBag, label: 'Store', desktopOnly: true },
     { id: 'profile', icon: UserIcon, label: 'Profile', desktopOnly: true },
-    { id: 'menu', icon: Menu, label: 'Menu', mobileOnly: true },
+    { id: 'menu', icon: AlignRight, label: 'Menu', mobileOnly: true },
   ];
 
   return (
@@ -38,7 +38,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, onCreatePo
                     onClick={onCreatePost}
                     className="md:hidden flex items-center justify-center p-3 rounded-full bg-nexus-primary text-white shadow-lg hover:bg-nexus-primary/90 transition-all"
                 >
-                    <item.icon className="w-6 h-6" />
+                    <item.icon className="w-6 h-6" strokeWidth={3} />
                 </button>
               );
           }
@@ -65,7 +65,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, onCreatePo
                     className={`w-8 h-8 rounded-full object-cover ${isActive ? 'ring-2 ring-nexus-primary' : ''}`}
                   />
               ) : (
-                  <item.icon className={`w-6 h-6 ${isActive ? 'fill-current' : ''}`} />
+                  <item.icon className={`w-6 h-6 ${isActive ? 'fill-current' : ''}`} strokeWidth={isActive ? 2.5 : 2} />
               )}
               <span className="hidden md:block text-lg">{item.label}</span>
             </button>
